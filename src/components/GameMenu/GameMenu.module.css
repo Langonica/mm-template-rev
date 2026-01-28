@@ -1,0 +1,122 @@
+/**
+ * GameMenu Component Styles
+ *
+ * Dropdown menu triggered by hamburger icon in header.
+ * Contains game actions, settings, and navigation.
+ */
+
+/* Menu toggle button (hamburger icon) */
+.menuButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: var(--color-neutral-light);
+  border: 1px solid var(--color-neutral-border);
+  border-radius: var(--border-radius-sm);
+  color: var(--color-text-primary);
+  font-size: 20px;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.menuButton:hover {
+  background: var(--color-neutral-medium);
+  transform: var(--hover-lift);
+}
+
+.menuButton.open {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary-border);
+  color: var(--color-primary);
+}
+
+/* Hamburger icon lines */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 18px;
+}
+
+.hamburger span {
+  display: block;
+  height: 2px;
+  background: currentColor;
+  border-radius: 1px;
+  transition: all var(--transition-fast);
+}
+
+/* Animate to X when open */
+.menuButton.open .hamburger span:nth-child(1) {
+  transform: rotate(45deg) translate(4px, 4px);
+}
+
+.menuButton.open .hamburger span:nth-child(2) {
+  opacity: 0;
+}
+
+.menuButton.open .hamburger span:nth-child(3) {
+  transform: rotate(-45deg) translate(4px, -4px);
+}
+
+/* Menu container */
+.menuContainer {
+  position: relative;
+}
+
+/* Dropdown panel */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: rgba(20, 20, 20, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-xs) 0;
+  z-index: var(--z-dropdown);
+
+  /* Animation */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px) scale(0.95);
+  transform-origin: top right;
+  transition: all var(--transition-fast);
+}
+
+.dropdown.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* Mode selector within menu */
+.modeGroup {
+  padding: var(--spacing-xs) var(--spacing-md);
+}
+
+.modeLabel {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  margin-bottom: var(--spacing-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modeSelect {
+  width: 100%;
+}
+
+/* Section within menu */
+.section {
+  padding: var(--spacing-xs) 0;
+}
+
+.section + .section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}

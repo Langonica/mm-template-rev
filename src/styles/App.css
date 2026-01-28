@@ -1,0 +1,2193 @@
+@import './tokens.css';
+
+:root {
+  /* ===========================================
+     LAYOUT DIMENSIONS
+     Base unit: card width. All other dimensions derive from this.
+     See docs/LAYOUT_AUDIT.md for ratio model.
+     =========================================== */
+
+  /* Stage dimensions (overall container) */
+  --stage-w: 1280px;
+  --stage-h: 720px;
+
+  /* Chrome (header/footer) - DEPRECATED: Now using full-bleed layout */
+  --header-h: 0px;
+  --footer-h: 0px;
+  --play-area-h: 720px;  /* Now equals --stage-h for full-bleed layout */
+
+  /* Card dimensions (base unit for calculations) */
+  --card-w: 80px;
+  --card-h: 112px;              /* card-w × 1.4 */
+  --card-overlap: 16px;         /* card-w × 0.2 */
+  --card-aspect: 1.4;           /* height / width ratio */
+
+  /* Foundation zone */
+  --fnd-top: 50px;              /* Top padding for foundation zone (centers content) */
+  --fnd-height: 130px;          /* Zone height (full-size cards) */
+  --fnd-card-scale: 1;          /* Scale factor for foundation cards */
+  --fnd-card-w: 80px;           /* Same as card-w (full size) */
+  --fnd-card-h: 112px;          /* Same as card-h (full size) */
+  --fnd-group-gap: 40px;        /* Gap between UP and DOWN foundation groups */
+  --fnd-slot-gap: 20px;         /* Gap between slots within a group */
+
+  /* Tableau zone */
+  --theater-top: 190px;         /* Where columns start (fnd-top + fnd-height + gap) */
+  --track-h: 290px;             /* Column track height */
+  --col-gap: 20px;              /* Gap between columns (card-w × 0.25) */
+  --col-start-x: 300px;         /* Left offset for first column */
+  --col-count: 7;               /* Number of tableau columns */
+
+  /* Bottom zone (stock/waste/pockets) */
+  --bottom-zone-top: 490px;     /* theater-top + track-h */
+  --controls-zone-top: 615px;   /* bottom-zone-top + card-h + padding */
+  --stock-waste-gap: 10px;      /* Gap between stock and waste */
+  --waste-pocket-gap: 40px;     /* Gap between waste and pockets */
+
+  /* ===========================================
+     ASSET URLS
+
+     The game works with CSS-only styling by default.
+     To add custom sprites, uncomment the relevant URL variables.
+
+     REQUIRED SPRITE (always needed):
+     - Card sprite sheet (13×5 grid, 80×112px cells)
+
+     OPTIONAL SPRITES (CSS fallbacks provided):
+     - Track backgrounds (80×290px)
+     - Badges for ace/king columns (80×112px)
+     - Game board background (1280×720px)
+
+     See docs/DESIGN_ASSETS.md for full specifications.
+     =========================================== */
+
+  /* Card sprite sheet - REQUIRED */
+  --sprite-url: url('/assets/cardspritesheet.png');
+
+  /* Game board backgrounds - OPTIONAL (CSS gradient used if not set) */
+  --gamefield-url: none;
+  --gamestage-url: none;
+
+  /* Track backgrounds - OPTIONAL (CSS gradients used if not set)
+   * Uncomment to use custom track sprites:
+   * --track-ace: url('/assets/aces-up.png');
+   * --track-king: url('/assets/kings-down.png');
+   * --track-default: url('/assets/default-down.png');
+   * --track-empty: url('/assets/empty.png');
+   */
+  --track-ace: none;
+  --track-king: none;
+  --track-default: none;
+  --track-empty: none;
+
+  /* Column badges - OPTIONAL (CSS gradients used if not set)
+   * Uncomment to use custom badge sprites:
+   * --ace-badge-url: url('/assets/ace-badge.png');
+   * --king-badge-url: url('/assets/king-badge.png');
+   */
+  --ace-badge-url: none;
+  --king-badge-url: none;
+
+  /* ===========================================
+     COLORS - Using tokens from tokens.css
+     =========================================== */
+  /* Legacy color variables removed - now using design tokens */
+
+  /* ===========================================
+     TRACK GRADIENTS (CSS-only fallbacks)
+     These provide visual styling when sprites aren't loaded.
+     To use sprites: set --track-ace, --track-king, etc. to url() values.
+     =========================================== */
+
+  /* Ace track: Gold gradient indicating upward direction (A→6) */
+  --track-grad-ace: linear-gradient(
+    to top,
+    var(--color-gold-30) 0%,
+    var(--color-gold-10) 50%,
+    transparent 100%
+  );
+
+  /* King track: Silver gradient indicating downward direction (K→7) */
+  --track-grad-king: linear-gradient(
+    to bottom,
+    var(--color-silver-30) 0%,
+    var(--color-silver-10) 50%,
+    transparent 100%
+  );
+
+  /* Traditional track: Neutral subtle gradient */
+  --track-grad-neutral: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+
+  /* Empty track: Subtle inset appearance */
+  --track-grad-empty: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.25) 100%
+  );
+
+  /* ===========================================
+     PLINTH GRADIENTS (CSS-only fallbacks)
+     Plinths are the card-sized areas at top (ace) or bottom (king) of tracks.
+     =========================================== */
+
+  /* Ace plinth: Gold accent at top of ace columns */
+  --plinth-grad-ace: linear-gradient(
+    to bottom,
+    var(--color-gold-30) 0%,
+    var(--color-gold-10) 100%
+  );
+
+  /* King plinth: Silver accent at bottom of king columns */
+  --plinth-grad-king: linear-gradient(
+    to top,
+    var(--color-silver-30) 0%,
+    var(--color-silver-10) 100%
+  );
+
+  /* Neutral/Traditional plinth */
+  --plinth-grad-neutral: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.08) 0%,
+    transparent 100%
+  );
+
+  /* Empty plinth: Dashed border appearance via gradient */
+  --plinth-grad-empty: rgba(255, 255, 255, 0.03);
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background: var(--bg-deep);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+/* Wrapper sizes to the scaled game dimensions for proper centering */
+.game-wrapper {
+  position: relative;
+  overflow: hidden;
+  /* Dimensions set dynamically via inline style */
+  /* Required for absolute positioning of child elements in full-bleed layout */
+}
+
+.game-container {
+  width: var(--stage-w);
+  height: var(--stage-h);
+  position: relative;
+  border: var(--border-width-thin) solid var(--color-neutral-700);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== HEADER ===== */
+/* DEPRECATED: Header is no longer displayed in full-bleed layout */
+header {
+  height: var(--header-h);
+  min-height: var(--header-h);
+  max-height: var(--header-h);
+  background: var(--bg-deep);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--spacing-5);
+  z-index: 2000;
+  position: relative;
+  border-bottom: var(--border-width-thin) solid var(--color-neutral-700);
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.header-title {
+  font-weight: var(--font-weight-black);
+  color: var(--color-accent-gold);
+  font-size: var(--font-size-lg);
+  white-space: nowrap;
+}
+
+.header-subtitle {
+  font-weight: var(--font-weight-normal);
+  color: var(--text-disabled);
+  font-size: var(--font-size-xs);
+  margin-left: var(--spacing-2);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg, 15px);
+}
+
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 10px);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 10px);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 10px);
+}
+
+.header-stat {
+  font-size: var(--font-size-sm, 12px);
+  color: var(--color-text-secondary, #888);
+  padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+  background: var(--color-bg-overlay, rgba(255, 255, 255, 0.05));
+  border-radius: var(--border-radius-sm, 4px);
+}
+
+.header-badge {
+  font-size: var(--font-size-xs, 11px);
+  color: var(--color-text-muted, #666);
+  padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+  background: var(--color-bg-elevated, rgba(255, 255, 255, 0.03));
+  border-radius: var(--border-radius-sm, 4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ===== MAIN GAME STAGE ===== */
+#game-stage {
+  height: 100%;  /* Changed from var(--play-area-h) for full-bleed layout */
+  position: relative;
+  background-image: var(--gamestage-url);
+  background-repeat: no-repeat;
+  background-color: var(--bg-felt);
+  z-index: 1;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ===== FOOTER ===== */
+/* DEPRECATED: Footer is no longer displayed in full-bleed layout */
+footer {
+  height: var(--footer-h);
+  background: var(--bg-deep);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--spacing-5);
+  z-index: 2000;
+  position: relative;
+  border-top: var(--border-width-thin) solid var(--color-neutral-700);
+  flex-shrink: 0;
+}
+
+/* Footer Layout */
+.footer-left,
+.footer-center,
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+}
+
+.footer-left {
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.footer-center {
+  flex: 2;
+  justify-content: center;
+}
+
+.footer-right {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+/* ===== FOUNDATION ZONES ===== */
+.foundation-zone {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: var(--fnd-height);
+/*   background: var(--bg-deep); */
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+.f-top {
+  top: var(--fnd-top);
+  border-bottom: var(--border-width-thin) solid var(--color-neutral-800);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--fnd-group-gap);
+}
+
+.f-bottom {
+  top: var(--bottom-zone-top);
+  border-top: var(--border-width-thin) solid var(--color-neutral-800);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Controls and stats row below bottom zone */
+.controls-zone {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  top: var(--controls-zone-top);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  z-index: 150;
+}
+
+/* ===== TABLEAU COLUMNS (TRACKS) ===== */
+/*
+ * Track backgrounds use CSS gradients as fallbacks.
+ * To add custom sprites, set the CSS variables:
+ *   --track-ace: url('/assets/your-ace-track.png');
+ *   --track-king: url('/assets/your-king-track.png');
+ *   etc.
+ * Sprites should be: width=card-w (80px), height=track-h (290px)
+ */
+.lane-track {
+  position: absolute;
+  width: var(--card-w);
+  height: var(--track-h);
+  top: var(--theater-top);
+  border-radius: var(--radius-lg);
+  background: var(--track-grad-neutral);
+  border: var(--border-width-thin) solid var(--bg-overlay-light);
+  z-index: 2;
+  box-sizing: border-box;
+  /* Sprite overlay (if set) */
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.lane-ace {
+  background: var(--track-grad-ace);
+  border-color: var(--color-gold-50);
+  box-shadow: inset 0 0 20px var(--color-gold-10);
+  /* Optional sprite overlay */
+  background-image: var(--track-ace);
+}
+
+.lane-king {
+  background: var(--track-grad-king);
+  border-color: var(--color-silver-50);
+  box-shadow: inset 0 0 20px var(--color-silver-10);
+  /* Optional sprite overlay */
+  background-image: var(--track-king);
+}
+
+.lane-traditional {
+  background: var(--track-grad-neutral);
+  border-color: var(--bg-overlay-medium);
+  /* Optional sprite overlay */
+  background-image: var(--track-default);
+}
+
+.lane-empty {
+  background: var(--track-grad-empty);
+  border-color: var(--bg-overlay-light);
+  border-style: dashed;
+  /* Optional sprite overlay */
+  background-image: var(--track-empty);
+}
+
+/* ===== SLOTS ===== */
+.slot {
+  width: var(--card-w);
+  height: var(--card-h);
+  position: absolute;
+  border-radius: var(--radius-md);
+  background: var(--bg-overlay-light);
+  border: var(--border-width-thin) solid var(--bg-overlay-medium);
+  box-sizing: border-box;
+}
+
+/* ===== PLINTH ===== */
+/*
+ * Plinths are the card-sized indicator areas on tracks.
+ * - Ace columns: plinth at TOP (A starts here, builds up to 6)
+ * - King columns: plinth at BOTTOM (K starts here, builds down to 7)
+ * To add custom badges, set:
+ *   --ace-badge-url: url('/assets/your-ace-badge.png');
+ *   --king-badge-url: url('/assets/your-king-badge.png');
+ * Badge sprites should be: 80×112px
+ */
+.plinth {
+  width: 100%;
+  height: var(--card-h);
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+  letter-spacing: var(--letter-spacing-tight);
+  text-transform: uppercase;
+  color: var(--bg-overlay-medium);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  z-index: 1; /* Below cards */
+  background: var(--plinth-grad-neutral);
+  top: calc(var(--track-h) - var(--card-h));
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.plinth.plinth-ace {
+  top: 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--plinth-grad-ace);
+  color: var(--color-accent-gold);
+  /* Optional badge sprite */
+  background-image: var(--ace-badge-url);
+}
+
+.plinth.plinth-king {
+  top: calc(var(--track-h) - var(--card-h));
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  background: var(--plinth-grad-king);
+  color: var(--color-accent-silver);
+  /* Optional badge sprite */
+  background-image: var(--king-badge-url);
+}
+
+.plinth.plinth-traditional {
+  top: calc(var(--track-h) - var(--card-h));
+  background: var(--plinth-grad-neutral);
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.plinth.plinth-empty {
+  top: calc(var(--track-h) - var(--card-h));
+  background: var(--plinth-grad-empty);
+  color: rgba(255, 255, 255, 0.2);
+  font-weight: 400;
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ===== CARDS ===== */
+.card {
+  width: var(--card-w);
+  height: var(--card-h);
+  background-image: var(--sprite-url);
+  position: absolute;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 110;
+  transition: var(--transition-normal);
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-5px) scale(1.05);
+  z-index: 600 !important;
+}
+
+/* ===== BUTTONS ===== */
+.btn-ui {
+  background: var(--bg-surface);
+  border: var(--border-width-thin) solid var(--color-neutral-600);
+  color: var(--text-secondary);
+  padding: var(--spacing-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  font-family: var(--font-family);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.btn-ui:hover {
+  background: var(--bg-elevated);
+  border-color: var(--text-disabled);
+}
+
+/* ===== MODE SELECTOR (Footer) ===== */
+.mode-selector {
+  display: flex;
+  gap: 5px;
+}
+
+.btn-mode {
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-xs);
+  background: var(--bg-surface);
+  border: var(--border-width-thin) solid var(--color-neutral-600);
+  color: var(--text-muted);
+  transition: var(--transition-normal);
+  min-width: 80px;
+}
+
+.btn-mode.active {
+  background: var(--color-accent-gold);
+  color: var(--text-inverse);
+  border-color: var(--color-accent-gold);
+  font-weight: var(--font-weight-bold);
+}
+
+.btn-mode:hover:not(.active) {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+}
+
+/* ===== VARIANT SELECTOR (Footer) ===== */
+.variant-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-variant {
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-xs);
+  background: var(--bg-surface);
+  border: var(--border-width-thin) solid var(--color-neutral-600);
+  color: var(--text-muted);
+  transition: var(--transition-normal);
+  min-width: 70px;
+}
+
+.btn-variant.active {
+  background: var(--color-accent-gold);
+  color: var(--text-inverse);
+  border-color: var(--color-accent-gold);
+  font-weight: var(--font-weight-bold);
+}
+
+.btn-variant:hover:not(.active) {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+}
+
+/* ===== SNAPSHOT INFO ===== */
+.snapshot-info {
+  font-size: var(--font-size-xs);
+  color: var(--color-accent-silver);
+  font-style: italic;
+  padding: var(--spacing-1) var(--spacing-2);
+  background: var(--color-silver-10);
+  border-radius: var(--radius-xs);
+  border: var(--border-width-thin) solid var(--color-silver-20);
+}
+
+/* ===== STOCK & WASTE PILES ===== */
+/*
+ * Stock and waste areas use CSS-only styling by default.
+ * The card back comes from the sprite sheet (--sprite-url).
+ * Placeholder/empty states are CSS gradients.
+ */
+.stock-pile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.stock-depth-layer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    145deg,
+    var(--bg-overlay-light) 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  border: var(--border-width-medium) dashed var(--bg-overlay-medium);
+  box-sizing: border-box;
+}
+
+.stock-top-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  background-image: var(--sprite-url);
+  background-position: -480px -448px;
+  z-index: 110;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition-normal);
+}
+
+.stock-top-card:hover {
+  transform: translateY(-5px) scale(1.05);
+  z-index: 600;
+}
+
+.waste-pile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.waste-depth-layer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    145deg,
+    var(--bg-overlay-light) 0%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
+  border: var(--border-width-thin) solid var(--bg-overlay-medium);
+  box-sizing: border-box;
+}
+
+.waste-top-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  z-index: 110;
+  box-shadow: var(--shadow-lg);
+}
+
+/* ===== POCKETS ===== */
+/*
+ * Pockets are temporary card storage areas.
+ * CSS-only styling; can optionally add pocket sprite via background-image.
+ */
+.pocket-slot {
+  background: linear-gradient(
+    145deg,
+    var(--bg-overlay-light) 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  border: var(--border-width-medium) solid var(--bg-overlay-medium);
+  border-radius: var(--radius-md);
+  transition: var(--transition-slow);
+  box-shadow: var(--shadow-inset-sm);
+}
+
+.pocket-slot:hover {
+  border-color: var(--bg-overlay-medium);
+}
+
+.pocket-inactive {
+  opacity: 0.3;
+  border-style: dashed;
+}
+
+/* ===== FOUNDATION CARDS ===== */
+.foundation-card {
+  width: var(--card-w);
+  height: var(--card-h);
+  position: absolute;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 110;
+}
+
+/* ===== TRANSITIONS ===== */
+.stock-depth-layer,
+.waste-depth-layer,
+.stock-top-card {
+  transition: transform 0.3s ease;
+}
+
+.stock-top-card {
+  transform-origin: center;
+}
+
+/* ===== HEADER SNAPSHOT SELECTOR SPECIFIC ===== */
+header .snapshot-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+header select {
+  background: var(--bg-surface);
+  border: var(--border-width-thin) solid var(--color-neutral-600);
+  color: var(--text-secondary);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  height: 24px;
+  line-height: 24px;
+  font-family: var(--font-family);
+  outline: none;
+  min-width: 90px;
+  transition: var(--transition-fast);
+}
+
+header select:focus {
+  border-color: var(--color-accent-gold);
+}
+
+header select option {
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  padding: var(--spacing-1);
+}
+
+/* Ensure dropdowns appear above game */
+header {
+  z-index: 3000;
+}
+
+header select {
+  z-index: 3001;
+  position: relative;
+}
+
+/* ===== UTILITY CLASSES ===== */
+.hidden {
+  display: none !important;
+}
+
+/* ===== RESPONSIVE SCALING ===== */
+/*
+ * Scaling is now handled dynamically via JavaScript (useViewportScale hook).
+ * The game-wrapper element sizes to fit the scaled game, ensuring proper
+ * centering without clipping on any viewport size.
+ */
+
+/* ===== DEBUG/DEV STYLES ===== */
+.debug-outline * {
+  outline: 1px solid rgba(255, 0, 0, 0.1);
+}
+/* ===================================================================== */
+/* DRAG & DROP STYLES - PHASES 1-3 IMPLEMENTATION */
+/* ===================================================================== */
+
+/* Valid drop target highlighting */
+.valid-drop-target {
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--color-success-50);
+  }
+  50% {
+    box-shadow: 0 0 30px var(--color-success-50);
+  }
+}
+
+/* Empty column drop zone */
+.empty-column-zone {
+  pointer-events: auto;
+}
+
+.empty-column-zone.valid-drop-target {
+  animation: pulse-border 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: var(--color-success-50);
+    transform: scale(1);
+  }
+  50% {
+    border-color: var(--color-success);
+    transform: scale(1.02);
+  }
+}
+
+/* Card being dragged */
+.card[draggable="true"] {
+  cursor: grab !important;
+}
+
+.card[draggable="true"]:active {
+  cursor: grabbing !important;
+}
+
+/* Stock/Waste improvements */
+.stock-empty {
+  box-sizing: border-box;
+}
+
+.stock-empty:hover {
+  transform: scale(1.05);
+}
+
+/* Recycle animation */
+@keyframes recycle-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.stock-empty.recycling {
+  animation: recycle-spin 0.6s ease-in-out;
+}
+
+/* Card draw animation */
+@keyframes card-draw {
+  0% {
+    transform: translateX(0) translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(50px) translateY(-10px);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(90px) translateY(0);
+    opacity: 1;
+  }
+}
+
+.card-drawing {
+  animation: card-draw 0.3s ease-out;
+}
+
+/* Drop success animation */
+@keyframes drop-success {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.card-drop-success {
+  animation: drop-success 0.3s ease-out;
+}
+
+/* Drop failure animation */
+@keyframes drop-fail {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.card-drop-fail {
+  animation: drop-fail 0.4s ease-out;
+}
+
+/* Slide animation for card movements */
+@keyframes slide-to-target {
+  from {
+    transform: translate(var(--from-x), var(--from-y));
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
+
+.card-sliding {
+  animation: slide-to-target 0.3s ease-out;
+}
+
+/* ===== FOUNDATION SLOT STYLING ===== */
+/*
+ * Foundation slots show where cards build to K (UP) or to A (DOWN).
+ * CSS-only styling provides visual distinction; optional sprites can be added.
+ * To add custom slot backgrounds, set CSS variables in :root.
+ */
+.foundation-slot {
+  transition: var(--transition-slow);
+  background: rgba(0, 0, 0, 0.2);
+  border: var(--border-width-medium) solid var(--bg-overlay-medium);
+  border-radius: var(--radius-md);
+  position: relative;
+}
+
+/* UP foundation slots (7→K): Gold accent */
+.foundation-slot.foundation-up {
+  border-color: var(--color-gold-50);
+  background: linear-gradient(
+    135deg,
+    var(--color-gold-10) 0%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  box-shadow: var(--shadow-inset-sm);
+}
+
+/* DOWN foundation slots (6→A): Silver accent */
+.foundation-slot.foundation-down {
+  border-color: var(--color-silver-50);
+  background: linear-gradient(
+    135deg,
+    var(--color-silver-10) 0%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  box-shadow: var(--shadow-inset-sm);
+}
+
+.foundation-slot.valid-drop-target {
+  transform: scale(1.05);
+  border-color: var(--color-success);
+  box-shadow: 0 0 15px var(--color-success-50);
+}
+
+/* Pocket slot improvements */
+.pocket-slot {
+  transition: var(--transition-slow);
+}
+
+.pocket-slot.valid-drop-target {
+  transform: scale(1.05);
+}
+
+/* Card count badges */
+.card-count-badge {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  background: rgba(33, 150, 243, 0.9);
+  color: white;
+  border-radius: var(--radius-round);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  z-index: 120;
+  border: var(--border-width-medium) solid var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-normal);
+}
+
+.card-count-badge:hover {
+  transform: scale(1.1);
+}
+
+/* Improved lane track for drop targets */
+.lane-track {
+  transition: var(--transition-slow);
+}
+
+.lane-track.valid-drop-target {
+  background: linear-gradient(
+    to bottom,
+    var(--color-success-10),
+    var(--color-success-10)
+  ) !important;
+}
+
+/* Hover effects for draggable cards */
+.card[draggable="true"]:hover {
+  z-index: 600 !important;
+}
+
+/* Multi-card sequence dragging visual */
+.card-sequence-drag {
+  position: relative;
+}
+
+.card-sequence-drag::after {
+  content: attr(data-sequence-count);
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: rgba(255, 152, 0, 0.9);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  border: 2px solid #1a1a1a;
+  z-index: 1000;
+}
+
+/* Accessibility - Focus states */
+.card:focus,
+.foundation-slot:focus,
+.pocket-slot:focus,
+.lane-track:focus {
+  outline: 2px solid rgba(33, 150, 243, 0.8);
+  outline-offset: 2px;
+}
+
+/* Loading/Processing state */
+.processing {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Error state */
+.error-shake {
+  animation: error-shake 0.5s ease-out;
+}
+
+@keyframes error-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+/* Success flash */
+.success-flash {
+  animation: success-flash 0.5s ease-out;
+}
+
+@keyframes success-flash {
+  0% {
+    box-shadow: 0 0 0 rgba(76, 175, 80, 0);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+/* Improved tooltips */
+.card[title],
+.foundation-slot[title],
+.pocket-slot[title] {
+  position: relative;
+}
+
+/* Ghost image for drag (browser default enhancement) */
+.drag-ghost {
+  opacity: 0.5;
+  transform: rotate(-5deg);
+}
+
+/* Prevent text selection during drag */
+.game-container.dragging {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+
+
+/* ===================================================================== */
+/* PRINT STYLES */
+/* ===================================================================== */
+
+@media print {
+  .header-controls,
+  footer {
+    display: none !important;
+  }
+  
+  .game-container {
+    border: none;
+  }
+}
+
+
+/* ===================================================================== */
+/* PHASE 5: NOTIFICATIONS & UNDO/REDO STYLES */
+/* ===================================================================== */
+
+/* Notification slide-down animation */
+@keyframes slideDown {
+  from {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+/* Undo/Redo button styles */
+.header-controls button {
+  font-family: inherit;
+}
+
+.header-controls button:disabled {
+  cursor: not-allowed !important;
+}
+
+.header-controls button:not(:disabled):active {
+  transform: translateY(0) !important;
+}
+
+/* Touch-specific improvements */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase touch target sizes */
+  .card {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Disable hover effects on touch devices */
+  .card:hover,
+  .foundation-slot:hover,
+  .pocket-slot:hover {
+    transform: none !important;
+  }
+  
+  /* Better visual feedback for touch */
+  .card:active {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+  
+  /* Larger tap targets for buttons */
+  button,
+  .header-controls > * {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+}
+
+/* Long-press indication for touch */
+.touch-press-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(33, 150, 243, 0.3), transparent);
+  animation: press-pulse 0.15s ease-out;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+@keyframes press-pulse {
+  from {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Keyboard shortcut hints */
+.keyboard-hint {
+  position: fixed;
+  bottom: var(--spacing-5);
+  right: var(--spacing-5);
+  background: var(--bg-overlay-heavy);
+  color: white;
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  z-index: 9999;
+  animation: fadeIn var(--duration-slow) ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Move counter animation */
+.move-counter {
+  transition: all 0.2s ease-out;
+}
+
+.move-counter.updated {
+  animation: counter-bump 0.3s ease-out;
+}
+
+@keyframes counter-bump {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+    color: #4CAF50;
+  }
+}
+
+/* Undo/Redo button glow */
+.undo-button:not(:disabled):hover,
+.redo-button:not(:disabled):hover {
+  box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+}
+
+/* Touch device indicator */
+.touch-indicator {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Loading state for async operations */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-overlay-heavy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn var(--duration-normal) ease-out;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--bg-overlay-medium);
+  border-top: 4px solid white;
+  border-radius: var(--radius-round);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Edge case: Empty game state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-neutral-500);
+  gap: var(--spacing-5);
+}
+
+.empty-state-icon {
+  font-size: var(--font-size-4xl);
+  opacity: 0.5;
+}
+
+.empty-state-text {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-normal);
+}
+
+/* Win celebration overlay */
+.win-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-overlay-heavy);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn var(--duration-slower) ease-out;
+}
+
+.win-message {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: #FFD700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  margin-bottom: var(--spacing-5);
+  animation: celebration-pulse 1s ease-in-out infinite;
+}
+
+@keyframes celebration-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.win-stats {
+  color: white;
+  font-size: var(--font-size-lg);
+  text-align: center;
+  line-height: var(--line-height-relaxed);
+}
+
+/* Confetti animation for win */
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: #FFD700;
+  animation: confetti-fall 3s linear infinite;
+}
+
+@keyframes confetti-fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+/* Game Over Overlay */
+.game-over-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.game-over-overlay.won {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(25, 50, 25, 0.9) 100%);
+}
+
+.game-over-overlay.stalemate {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(50, 25, 25, 0.9) 100%);
+}
+
+.game-over-content {
+  text-align: center;
+  padding: var(--spacing-10) var(--spacing-16);
+  background: rgba(30, 30, 30, 0.95);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-2xl);
+  max-width: 400px;
+}
+
+.game-over-icon {
+  font-size: 72px;
+  margin-bottom: 20px;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.won .game-over-icon {
+  animation: celebration-pulse 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.game-over-title {
+  font-size: 36px;
+  font-weight: bold;
+  margin: 0 0 16px 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.won .game-over-title {
+  color: #FFD700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.stalemate .game-over-title {
+  color: #ff6b6b;
+}
+
+.game-over-level {
+  font-size: 14px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.won .game-over-level {
+  color: #4CAF50;
+}
+
+.game-over-message {
+  font-size: 16px;
+  color: #aaa;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.game-over-stats {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.game-over-stats .stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-over-stats .stat-label {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.game-over-stats .stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.won .game-over-stats .stat-value {
+  color: #FFD700;
+}
+
+.game-over-button {
+  padding: 14px 40px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.game-over-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.stalemate .game-over-button {
+  background: linear-gradient(135deg, #666 0%, #555 100%);
+}
+
+.stalemate .game-over-button:hover {
+  box-shadow: 0 6px 20px rgba(100, 100, 100, 0.4);
+}
+
+/* Enhanced game-over stats */
+.game-over-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.game-over-stats .stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+}
+
+.game-over-stats .stat-compare {
+  font-size: 10px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.won .game-over-stats .stat-compare {
+  color: #a08040;
+}
+
+/* Game over badge for new records */
+.game-over-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  margin: 8px 4px;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  color: #000;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 20px;
+  animation: badge-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  }
+}
+
+/* Game over buttons container */
+.game-over-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.game-over-button.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.game-over-button.secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================================================
+   PORTAL ANIMATION SYSTEM
+   For empty columns accepting Kings and Aces
+   ============================================================================ */
+
+/* Portal Core Element */
+.portal {
+  position: relative;
+  transition: all 0.3s ease;
+  background: radial-gradient(circle, rgba(100, 100, 120, 0.3) 0%, transparent 70%);
+}
+
+/* Portal Inner Ring */
+.portal::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  animation: portal-idle-pulse 3s ease-in-out infinite;
+}
+
+/* Portal Outer Glow Ring */
+.portal::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: radial-gradient(circle, rgba(150, 150, 170, 0.15) 0%, transparent 60%);
+  animation: portal-idle-glow 4s ease-in-out infinite;
+}
+
+/* ===== IDLE STATE ===== */
+@keyframes portal-idle-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.6;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+@keyframes portal-idle-glow {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1) rotate(180deg);
+    opacity: 0.5;
+  }
+}
+
+/* ===== ACTIVE STATE (Valid card being dragged) ===== */
+.portal.active {
+  transform: scale(1.2);
+  background: radial-gradient(circle, rgba(76, 175, 80, 0.4) 0%, transparent 70%);
+}
+
+.portal.active::before {
+  animation: portal-active-vortex 0.6s linear infinite;
+  border-color: rgba(76, 175, 80, 0.8);
+  border-width: 3px;
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.5), inset 0 0 15px rgba(76, 175, 80, 0.3);
+}
+
+.portal.active::after {
+  animation: portal-active-pull 0.5s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(76, 175, 80, 0.4) 0%, transparent 60%);
+  border-color: rgba(76, 175, 80, 0.4);
+}
+
+@keyframes portal-active-vortex {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(0.85) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 0.9;
+  }
+}
+
+@keyframes portal-active-pull {
+  0%, 100% {
+    transform: scale(1.3);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(0.7);
+    opacity: 0.9;
+  }
+}
+
+/* ===== SLURPING STATE (Card being absorbed) ===== */
+.portal.slurping {
+  transform: scale(1.3);
+}
+
+.portal.slurping::before {
+  animation: portal-absorb 300ms ease-in forwards;
+  border-color: rgba(255, 255, 255, 0.9);
+  border-width: 4px;
+}
+
+.portal.slurping::after {
+  animation: portal-absorb-glow 300ms ease-in forwards;
+}
+
+@keyframes portal-absorb {
+  0% {
+    transform: scale(1) rotate(0deg);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5), inset 0 0 15px rgba(76, 175, 80, 0.3);
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    transform: scale(0.5) rotate(360deg);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+  }
+}
+
+@keyframes portal-absorb-glow {
+  0% {
+    transform: scale(1.3);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.8);
+    opacity: 1;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 60%);
+  }
+  100% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* ===== SLURP ANIMATION (Card being sucked in) ===== */
+.card.slurping {
+  animation: card-slurp 300ms ease-in forwards;
+  z-index: 1000 !important;
+}
+
+@keyframes card-slurp {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+    filter: brightness(1);
+  }
+  30% {
+    transform: scale(1.1) rotate(-10deg);
+    opacity: 1;
+    filter: brightness(1.2);
+  }
+  60% {
+    transform: scale(0.6) rotate(60deg);
+    opacity: 0.9;
+    filter: brightness(1.5);
+  }
+  100% {
+    transform: scale(0) rotate(180deg);
+    opacity: 0;
+    filter: brightness(2);
+  }
+}
+
+/* ===== PORTAL FLASH (After slurp) ===== */
+.portal.flash::before {
+  animation: portal-flash 100ms ease-out forwards;
+}
+
+@keyframes portal-flash {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.6);
+  }
+  100% {
+    transform: scale(1.5);
+    box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0);
+    background: transparent;
+  }
+}
+
+/* ===== POP ANIMATION (Card appearing at final position) ===== */
+.card.popping {
+  animation: card-pop 350ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes card-pop {
+  0% {
+    transform: scale(0) rotate(-30deg);
+    opacity: 0;
+    filter: brightness(2);
+  }
+  40% {
+    transform: scale(1.2) rotate(8deg);
+    opacity: 1;
+    filter: brightness(1.3);
+  }
+  70% {
+    transform: scale(0.92) rotate(-3deg);
+    filter: brightness(1);
+  }
+  85% {
+    transform: scale(1.05) rotate(1deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+/* ===== ACE REVEAL ANIMATION ===== */
+/* When Ace is revealed and needs to move to bottom */
+.card.ace-relocating {
+  animation: ace-relocate-slurp 200ms ease-in forwards;
+  z-index: 1000 !important;
+}
+
+@keyframes ace-relocate-slurp {
+  0% {
+    transform: scale(1) rotate(0deg) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.3) rotate(90deg) translateY(-50px);
+    opacity: 0;
+  }
+}
+
+/* Ace appearing at bottom after relocation */
+.card.ace-popping {
+  animation: ace-pop-bottom 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes ace-pop-bottom {
+  0% {
+    transform: scale(0.3) rotate(-90deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12) rotate(4deg);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(0.96) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* ===== SLURPING CARD CONTAINER ===== */
+.slurping-card-container {
+  pointer-events: none;
+}
+
+/* ===== AUTO-MOVE TO FOUNDATION ANIMATIONS ===== */
+/* Slurp animation for cards being auto-moved to foundation */
+.card.auto-move-slurping {
+  animation: auto-move-slurp 300ms ease-in forwards;
+  z-index: 1000 !important;
+  pointer-events: none;
+}
+
+@keyframes auto-move-slurp {
+  0% {
+    transform: scale(1) rotate(0deg) translateY(0);
+    opacity: 1;
+    filter: brightness(1);
+  }
+  20% {
+    transform: scale(1.08) rotate(-5deg) translateY(-10px);
+    opacity: 1;
+    filter: brightness(1.2);
+  }
+  50% {
+    transform: scale(0.7) rotate(30deg) translateY(-40px);
+    opacity: 0.9;
+    filter: brightness(1.4);
+  }
+  100% {
+    transform: scale(0) rotate(90deg) translateY(-80px);
+    opacity: 0;
+    filter: brightness(2);
+  }
+}
+
+/* Pop animation for cards arriving at foundation */
+.card.foundation-popping {
+  animation: foundation-pop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  z-index: 200 !important;
+}
+
+@keyframes foundation-pop {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+    filter: brightness(2);
+  }
+  30% {
+    transform: scale(1.25) rotate(10deg);
+    opacity: 1;
+    filter: brightness(1.4);
+  }
+  50% {
+    transform: scale(0.9) rotate(-5deg);
+    filter: brightness(1.1);
+  }
+  70% {
+    transform: scale(1.1) rotate(3deg);
+    filter: brightness(1);
+  }
+  85% {
+    transform: scale(0.98) rotate(-1deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+/* ===== STATS MODAL ===== */
+.stats-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 15000;
+  animation: fadeIn 0.2s ease;
+}
+
+.stats-modal {
+  background: linear-gradient(145deg, var(--bg-elevated), var(--bg-surface));
+  border-radius: var(--radius-xl);
+  border: var(--border-width-thin) solid var(--bg-overlay-medium);
+  box-shadow: var(--shadow-2xl);
+  width: 90%;
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp var(--duration-slow) ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stats-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-4) var(--spacing-5);
+  border-bottom: var(--border-width-thin) solid var(--bg-overlay-medium);
+}
+
+.stats-modal-header h2 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-accent-gold);
+  font-weight: var(--font-weight-semibold);
+}
+
+.stats-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  padding: var(--spacing-1) var(--spacing-2);
+  transition: var(--transition-normal);
+}
+
+.stats-modal-close:hover {
+  color: var(--text-primary);
+}
+
+.stats-modal-content {
+  padding: var(--spacing-4) var(--spacing-5);
+}
+
+.stats-section {
+  margin-bottom: 20px;
+}
+
+.stats-section h3 {
+  margin: 0 0 var(--spacing-3) 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.stat-item {
+  background: var(--bg-overlay-light);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-3);
+  text-align: center;
+  border: var(--border-width-thin) solid var(--bg-overlay-light);
+}
+
+.stat-value {
+  display: block;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-1);
+}
+
+.stat-label {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--color-neutral-500);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+/* Mode table */
+.stats-mode-table {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stats-mode-header,
+.stats-mode-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 10px 12px;
+  font-size: 11px;
+}
+
+.stats-mode-header {
+  background: rgba(255, 255, 255, 0.05);
+  color: #888;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stats-mode-row {
+  color: #ccc;
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.stats-mode-row .mode-name {
+  color: var(--color-accent-gold);
+}
+
+/* Reset section */
+.stats-reset-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-reset-button {
+  width: 100%;
+  padding: 10px;
+  background: rgba(180, 60, 60, 0.2);
+  border: 1px solid rgba(180, 60, 60, 0.4);
+  border-radius: 6px;
+  color: #d88;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.stats-reset-button:hover {
+  background: rgba(180, 60, 60, 0.3);
+  border-color: rgba(180, 60, 60, 0.6);
+}
+
+.stats-reset-confirm {
+  text-align: center;
+}
+
+.stats-reset-confirm p {
+  margin: 0 0 12px 0;
+  color: #d88;
+  font-size: 13px;
+}
+
+.stats-reset-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.stats-reset-confirm-button {
+  padding: 8px 20px;
+  background: #b33;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.stats-reset-confirm-button:hover {
+  background: #c44;
+}
+
+.stats-reset-cancel-button {
+  padding: 8px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 4px;
+  color: #aaa;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.stats-reset-cancel-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* Stats button in header */
+.stats-button {
+  padding: var(--spacing-1) var(--spacing-3);
+  background: var(--color-gold-10);
+  border: var(--border-width-thin) solid var(--color-gold-30);
+  border-radius: var(--radius-sm);
+  color: var(--color-accent-gold);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.stats-button:hover {
+  background: var(--color-gold-20);
+  border-color: var(--color-gold-50);
+}
+
+/* Game timer in header */
+.game-timer {
+  font-size: var(--font-size-md);
+  font-family: var(--font-family-mono);
+  color: var(--text-muted);
+  min-width: 50px;
+  text-align: center;
+}
+

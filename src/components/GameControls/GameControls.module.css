@@ -1,0 +1,69 @@
+/**
+ * GameControls Component Styles
+ *
+ * Compact icon-only buttons for game control actions (undo, redo, pause)
+ * Matches game aesthetic with dark background and light icons
+ */
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.button {
+  /* Size */
+  width: 36px;
+  height: 36px;
+  padding: 0;
+
+  /* Layout */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Styling */
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius-sm);
+  color: rgba(255, 255, 255, 0.9);
+
+  /* Typography */
+  font-size: 20px;
+  line-height: 1;
+  font-family: var(--font-family);
+
+  /* Interaction */
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+  user-select: none;
+}
+
+/* Hover state */
+.button:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  transform: var(--hover-lift);
+}
+
+/* Active state */
+.button:active:not(:disabled) {
+  transform: translateY(0);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Focus state for accessibility */
+.button:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-secondary);
+}
+
+/* Disabled state */
+.button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.4);
+}

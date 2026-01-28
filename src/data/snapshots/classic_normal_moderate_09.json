@@ -1,0 +1,157 @@
+{
+  "metadata": {
+    "id": "classic_normal_moderate_09",
+    "name": "CLASSIC MODERATE 09",
+    "mode": "classic",
+    "variant": "normal",
+    "pockets": 1,
+    "allUp": true,
+    "isPressureTest": false,
+    "version": "2.0.0",
+    "createdAt": "2026-01-14T00:53:43Z",
+    "description": "moderate classic deal simulated for 100% solvability."
+  },
+  "tableau": {
+    "0": [
+      "2c"
+    ],
+    "1": [
+      "4d",
+      "7d"
+    ],
+    "2": [
+      "3h",
+      "6c",
+      "10d"
+    ],
+    "3": [
+      "9h",
+      "6h",
+      "10s",
+      "Ks"
+    ],
+    "4": [
+      "4c",
+      "6s",
+      "9s",
+      "Js",
+      "10c"
+    ],
+    "5": [
+      "3s",
+      "6d",
+      "Jc",
+      "5s",
+      "2s",
+      "10h"
+    ],
+    "6": [
+      "Jh",
+      "7s",
+      "4h",
+      "Ad",
+      "Kc",
+      "4s",
+      "Kh"
+    ]
+  },
+  "stock": [
+    "Jd",
+    "Qs",
+    "As",
+    "9c",
+    "5h",
+    "Qd",
+    "3d",
+    "3c",
+    "8h",
+    "5c",
+    "Qh",
+    "7c",
+    "2h",
+    "2d",
+    "8d",
+    "Ah",
+    "8c",
+    "8s",
+    "Kd",
+    "7h",
+    "Ac",
+    "5d",
+    "Qc"
+  ],
+  "waste": [
+    "9d"
+  ],
+  "pocket1": null,
+  "pocket2": null,
+  "foundations": {
+    "up": {
+      "h": [],
+      "d": [],
+      "c": [],
+      "s": []
+    },
+    "down": {
+      "h": [],
+      "d": [],
+      "c": [],
+      "s": []
+    }
+  },
+  "columnState": {
+    "types": [
+      "traditional",
+      "traditional",
+      "traditional",
+      "traditional",
+      "traditional",
+      "traditional",
+      "traditional"
+    ],
+    "faceUpCounts": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "faceDownCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "analysis": {
+    "progress": {
+      "foundationCards": 0,
+      "totalCards": 52,
+      "percentage": 0.0
+    },
+    "cardCounts": {
+      "tableau": 28,
+      "stock": 23,
+      "waste": 1,
+      "foundations": 0,
+      "pockets": 0
+    },
+    "tableau": {
+      "totalCards": 28,
+      "faceUpCards": 28,
+      "faceDownCards": 0,
+      "emptyColumns": 0
+    }
+  },
+  "validation": {
+    "isValid": true,
+    "errors": [],
+    "warnings": [],
+    "validatedAt": "2026-01-14T00:53:43Z"
+  }
+}

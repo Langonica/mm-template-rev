@@ -1,0 +1,2147 @@
+# ðŸŽ´ MERIDIAN MASTER - COMPLETE GAME ENGINE SPECIFICATION
+
+**Version:** 6.0.2  
+**Document Type:** Technical Specification  
+**Purpose:** UI-Agnostic Game Engine Documentation  
+**Audience:** AI Agents & Developers  
+**Last Updated:** January 2026
+
+---
+
+## ðŸ“– TABLE OF CONTENTS
+
+1. [Executive Summary](#executive-summary)
+2. [Game Overview](#game-overview)
+3. [Core Concepts](#core-concepts)
+4. [Data Structures](#data-structures)
+5. [Game Modes](#game-modes)
+6. [Game State Management](#game-state-management)
+7. [Card System](#card-system)
+8. [Dealing Algorithm](#dealing-algorithm)
+9. [Move Validation Rules](#move-validation-rules)
+10. [Column Typing System](#column-typing-system)
+11. [Foundation Rules](#foundation-rules)
+12. [Tableau Rules](#tableau-rules)
+13. [Pocket Rules](#pocket-rules)
+14. [Stock & Waste System](#stock-waste-system)
+15. [Move Execution](#move-execution)
+16. [Undo/Redo System](#undo-redo-system)
+17. [Win/Loss Detection](#win-loss-detection)
+18. [Hint System](#hint-system)
+19. [Efficiency Calculation](#efficiency-calculation)
+20. [Stalemate Detection](#stalemate-detection)
+21. [Statistics Tracking](#statistics-tracking)
+22. [Save/Load System](#save-load-system)
+23. [Integration Guide](#integration-guide)
+24. [Implementation Checklist](#implementation-checklist)
+
+---
+
+## 1. EXECUTIVE SUMMARY
+
+### What is Meridian Master?
+
+Meridian Master is a strategic solitaire card game featuring:
+- **Dual foundation system** (ascending & descending simultaneously)
+- **Dynamic column typing** (Ace/King columns with directional building)
+- **Multiple game modes** (4 variants: Classic, Double Pocket, Traditional, Expert)
+- **Strategic depth** through column management and pocket usage
+
+### Key Differentiators
+
+Unlike standard solitaire:
+1. **Split 7s/6s:** Cards 7+ go to "up" foundations (7â†’K), cards 6- go to "down" foundations (6â†’A)
+2. **Column typing:** Columns become typed (Ace/King/Untyped) based on their bottom card
+3. **Pocket storage:** Temporary single-card storage (1-2 pockets depending on mode)
+4. **Face-up/down variants:** Some modes have face-down cards (Traditional/Expert)
+
+### Architecture Philosophy
+
+The game engine is **completely UI-agnostic**:
+- Core engine manages game state
+- Validation happens independently of UI
+- Move execution returns success/failure
+- UI simply renders state and sends commands
+
+---
+
+## 2. GAME OVERVIEW
+
+### Game Objective
+
+**Win Condition:** Place all 52 cards into 8 foundation piles:
+- 4 "UP" foundations (7â†’8â†’9â†’10â†’Jâ†’Qâ†’K) - one per suit
+- 4 "DOWN" foundations (6â†’5â†’4â†’3â†’2â†’A) - one per suit
+
+### Game Components
+
+**Standard 52-card deck:**
+- 4 suits: Hearts (h), Diamonds (d), Clubs (c), Spades (s)
+- 13 ranks: A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K
+- Numeric values: A=1, 2=2...10=10, J=11, Q=12, K=13
+
+**Playing Areas:**
+1. **Tableau:** 7 columns where cards are dealt and played
+2. **Foundations:** 8 piles (4 up, 4 down) - goal piles
+3. **Stock:** Draw pile (24 cards after initial deal)
+4. **Waste:** Discard pile (cards drawn from stock)
+5. **Pocket(s):** Temporary storage (1 or 2 depending on mode)
+
+### Card Properties
+
+Each card has:
+- **Value:** A, 2-10, J, Q, K
+- **Suit:** h, d, c, s
+- **Color:** Red (h/d) or Black (c/s)
+- **Numeric Value:** 1-13
+- **Face Status:** Face-up or face-down (mode-dependent)
+- **Unique ID:** For tracking individual cards
+
+---
+
+## 3. CORE CONCEPTS
+
+### 3.1 Foundation Split (7s and 6s)
+
+**The Meridian:** Cards split at 7 and 6
+
+**UP Foundations (7â†’K):**
+- Start with: 7 of any suit
+- Build: 7 â†’ 8 â†’ 9 â†’ 10 â†’ J â†’ Q â†’ K (ascending)
+- Complete: 7 cards per foundation
+
+**DOWN Foundations (6â†’A):**
+- Start with: 6 of any suit
+- Build: 6 â†’ 5 â†’ 4 â†’ 3 â†’ 2 â†’ A (descending)
+- Complete: 6 cards per foundation
+
+**Key Rule:** Each foundation is suit-specific (all hearts, all diamonds, etc.)
+
+### 3.2 Column Typing
+
+Columns can be **typed** or **untyped:**
+
+**ACE COLUMN:**
+- Bottom card is an Ace
+- Building direction: ASCENDING ONLY (Aâ†’2â†’3â†’4...)
+- Cards must alternate colors
+
+**KING COLUMN:**
+- Bottom card is a King
+- Building direction: DESCENDING ONLY (Kâ†’Qâ†’Jâ†’10...)
+- Cards must alternate colors
+
+**UNTYPED COLUMN:**
+- Bottom card is neither Ace nor King
+- Building direction: FLEXIBLE (can build up OR down)
+- Initially can go either direction
+- Once direction chosen, must continue that way
+
+**EMPTY COLUMN:**
+- No cards present
+- Can only accept Ace or King as first card
+- Once first card placed, column becomes typed
+
+### 3.3 Color Alternation
+
+**Universal Rule:** Tableau sequences MUST alternate colors
+- Red (â™¥â™¦) â†’ Black (â™£â™ ) â†’ Red â†’ Black
+- Black â†’ Red â†’ Black â†’ Red
+
+**Examples:**
+- Valid: 5â™¥ on 6â™  (red on black)
+- Valid: Jâ™£ on Qâ™¦ (black on red)
+- Invalid: 5â™¥ on 6â™¦ (red on red)
+- Invalid: Jâ™£ on Qâ™  (black on black)
+
+### 3.4 Card Movement
+
+**Movable Cards:**
+- Top card of tableau column (always)
+- Sequences of face-up cards in correct order (sometimes)
+- Top card of waste pile
+- Card in pocket
+
+**Destination Options:**
+- Foundation (if next in sequence)
+- Tableau column (if valid sequence)
+- Pocket (if empty)
+
+---
+
+## 4. DATA STRUCTURES
+
+### 4.1 Card Object
+
+```javascript
+Card {
+    id: string              // Unique identifier (e.g., "Ah_1234567890_1_abc123")
+    value: string          // "A", "2"-"10", "J", "Q", "K"
+    suit: string           // "h", "d", "c", "s"
+    color: string          // "red" or "black"
+    numericValue: number   // 1-13
+    isFaceUp: boolean     // true/false (mode-dependent)
+}
+```
+
+**Card ID Format:** `{value}{suit}_{timestamp}_{counter}_{random}`
+- Example: `"Ah_1768112159226_9_wae4gq1zf"`
+- Ensures uniqueness even with multiple decks
+
+### 4.2 Game State Object
+
+```javascript
+GameState {
+    // Core game areas
+    deck: Card[]                    // Stock pile (draw pile)
+    waste: Card[]                   // Waste pile (drawn cards)
+    pocket: Card[]                  // Pocket 1 (0 or 1 card)
+    pocket2: Card[]                 // Pocket 2 (0 or 1 card, some modes only)
+    tableau: Card[][]               // 7 columns of cards
+    foundations: {
+        up: {
+            h: Card[],              // Hearts UP foundation
+            d: Card[],              // Diamonds UP foundation
+            c: Card[],              // Clubs UP foundation
+            s: Card[]               // Spades UP foundation
+        },
+        down: {
+            h: Card[],              // Hearts DOWN foundation
+            d: Card[],              // Diamonds DOWN foundation  
+            c: Card[],              // Clubs DOWN foundation
+            s: Card[]               // Spades DOWN foundation
+        }
+    },
+    
+    // Column typing
+    columnTypes: string[]           // ["ace", null, "king", "untyped", null, null, null]
+    columnTypingCards: Card[]       // [AceCard, null, KingCard, null, null, null, null]
+    
+    // Game status
+    active: boolean                 // Is game in progress?
+    paused: boolean                // Is game paused?
+    gameMode: string               // "classic", "double_pocket", "traditional", "expert"
+    
+    // Move tracking
+    moveHistory: Move[]            // Array of moves for undo/redo
+    currentGame: {
+        moves: number              // Total moves made
+        startTime: number          // Timestamp
+        efficiency: number         // 0-100%
+        hintUses: number          // Times hint used
+        undoUses: number          // Times undo used
+        // ... more tracking fields
+    },
+    
+    // Statistics
+    stats: {
+        wins: number
+        losses: number
+        gamesPlayed: number
+        totalMoves: number
+        // ... more stats
+    }
+}
+```
+
+### 4.3 Move Object
+
+```javascript
+Move {
+    cardId: string                 // Card being moved
+    sourceLocation: Location       // Where card came from
+    targetLocation: Location       // Where card went
+    movingCards: Card[]           // All cards in sequence
+    timestamp: number             // When move occurred
+    stateSnapshot: GameState      // Game state before move (for undo)
+}
+```
+
+### 4.4 Location Object
+
+```javascript
+Location {
+    type: string                   // "waste", "pocket", "tab", "fUp", "fDown"
+    col?: number                   // Column index (0-6) if type="tab"
+    suit?: string                  // Suit (h/d/c/s) if type="fUp" or "fDown"
+    pocketNum?: number            // Pocket number (1 or 2) if type="pocket"
+}
+```
+
+**Location Types:**
+- `"waste"` - Waste pile
+- `"pocket"` - Pocket (pocket 1 by default)
+- `"tab"` - Tableau column (requires col: 0-6)
+- `"fUp"` - Foundation UP (requires suit: h/d/c/s)
+- `"fDown"` - Foundation DOWN (requires suit: h/d/c/s)
+
+---
+
+## 5. GAME MODES
+
+### 5.1 Classic Mode
+
+**Identifier:** `"classic"`
+
+**Configuration:**
+- **Tableau:** All 7 columns face-up
+- **Pockets:** 1 pocket
+- **Deck:** Draw 1 card at a time
+- **Face-down cards:** None
+- **Difficulty:** Medium
+
+**Initial Deal:**
+- Column 0: 1 card
+- Column 1: 2 cards  
+- Column 2: 3 cards
+- Column 3: 4 cards
+- Column 4: 5 cards
+- Column 5: 6 cards
+- Column 6: 7 cards
+- **Total:** 28 cards dealt, 24 remain in stock
+
+**Strategy:** Balance between pocket usage and column management
+
+### 5.2 Double Pocket Mode
+
+**Identifier:** `"double_pocket"`
+
+**Configuration:**
+- **Tableau:** All 7 columns face-up
+- **Pockets:** 2 pockets
+- **Deck:** Draw 1 card at a time
+- **Face-down cards:** None
+- **Difficulty:** Easy
+
+**Initial Deal:** Same as Classic (28 cards to tableau)
+
+**Strategy:** Extra pocket provides more flexibility
+
+### 5.3 Traditional Mode
+
+**Identifier:** `"traditional"`
+
+**Configuration:**
+- **Tableau:** Mix of face-up and face-down
+- **Pockets:** 1 pocket
+- **Deck:** Draw 1 card at a time
+- **Face-down cards:** First card in each column
+- **Difficulty:** Hard
+
+**Initial Deal:**
+- Column 0: 1 card (face-up)
+- Column 1: 1 face-down, 1 face-up (2 total)
+- Column 2: 2 face-down, 1 face-up (3 total)
+- Column 3: 3 face-down, 1 face-up (4 total)
+- Column 4: 4 face-down, 1 face-up (5 total)
+- Column 5: 5 face-down, 1 face-up (6 total)
+- Column 6: 6 face-down, 1 face-up (7 total)
+- **Total:** 28 cards dealt (21 face-down, 7 face-up)
+
+**Key Rule:** When top card removed, card below flips face-up automatically
+
+**Strategy:** Must reveal hidden cards, adds uncertainty
+
+### 5.4 Expert Mode
+
+**Identifier:** `"expert"`
+
+**Configuration:**
+- **Tableau:** Mix of face-up and face-down
+- **Pockets:** 1 pocket
+- **Deck:** Draw 1 card at a time
+- **Face-down cards:** First card in each column
+- **Difficulty:** Very Hard
+
+**Initial Deal:** Same as Traditional (21 face-down, 7 face-up)
+
+**Differences from Traditional:**
+- Same face-down/up pattern
+- More challenging due to (specify if there are actual differences)
+
+**Strategy:** Advanced planning required
+
+---
+
+## 6. GAME STATE MANAGEMENT
+
+### 6.1 State Initialization
+
+**On New Game:**
+1. Clear all previous state
+2. Set game mode
+3. Create and shuffle deck (52 cards)
+4. Deal cards to tableau (mode-specific pattern)
+5. Place remaining 24 cards in stock
+6. Initialize empty: waste, pockets, foundations
+7. Set column types (only column 0 initially)
+8. Mark game as active
+9. Start timer
+10. Reset move counter
+
+**Pseudocode:**
+```
+function initializeGame(mode):
+    state.gameMode = mode
+    state.deck = createAndShuffleDeck()
+    
+    dealCardsToTableau(mode)
+    
+    state.waste = []
+    state.pocket = []
+    state.pocket2 = []
+    state.foundations.up = {h:[], d:[], c:[], s:[]}
+    state.foundations.down = {h:[], d:[], c:[], s:[]}
+    
+    initializeColumnTypes()
+    
+    state.active = true
+    state.currentGame.startTime = now()
+    state.currentGame.moves = 0
+```
+
+### 6.2 State Transitions
+
+**Valid State Transitions:**
+
+```
+IDLE â†’ ACTIVE (start new game)
+ACTIVE â†’ PAUSED (pause game)
+PAUSED â†’ ACTIVE (resume game)
+ACTIVE â†’ WON (all cards in foundations)
+ACTIVE â†’ LOST (stalemate detected)
+WON/LOST â†’ IDLE (end game)
+```
+
+### 6.3 State Validation
+
+**Invariants (must always be true):**
+1. Total cards = 52 (across all areas)
+2. Each card has unique ID
+3. Tableau has exactly 7 columns
+4. Foundations have exactly 8 piles (4 up, 4 down)
+5. Pocket has 0 or 1 card
+6. Pocket2 has 0 or 1 card (if mode supports it)
+7. Column types match column bottom cards
+8. Face-up/down status matches game mode
+
+**Validation Function:**
+```
+function validateState(state):
+    totalCards = countAllCards(state)
+    assert totalCards == 52
+    
+    assert state.tableau.length == 7
+    assert state.columnTypes.length == 7
+    
+    assert state.pocket.length <= 1
+    
+    if state.gameMode == "double_pocket":
+        assert state.pocket2.length <= 1
+    else:
+        assert state.pocket2.length == 0
+        
+    for each column in state.tableau:
+        validateColumnType(column, columnType)
+```
+
+---
+
+## 7. CARD SYSTEM
+
+### 7.1 Card Creation
+
+**Creating a Standard Deck:**
+```
+function createDeck():
+    deck = []
+    suits = ["h", "d", "c", "s"]
+    values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
+    
+    for each suit in suits:
+        for each value in values:
+            card = new Card()
+            card.value = value
+            card.suit = suit
+            card.color = (suit in ["h", "d"]) ? "red" : "black"
+            card.numericValue = getNumericValue(value)
+            card.isFaceUp = true  // Default, changed during deal
+            card.id = generateUniqueID(value, suit)
+            deck.append(card)
+    
+    return deck
+```
+
+**Numeric Value Mapping:**
+```
+A  â†’ 1
+2  â†’ 2
+3  â†’ 3
+...
+10 â†’ 10
+J  â†’ 11
+Q  â†’ 12
+K  â†’ 13
+```
+
+### 7.2 Card Shuffling
+
+**Fisher-Yates Shuffle Algorithm:**
+```
+function shuffleDeck(deck):
+    for i from deck.length - 1 down to 1:
+        j = random integer between 0 and i (inclusive)
+        swap deck[i] with deck[j]
+    
+    return deck
+```
+
+**Requirements:**
+- Must be truly random
+- Each card has equal probability of any position
+- In-place shuffling preferred for efficiency
+
+### 7.3 Card Identification
+
+**Unique ID Generation:**
+```
+function generateUniqueID(value, suit):
+    timestamp = currentTimeMillis()
+    counter = incrementGlobalCounter()
+    random = generateRandomString(9)
+    
+    return value + suit + "_" + timestamp + "_" + counter + "_" + random
+```
+
+**Example IDs:**
+- `"Ah_1768112159226_9_wae4gq1zf"` (Ace of Hearts)
+- `"10d_1768112159226_21_2exdfcg55"` (10 of Diamonds)
+- `"Ks_1768112159226_51_r6ou7ozpc"` (King of Spades)
+
+---
+
+## 8. DEALING ALGORITHM
+
+### 8.1 Initial Deal Structure
+
+**All Modes Deal Pattern:**
+```
+Column 0: 1 card   (positions: 0)
+Column 1: 2 cards  (positions: 0, 1)
+Column 2: 3 cards  (positions: 0, 1, 2)
+Column 3: 4 cards  (positions: 0, 1, 2, 3)
+Column 4: 5 cards  (positions: 0, 1, 2, 3, 4)
+Column 5: 6 cards  (positions: 0, 1, 2, 3, 4, 5)
+Column 6: 7 cards  (positions: 0, 1, 2, 3, 4, 5, 6)
+
+Total: 28 cards (1+2+3+4+5+6+7)
+Remaining in stock: 24 cards
+```
+
+**Array Index Convention:**
+- `column[0]` = BOTTOM card (first dealt)
+- `column[column.length-1]` = TOP card (last dealt, playable)
+
+### 8.2 Classic & Double Pocket Deal
+
+**All Cards Face-Up:**
+```
+function dealClassicMode(deck):
+    tableau = [[], [], [], [], [], [], []]
+    cardIndex = 0
+    
+    for col from 0 to 6:
+        for row from 0 to col:
+            card = deck[cardIndex]
+            card.isFaceUp = true
+            tableau[col].append(card)
+            cardIndex++
+    
+    // Remaining 24 cards go to stock
+    stock = deck.slice(cardIndex, 52)
+    
+    return {tableau, stock}
+```
+
+### 8.3 Traditional & Expert Deal
+
+**Bottom Cards Face-Down (Except Column 0):**
+```
+function dealTraditionalMode(deck):
+    tableau = [[], [], [], [], [], [], []]
+    cardIndex = 0
+    
+    for col from 0 to 6:
+        for row from 0 to col:
+            card = deck[cardIndex]
+            
+            // Face-down logic
+            if col > 0 and row < col:
+                // Not the top card, and not column 0
+                card.isFaceUp = false
+            else:
+                card.isFaceUp = true
+            
+            tableau[col].append(card)
+            cardIndex++
+    
+    stock = deck.slice(cardIndex, 52)
+    
+    return {tableau, stock}
+```
+
+**Face Status After Deal:**
+```
+Column 0: [F] (1 face-up)
+Column 1: [D, F] (1 face-down, 1 face-up)
+Column 2: [D, D, F] (2 face-down, 1 face-up)
+Column 3: [D, D, D, F] (3 face-down, 1 face-up)
+Column 4: [D, D, D, D, F] (4 face-down, 1 face-up)
+Column 5: [D, D, D, D, D, F] (5 face-down, 1 face-up)
+Column 6: [D, D, D, D, D, D, F] (6 face-down, 1 face-up)
+
+D = Face-down
+F = Face-up
+```
+
+---
+
+## 9. MOVE VALIDATION RULES
+
+### 9.1 General Move Validation
+
+**Move is Valid if ALL of:**
+1. Source card exists and is accessible
+2. Target location is valid
+3. Card can legally be placed at target
+4. Game is active (not paused, not ended)
+5. Card is not being dragged (UI state check)
+
+**Validation Flow:**
+```
+function validateMove(cardId, targetLocation):
+    // 1. Find the card and its source
+    card = findCard(cardId)
+    if card == null:
+        return {valid: false, reason: "Card not found"}
+    
+    sourceLocation = findCardLocation(cardId)
+    if sourceLocation == null:
+        return {valid: false, reason: "Card location unknown"}
+    
+    // 2. Check if card is accessible
+    if not isCardAccessible(card, sourceLocation):
+        return {valid: false, reason: "Card not accessible"}
+    
+    // 3. Validate target
+    result = validateTarget(card, targetLocation)
+    if not result.valid:
+        return result
+    
+    // 4. Check game state
+    if not state.active or state.paused:
+        return {valid: false, reason: "Game not active"}
+    
+    return {valid: true}
+```
+
+### 9.2 Card Accessibility
+
+**Card is Accessible if:**
+
+**From Waste:**
+- Card is the top card (last in array)
+
+**From Pocket:**
+- Card is the only card in pocket
+
+**From Tableau:**
+- Card is face-up
+- All cards above it are also face-up
+- Sequence above card is valid (alternating colors, correct direction)
+
+```
+function isCardAccessible(card, location):
+    if location.type == "waste":
+        return waste[waste.length - 1].id == card.id
+    
+    if location.type == "pocket":
+        return pocket.length > 0 and pocket[0].id == card.id
+    
+    if location.type == "tab":
+        column = tableau[location.col]
+        cardIndex = findIndexInColumn(card, column)
+        
+        // Card must be in column
+        if cardIndex == -1:
+            return false
+        
+        // All cards from this card to top must be face-up
+        for i from cardIndex to column.length - 1:
+            if not column[i].isFaceUp:
+                return false
+        
+        // Sequence above must be valid
+        for i from cardIndex to column.length - 2:
+            if not isValidSequence(column[i], column[i+1]):
+                return false
+        
+        return true
+    
+    return false
+```
+
+---
+
+## 10. COLUMN TYPING SYSTEM
+
+### 10.1 Column Type Rules
+
+**Three Typing Scenarios:**
+
+1. **Initial Deal (Column 0 Only)**
+   - If bottom card (index 0) is Ace â†’ Type "ace"
+   - If bottom card is King â†’ Type "king"
+   - Otherwise â†’ Type "untyped"
+
+2. **Empty Column Placement**
+   - Place Ace â†’ Type "ace"
+   - Place King â†’ Type "king"
+   - Place other card â†’ Type "untyped"
+
+3. **Last Card Remaining**
+   - When column reduces to 1 card (the bottom card)
+   - Check card value â†’ Type accordingly
+   - Works for both face-down reveal AND face-up modes
+
+**CRITICAL:** Column type is based on the **BOTTOM** card (index 0), not the top!
+
+### 10.2 Column Typing Algorithm
+
+```
+function updateColumnType(colIndex):
+    column = tableau[colIndex]
+    
+    if column.length == 0:
+        // Empty column
+        columnTypes[colIndex] = null
+        columnTypingCards[colIndex] = null
+        return
+    
+    if column.length == 1:
+        // Single card - type based on this card
+        bottomCard = column[0]
+        if bottomCard.value == "A":
+            columnTypes[colIndex] = "ace"
+            columnTypingCards[colIndex] = bottomCard
+        else if bottomCard.value == "K":
+            columnTypes[colIndex] = "king"
+            columnTypingCards[colIndex] = bottomCard
+        else:
+            columnTypes[colIndex] = "untyped"
+            columnTypingCards[colIndex] = null
+        return
+    
+    // Multiple cards - check if typing card still present
+    typingCard = columnTypingCards[colIndex]
+    if typingCard != null:
+        if typingCard not in column:
+            // Typing card removed - becomes untyped
+            columnTypes[colIndex] = "untyped"
+            columnTypingCards[colIndex] = null
+```
+
+### 10.3 Empty Column Placement
+
+```
+function handleEmptyColumnPlacement(colIndex, movingCards):
+    // Column was empty before, now has cards
+    if columnTypes[colIndex] == null:
+        bottomCard = movingCards[0]  // First card placed becomes bottom
+        
+        if bottomCard.value == "A":
+            columnTypes[colIndex] = "ace"
+            columnTypingCards[colIndex] = bottomCard
+        else if bottomCard.value == "K":
+            columnTypes[colIndex] = "king"
+            columnTypingCards[colIndex] = bottomCard
+        else:
+            columnTypes[colIndex] = "untyped"
+            columnTypingCards[colIndex] = null
+```
+
+### 10.4 Type-Specific Movement Rules
+
+**ACE COLUMN (Ascending Only):**
+```
+Allowed: A â†’ 2 â†’ 3 â†’ 4 â†’ 5 â†’ 6
+Can place: 2 on A, 3 on 2, 4 on 3, etc.
+Cannot place: 2 on 3 (wrong direction)
+Must alternate colors
+```
+
+**KING COLUMN (Descending Only):**
+```
+Allowed: K â†’ Q â†’ J â†’ 10 â†’ 9 â†’ 8 â†’ 7
+Can place: Q on K, J on Q, 10 on J, etc.
+Cannot place: Q on J (wrong direction)
+Must alternate colors
+```
+
+**UNTYPED COLUMN (Flexible):**
+```
+Initially flexible:
+  - First move determines direction
+  - Can place 5 on 6 (descending)
+  - OR place 7 on 6 (ascending)
+
+After first move:
+  - Direction is locked
+  - If went descending: must continue descending
+  - If went ascending: must continue ascending
+  
+Must always alternate colors
+```
+
+---
+
+## 11. FOUNDATION RULES
+
+### 11.1 Foundation Structure
+
+**8 Total Foundations:**
+- 4 UP foundations (one per suit: h, d, c, s)
+- 4 DOWN foundations (one per suit: h, d, c, s)
+
+**UP Foundation (7â†’K):**
+```
+Empty: Can accept 7 only
+Card 1: 7 of suit
+Card 2: 8 of suit
+Card 3: 9 of suit
+Card 4: 10 of suit
+Card 5: J of suit
+Card 6: Q of suit
+Card 7: K of suit (complete)
+```
+
+**DOWN Foundation (6â†’A):**
+```
+Empty: Can accept 6 only
+Card 1: 6 of suit
+Card 2: 5 of suit
+Card 3: 4 of suit
+Card 4: 3 of suit
+Card 5: 2 of suit
+Card 6: A of suit (complete)
+```
+
+### 11.2 Foundation Validation
+
+```
+function canPlaceOnFoundation(card, foundation, direction):
+    // Check if foundation is empty
+    if foundation.length == 0:
+        if direction == "up":
+            return card.value == "7"
+        else:  // direction == "down"
+            return card.value == "6"
+    
+    // Foundation has cards
+    topCard = foundation[foundation.length - 1]
+    
+    // Must be same suit
+    if card.suit != topCard.suit:
+        return false
+    
+    // Check sequence
+    if direction == "up":
+        // Ascending: 7â†’8â†’9â†’10â†’Jâ†’Qâ†’K
+        return card.numericValue == topCard.numericValue + 1
+    else:  // direction == "down"
+        // Descending: 6â†’5â†’4â†’3â†’2â†’A
+        return card.numericValue == topCard.numericValue - 1
+```
+
+### 11.3 Foundation Completion
+
+**Foundation is Complete when:**
+- UP foundation: Has 7 cards (7, 8, 9, 10, J, Q, K)
+- DOWN foundation: Has 6 cards (6, 5, 4, 3, 2, A)
+
+**Game is Won when:**
+- All 8 foundations are complete
+- Total: 52 cards in foundations (4 Ã— 7 + 4 Ã— 6 = 28 + 24 = 52)
+
+```
+function checkWinCondition():
+    for each suit in [h, d, c, s]:
+        // Check UP foundation
+        if foundations.up[suit].length != 7:
+            return false
+        
+        // Verify UP sequence
+        if not isValidUpSequence(foundations.up[suit]):
+            return false
+        
+        // Check DOWN foundation
+        if foundations.down[suit].length != 6:
+            return false
+        
+        // Verify DOWN sequence
+        if not isValidDownSequence(foundations.down[suit]):
+            return false
+    
+    return true  // All foundations complete!
+```
+
+---
+
+## 12. TABLEAU RULES
+
+### 12.1 Tableau Building Rules
+
+**Universal Requirements:**
+1. **Color Alternation:** Must alternate red/black
+2. **Sequence Direction:** Must follow column type
+3. **Face-up Cards:** Only face-up cards can be moved
+4. **Valid Sequences:** Moving multiple cards requires valid sequence
+
+### 12.2 Sequence Validation
+
+**Valid Sequence Requirements:**
+```
+function isValidSequence(cards, direction):
+    if cards.length < 2:
+        return true  // Single card always valid
+    
+    for i from 0 to cards.length - 2:
+        currentCard = cards[i]
+        nextCard = cards[i + 1]
+        
+        // Must alternate colors
+        if currentCard.color == nextCard.color:
+            return false
+        
+        // Must follow direction
+        if direction == "ascending":
+            if nextCard.numericValue != currentCard.numericValue + 1:
+                return false
+        else if direction == "descending":
+            if nextCard.numericValue != currentCard.numericValue - 1:
+                return false
+        else:  // "flexible" (untyped)
+            // Check if ascending or descending
+            diff = nextCard.numericValue - currentCard.numericValue
+            if abs(diff) != 1:
+                return false
+            // Once direction determined, must continue
+            if i > 0:
+                prevDiff = cards[i].numericValue - cards[i-1].numericValue
+                if (diff > 0) != (prevDiff > 0):
+                    return false  // Direction changed!
+    
+    return true
+```
+
+### 12.3 Placing Cards on Tableau
+
+```
+function canPlaceOnTableau(movingCards, targetColumn, columnType):
+    if targetColumn.length == 0:
+        // Empty column - only accept Ace or King
+        firstCard = movingCards[0]
+        return firstCard.value == "A" or firstCard.value == "K"
+    
+    topCard = targetColumn[targetColumn.length - 1]
+    bottomMovingCard = movingCards[0]
+    
+    // Must alternate colors
+    if topCard.color == bottomMovingCard.color:
+        return false
+    
+    // Check column type rules
+    if columnType == "ace":
+        // Ascending only
+        return bottomMovingCard.numericValue == topCard.numericValue + 1
+    
+    else if columnType == "king":
+        // Descending only
+        return bottomMovingCard.numericValue == topCard.numericValue - 1
+    
+    else if columnType == "untyped":
+        // Flexible - can go either direction
+        return abs(bottomMovingCard.numericValue - topCard.numericValue) == 1
+    
+    return false
+```
+
+### 12.4 Moving Multiple Cards
+
+**Requirements for Multi-Card Moves:**
+1. All cards must be face-up
+2. Cards form valid sequence
+3. Sequence matches column type at destination
+4. Bottom card of sequence matches top card of target
+
+```
+function getMovableSequence(column, startIndex):
+    movableCards = []
+    
+    for i from startIndex to column.length - 1:
+        card = column[i]
+        
+        // Must be face-up
+        if not card.isFaceUp:
+            return []  // Invalid sequence
+        
+        movableCards.append(card)
+    
+    // Validate sequence
+    if not isValidSequence(movableCards):
+        return []
+    
+    return movableCards
+```
+
+---
+
+## 13. POCKET RULES
+
+### 13.1 Pocket Capacity
+
+**Classic Mode:** 1 pocket
+**Double Pocket Mode:** 2 pockets
+**Traditional Mode:** 1 pocket
+**Expert Mode:** 1 pocket
+
+### 13.2 Pocket Operations
+
+**Placing Card in Pocket:**
+```
+function canPlaceToPocket(card, pocketNum):
+    pocket = (pocketNum == 1) ? state.pocket : state.pocket2
+    
+    // Check if pocket exists for this mode
+    if pocketNum == 2 and state.gameMode != "double_pocket":
+        return false
+    
+    // Pocket must be empty
+    if pocket.length > 0:
+        return false
+    
+    return true
+```
+
+**Retrieving from Pocket:**
+```
+function canRetrieveFromPocket(pocketNum):
+    pocket = (pocketNum == 1) ? state.pocket : state.pocket2
+    
+    // Pocket must have a card
+    return pocket.length == 1
+```
+
+### 13.3 Pocket Strategy
+
+**Strategic Uses:**
+- Temporary storage for blocking cards
+- Breaking deadlocks
+- Creating space for tableau moves
+- Double pocket allows more flexibility
+
+**Limitations:**
+- Can only hold 1 card at a time
+- Card must be removed before adding another
+- No direct pocket-to-pocket moves
+
+---
+
+## 14. STOCK & WASTE SYSTEM
+
+### 14.1 Drawing Cards
+
+**Draw Operation:**
+```
+function drawCard():
+    if stock.length == 0:
+        if waste.length == 0:
+            return {success: false, reason: "No cards to draw"}
+        
+        // Recycle waste back to stock
+        recycleWaste()
+    
+    // Draw top card from stock
+    card = stock.pop()  // Remove last card
+    card.isFaceUp = true
+    waste.push(card)
+    
+    return {success: true, card: card}
+```
+
+**Always Draw 1 Card:**
+- All modes draw 1 card at a time
+- Draw 3 mode removed in v6.0.0
+
+### 14.2 Waste Recycling
+
+```
+function recycleWaste():
+    // Move all waste cards back to stock
+    // Do NOT shuffle - preserve order
+    stock = waste.reverse()
+    waste = []
+    
+    // Note: Cards remain face-up after recycling
+```
+
+**Rules:**
+- Can recycle waste unlimited times
+- Order preserved (reversed)
+- No penalty for recycling
+
+### 14.3 Playing from Waste
+
+**Only Top Card Playable:**
+```
+function canPlayFromWaste(cardId):
+    if waste.length == 0:
+        return false
+    
+    topCard = waste[waste.length - 1]
+    return topCard.id == cardId
+```
+
+**Waste as Source:**
+- Top card can go to foundations
+- Top card can go to tableau
+- Top card can go to pocket
+- Cannot move cards below top card
+
+---
+
+## 15. MOVE EXECUTION
+
+### 15.1 Move Execution Flow
+
+```
+function executeMove(cardId, targetLocation):
+    // 1. Validate move
+    validation = validateMove(cardId, targetLocation)
+    if not validation.valid:
+        return {success: false, reason: validation.reason}
+    
+    // 2. Create snapshot for undo
+    snapshot = createSnapshot(state)
+    
+    // 3. Find source and determine moving cards
+    sourceLocation = findCardLocation(cardId)
+    movingCards = getMovingCards(cardId, sourceLocation)
+    
+    // 4. Remove cards from source
+    success = removeFromSource(movingCards, sourceLocation)
+    if not success:
+        return {success: false, reason: "Failed to remove from source"}
+    
+    // 5. Add cards to target
+    success = addToTarget(movingCards, targetLocation)
+    if not success:
+        // Rollback - restore snapshot
+        restoreSnapshot(snapshot)
+        return {success: false, reason: "Failed to add to target"}
+    
+    // 6. Update column types
+    updateColumnType(sourceLocation.col)
+    updateColumnType(targetLocation.col)
+    
+    // 7. Check for face-down card flip
+    flipTopCardIfNeeded(sourceLocation.col)
+    
+    // 8. Record move for undo
+    recordMove(cardId, sourceLocation, targetLocation, movingCards, snapshot)
+    
+    // 9. Update game state
+    state.currentGame.moves++
+    updateEfficiency()
+    checkWinCondition()
+    checkStalemateConditions()
+    
+    return {success: true}
+```
+
+### 15.2 Removing from Source
+
+```
+function removeFromSource(movingCards, source):
+    if source.type == "waste":
+        // Remove top card only
+        waste.pop()
+    
+    else if source.type == "pocket":
+        // Clear pocket
+        if source.pocketNum == 2:
+            state.pocket2 = []
+        else:
+            state.pocket = []
+    
+    else if source.type == "tab":
+        column = tableau[source.col]
+        // Find start index
+        startIndex = findCardIndex(movingCards[0], column)
+        // Remove from startIndex to end
+        column.splice(startIndex, movingCards.length)
+    
+    else:
+        return false  // Can't move from foundations
+    
+    return true
+```
+
+### 15.3 Adding to Target
+
+```
+function addToTarget(movingCards, target):
+    if target.type == "fUp":
+        foundations.up[target.suit].push(movingCards[0])
+    
+    else if target.type == "fDown":
+        foundations.down[target.suit].push(movingCards[0])
+    
+    else if target.type == "tab":
+        // Add all moving cards to column
+        for card in movingCards:
+            tableau[target.col].push(card)
+    
+    else if target.type == "pocket":
+        // Only single card to pocket
+        if movingCards.length != 1:
+            return false
+        if target.pocketNum == 2:
+            state.pocket2 = [movingCards[0]]
+        else:
+            state.pocket = [movingCards[0]]
+    
+    else:
+        return false
+    
+    return true
+```
+
+### 15.4 Face-Down Card Flip
+
+```
+function flipTopCardIfNeeded(colIndex):
+    if colIndex == null or colIndex < 0 or colIndex >= 7:
+        return
+    
+    column = tableau[colIndex]
+    if column.length == 0:
+        return
+    
+    topCard = column[column.length - 1]
+    if not topCard.isFaceUp:
+        topCard.isFaceUp = true
+        
+        // Check if this revealed card should type the column
+        if topCard == column[0]:  // It's the bottom card
+            if topCard.value == "A":
+                columnTypes[colIndex] = "ace"
+                columnTypingCards[colIndex] = topCard
+            else if topCard.value == "K":
+                columnTypes[colIndex] = "king"
+                columnTypingCards[colIndex] = topCard
+            else:
+                columnTypes[colIndex] = "untyped"
+                columnTypingCards[colIndex] = null
+```
+
+---
+
+## 16. UNDO/REDO SYSTEM
+
+### 16.1 Move History
+
+**Structure:**
+```
+moveHistory = [
+    {
+        cardId: "5h_...",
+        source: {type: "waste"},
+        target: {type: "tab", col: 3},
+        movingCards: [card],
+        snapshot: {complete game state},
+        timestamp: 1234567890
+    },
+    // ... more moves
+]
+```
+
+**Limitations:**
+- Maximum 10 moves in history
+- Oldest move dropped when exceeding limit
+
+### 16.2 Undo Operation
+
+```
+function undo():
+    if moveHistory.length == 0:
+        return {success: false, reason: "No moves to undo"}
+    
+    // Get last move
+    lastMove = moveHistory.pop()
+    
+    // Restore state from snapshot
+    restoreSnapshot(lastMove.snapshot)
+    
+    // Update stats
+    state.currentGame.undoUses++
+    updateEfficiency()  // Undo affects efficiency negatively
+    
+    return {success: true}
+```
+
+**Undo Limitations:**
+- Cannot undo after game won/lost
+- Cannot undo draw operations (only card moves)
+- Undo affects efficiency score
+
+### 16.3 Snapshot System
+
+```
+function createSnapshot(state):
+    snapshot = {
+        deck: cloneArray(state.deck),
+        waste: cloneArray(state.waste),
+        pocket: cloneArray(state.pocket),
+        pocket2: cloneArray(state.pocket2),
+        tableau: cloneTableau(state.tableau),
+        foundations: cloneFoundations(state.foundations),
+        columnTypes: cloneArray(state.columnTypes),
+        columnTypingCards: cloneArray(state.columnTypingCards),
+        currentGame: cloneObject(state.currentGame)
+    }
+    
+    return snapshot
+```
+
+**Snapshot Requirements:**
+- Deep copy (not references)
+- Preserve card IDs
+- Preserve face-up/down status
+- Capture all game state
+
+---
+
+## 17. WIN/LOSS DETECTION
+
+### 17.1 Win Condition
+
+```
+function checkWinCondition():
+    // Must have all 52 cards in foundations
+    totalCards = 0
+    
+    for suit in [h, d, c, s]:
+        totalCards += foundations.up[suit].length
+        totalCards += foundations.down[suit].length
+    
+    if totalCards != 52:
+        return false
+    
+    // Verify all foundations complete
+    for suit in [h, d, c, s]:
+        if foundations.up[suit].length != 7:
+            return false
+        if foundations.down[suit].length != 6:
+            return false
+    
+    // Verify sequences
+    for suit in [h, d, c, s]:
+        if not isCompleteUpSequence(foundations.up[suit], suit):
+            return false
+        if not isCompleteDownSequence(foundations.down[suit], suit):
+            return false
+    
+    return true  // GAME WON!
+```
+
+### 17.2 Loss/Stalemate Condition
+
+**Stalemate occurs when:**
+1. No valid moves available
+2. Stock is empty
+3. No cards can be drawn
+4. No progress for extended time
+
+```
+function checkStalemate():
+    // Check if any moves available
+    moves = findAllValidMoves()
+    if moves.length > 0:
+        return false  // Moves available
+    
+    // Check if can draw
+    if stock.length > 0:
+        return false  // Can still draw
+    
+    // Check waste recycling
+    if waste.length > 0 and not hasDrawnFromRecycledWaste:
+        return false  // Can recycle
+    
+    // No moves, can't draw = stalemate
+    return true
+```
+
+### 17.3 Progress Tracking
+
+```
+movesWithoutProgress = 0
+
+function trackProgress():
+    // Progress = cards moving to foundations
+    if lastMoveWasToFoundation:
+        movesWithoutProgress = 0
+    else:
+        movesWithoutProgress++
+    
+    // Warn if no progress for long time
+    if movesWithoutProgress >= 30:
+        showStalemateWarning()
+```
+
+---
+
+## 18. HINT SYSTEM
+
+### 18.1 Move Scoring
+
+**Move scores help prioritize hints:**
+```
+FOUNDATION_MOVE = 100      // Moving to foundation
+REVEAL_CARD = 50           // Reveals face-down card
+TYPE_COLUMN = 40           // Creates typed column (Ace/King)
+EMPTY_COLUMN = 30          // Empties a column
+FROM_POCKET = 15           // Clears pocket space
+FROM_WASTE = 15            // Clears waste
+EXTEND_SEQUENCE = 10       // Extends tableau sequence
+```
+
+### 18.2 Finding Best Move
+
+```
+function findBestMove():
+    allMoves = analyzeAllPossibleMoves()
+    
+    if allMoves.length == 0:
+        return null
+    
+    // Score each move
+    for move in allMoves:
+        move.score = calculateMoveScore(move)
+        move.lookaheadScore = analyzeLookahead(move)
+        move.totalScore = move.score + (move.lookaheadScore * 0.3)
+        
+        // Penalize stalemate moves
+        if leadsToStalemate(move):
+            move.totalScore -= 50
+    
+    // Sort by score
+    allMoves.sort(by: totalScore, descending)
+    
+    return allMoves[0]
+```
+
+### 18.3 Lookahead Analysis
+
+**2-Move Lookahead:**
+```
+function analyzeLookahead(move):
+    // Simulate the move
+    futureState = simulateMove(move, currentState)
+    
+    // Analyze what moves become available
+    futureMoves = analyzeAllPossibleMoves(futureState)
+    
+    score = 0
+    for futureMove in futureMoves:
+        if futureMove.isFoundation:
+            score += 20  // Future foundation moves valuable
+        else if futureMove.score >= TYPE_COLUMN:
+            score += 10  // High-value moves
+        else:
+            score += 2   // More options is good
+    
+    return score
+```
+
+### 18.4 Stalemate Avoidance
+
+```
+function leadsToStalemate(move):
+    futureState = simulateMove(move, currentState)
+    futureMoves = analyzeAllPossibleMoves(futureState)
+    
+    // No moves and can't draw = stalemate
+    if futureMoves.length == 0 and futureState.deck.length == 0:
+        return true
+    
+    // Very few low-value moves = near stalemate
+    if futureMoves.length <= 2:
+        hasGoodMove = any(m.score >= REVEAL_CARD for m in futureMoves)
+        if not hasGoodMove and futureState.deck.length == 0:
+            return true
+    
+    return false
+```
+
+---
+
+## 19. EFFICIENCY CALCULATION
+
+### 19.1 Efficiency Formula
+
+**Formula:**
+```
+Efficiency = (Optimal Moves / Actual Moves) Ã— 100
+
+Optimal Moves = Cards in Foundations + (Cards in Tableau - 7)
+```
+
+**Reasoning:**
+- Every card in foundation = necessary move
+- Tableau starts with 28 cards
+- Count moves beyond initial setup
+
+### 19.2 Calculation
+
+```
+function calculateEfficiency():
+    cardsInFoundations = 0
+    for suit in [h, d, c, s]:
+        cardsInFoundations += foundations.up[suit].length
+        cardsInFoundations += foundations.down[suit].length
+    
+    cardsInTableau = 0
+    for col in tableau:
+        cardsInTableau += col.length
+    
+    optimalMoves = cardsInFoundations + max(0, cardsInTableau - 7)
+    actualMoves = state.currentGame.moves
+    
+    if optimalMoves <= 0 or actualMoves <= 0:
+        return 100
+    
+    efficiency = (optimalMoves / actualMoves) * 100
+    return min(100, round(efficiency))
+```
+
+### 19.3 Mode-Specific Baselines
+
+**Expected Efficiency by Mode:**
+```
+Classic Mode:
+  - Excellent: 75%+
+  - Good: 60-74%
+  - Average: 45-59%
+  - Needs Improvement: <45%
+
+Double Pocket Mode:
+  - Excellent: 80%+
+  - Good: 65-79%
+  - Average: 50-64%
+  - Needs Improvement: <50%
+
+Traditional Mode:
+  - Excellent: 65%+
+  - Good: 50-64%
+  - Average: 35-49%
+  - Needs Improvement: <35%
+
+Expert Mode:
+  - Excellent: 55%+
+  - Good: 40-54%
+  - Average: 25-39%
+  - Needs Improvement: <25%
+```
+
+### 19.4 Efficiency Impact
+
+**What Hurts Efficiency:**
+- Unnecessary undo operations
+- Moving cards back and forth
+- Non-optimal move sequences
+- Not using pockets strategically
+
+**What Helps Efficiency:**
+- Direct foundation moves
+- Efficient tableau building
+- Minimal undos
+- Strategic planning
+
+---
+
+## 20. STALEMATE DETECTION
+
+### 20.1 Loop Detection
+
+**State Hashing:**
+```
+function hashGameState(state):
+    // Create unique fingerprint of position
+    tableauStr = serializeTableau(state.tableau)
+    foundationsStr = serializeFoundations(state.foundations)
+    pocketStr = serializeCards(state.pocket)
+    
+    stateString = tableauStr + "::" + foundationsStr + "::" + pocketStr
+    
+    return hashString(stateString)
+```
+
+**Loop Detection:**
+```
+stateHistory = []  // Last 50 state hashes
+
+function detectLoop():
+    currentHash = hashGameState(state)
+    
+    if currentHash in stateHistory:
+        return true  // Loop detected!
+    
+    stateHistory.append(currentHash)
+    if stateHistory.length > 50:
+        stateHistory.shift()  // Remove oldest
+    
+    return false
+```
+
+### 20.2 Stalemate Conditions
+
+**Check for Stalemate:**
+1. No valid moves available
+2. Stock empty
+3. Too many moves without progress (30+)
+4. Loop detected
+5. High move count with no recent progress
+
+```
+function checkStalemateConditions():
+    // Loop detection
+    if detectLoop():
+        showWarning("Loop detected")
+    
+    // Moves without progress
+    if movesWithoutProgress >= 30:
+        if findAllValidMoves().length == 0:
+            return "stalemate"
+    
+    // High move count
+    if currentGame.moves >= 200:
+        if timeSinceLastProgress > 5 minutes:
+            if findAllValidMoves().length == 0:
+                return "stalemate"
+    
+    return "active"
+```
+
+---
+
+## 21. STATISTICS TRACKING
+
+### 21.1 Global Statistics
+
+```
+stats = {
+    gamesPlayed: 0,
+    wins: 0,
+    losses: 0,
+    stalemates: 0,
+    totalMoves: 0,
+    totalHintUses: 0,
+    totalUndoUses: 0,
+    totalTimePlayed: 0,  // milliseconds
+    efficiencyHistory: []
+}
+```
+
+### 21.2 Per-Mode Statistics
+
+```
+modeStats = {
+    classic: {
+        games: 0,
+        wins: 0,
+        totalMoves: 0,
+        bestEfficiency: 0,
+        bestTime: infinity
+    },
+    double_pocket: { /* same structure */ },
+    traditional: { /* same structure */ },
+    expert: { /* same structure */ }
+}
+```
+
+### 21.3 Per-Game Statistics
+
+```
+currentGame = {
+    moves: 0,
+    hintUses: 0,
+    undoUses: 0,
+    startTime: 0,
+    endTime: 0,
+    efficiency: 100,
+    movesWithoutProgress: 0,
+    acePlaced: false,
+    kingPlaced: false,
+    firstAceMove: null,
+    firstKingMove: null
+}
+```
+
+### 21.4 Statistical Calculations
+
+**Win Rate:**
+```
+winRate = (wins / gamesPlayed) * 100
+```
+
+**Average Efficiency:**
+```
+avgEfficiency = sum(efficiencyHistory) / efficiencyHistory.length
+```
+
+**Average Moves per Game:**
+```
+avgMoves = totalMoves / gamesPlayed
+```
+
+**Best Time by Mode:**
+```
+bestTime[mode] = min(all completed game times for mode)
+```
+
+---
+
+## 22. SAVE/LOAD SYSTEM
+
+### 22.1 Save Game State
+
+**What to Save:**
+```
+savedGame = {
+    version: "6.0.2",
+    gameMode: state.gameMode,
+    timestamp: now(),
+    
+    // All game areas (as card IDs)
+    deck: [cardIds],
+    waste: [cardIds],
+    pocket: [cardIds],
+    pocket2: [cardIds],
+    tableau: [[cardIds]], // Array of arrays
+    foundations: {
+        up: {h: [cardIds], d: [cardIds], c: [cardIds], s: [cardIds]},
+        down: {h: [cardIds], d: [cardIds], c: [cardIds], s: [cardIds]}
+    },
+    
+    // Column state
+    columnTypes: ["ace", null, "king", ...],
+    columnTypingCards: [cardId, null, cardId, ...],
+    
+    // Game progress
+    currentGame: { /* all tracking data */ },
+    
+    // Statistics
+    stats: { /* all stats */ },
+    modeStats: { /* per-mode stats */ }
+}
+```
+
+**Serialization:**
+```
+function saveGame():
+    snapshot = createCompleteSnapshot()
+    jsonString = JSON.stringify(snapshot)
+    localStorage.setItem('meridian_saved_game', jsonString)
+```
+
+### 22.2 Load Game State
+
+```
+function loadGame():
+    jsonString = localStorage.getItem('meridian_saved_game')
+    if jsonString == null:
+        return {success: false, reason: "No saved game"}
+    
+    savedGame = JSON.parse(jsonString)
+    
+    // Validate version compatibility
+    if savedGame.version != currentVersion:
+        return {success: false, reason: "Version mismatch"}
+    
+    // Reconstruct all cards from IDs
+    reconstructState(savedGame)
+    
+    return {success: true}
+```
+
+### 22.3 Card Reconstruction
+
+```
+function reconstructCard(cardId):
+    // Parse ID: "Ah_1768112159226_9_wae4gq1zf"
+    parts = cardId.split('_')
+    cardCode = parts[0]
+    
+    // Extract value and suit
+    if cardCode.startsWith('10'):
+        value = '10'
+        suit = cardCode.substring(2)
+    else:
+        value = cardCode.charAt(0)
+        suit = cardCode.substring(1)
+    
+    // Create card
+    card = new Card()
+    card.id = cardId
+    card.value = value
+    card.suit = suit
+    card.color = (suit in ['h', 'd']) ? 'red' : 'black'
+    card.numericValue = getNumericValue(value)
+    card.isFaceUp = true  // Will be set correctly during reconstruction
+    
+    return card
+```
+
+---
+
+## 23. INTEGRATION GUIDE
+
+### 23.1 Connecting UI to Engine
+
+**Engine-to-UI Interface:**
+```
+Engine provides:
+- getGameState() â†’ current state for rendering
+- executeMove(cardId, target) â†’ boolean success
+- drawCard() â†’ boolean success
+- undo() â†’ boolean success
+- getHint() â†’ suggested move
+- pause() / resume() â†’ control game
+- saveGame() / loadGame() â†’ persistence
+```
+
+**UI-to-Engine Commands:**
+```
+UI sends:
+- User clicks card â†’ engine.executeMove(cardId, targetLocation)
+- User clicks stock â†’ engine.drawCard()
+- User clicks undo â†’ engine.undo()
+- User requests hint â†’ engine.getHint()
+```
+
+### 23.2 Rendering Strategy
+
+**State-Driven Rendering:**
+```
+function render():
+    state = engine.getGameState()
+    
+    // Render tableau
+    for col = 0 to 6:
+        renderColumn(state.tableau[col], state.columnTypes[col])
+    
+    // Render foundations
+    renderFoundations(state.foundations)
+    
+    // Render stock/waste
+    renderStock(state.deck.length)
+    renderWaste(state.waste)
+    
+    // Render pockets
+    renderPocket(state.pocket, 1)
+    if state.gameMode == "double_pocket":
+        renderPocket(state.pocket2, 2)
+    
+    // Render game info
+    renderMoves(state.currentGame.moves)
+    renderEfficiency(state.currentGame.efficiency)
+    renderTimer(state.currentGame.startTime)
+```
+
+### 23.3 Event Handling
+
+**Drag and Drop:**
+```
+onCardDragStart(cardId):
+    card = engine.findCard(cardId)
+    if not engine.isCardAccessible(cardId):
+        cancelDrag()
+        return
+    
+    startDrag(cardId)
+
+onCardDrop(cardId, targetLocation):
+    result = engine.executeMove(cardId, targetLocation)
+    
+    if result.success:
+        playSuccessAnimation()
+        render()
+    else:
+        playErrorAnimation()
+        showError(result.reason)
+```
+
+**Click Handling:**
+```
+onCardClick(cardId):
+    // Try auto-place to foundation
+    result = engine.autoPlaceCard(cardId)
+    
+    if result.success:
+        render()
+    else:
+        // Start selection mode
+        selectCard(cardId)
+```
+
+### 23.4 Framework-Specific Tips
+
+**React/Vue:**
+- Use engine state as single source of truth
+- Component re-renders on state change
+- Immutable state updates
+
+**Phaser/PixiJS:**
+- Engine manages logic only
+- Game objects track visual state
+- Smooth animations between states
+
+**Native Mobile:**
+- Engine runs in background thread
+- UI updates on main thread
+- Optimize for touch interactions
+
+---
+
+## 24. IMPLEMENTATION CHECKLIST
+
+### 24.1 Core Systems
+
+- [ ] Card System
+  - [ ] Card object structure
+  - [ ] Deck creation (52 cards)
+  - [ ] Shuffling algorithm
+  - [ ] Unique ID generation
+
+- [ ] Game State
+  - [ ] State object structure
+  - [ ] Initialization
+  - [ ] Validation
+  - [ ] Transitions
+
+- [ ] Dealing
+  - [ ] Classic/Double Pocket deal
+  - [ ] Traditional/Expert deal
+  - [ ] Face-up/down handling
+
+### 24.2 Move System
+
+- [ ] Move Validation
+  - [ ] Card accessibility
+  - [ ] Target validation
+  - [ ] Sequence validation
+  - [ ] Column type rules
+
+- [ ] Move Execution
+  - [ ] Remove from source
+  - [ ] Add to target
+  - [ ] Update column types
+  - [ ] Face-down flip
+  - [ ] Move recording
+
+- [ ] Undo/Redo
+  - [ ] Snapshot creation
+  - [ ] State restoration
+  - [ ] History management (max 10)
+
+### 24.3 Game Areas
+
+- [ ] Tableau
+  - [ ] Building rules
+  - [ ] Sequence validation
+  - [ ] Multi-card moves
+
+- [ ] Foundations
+  - [ ] UP foundations (7â†’K)
+  - [ ] DOWN foundations (6â†’A)
+  - [ ] Suit-specific validation
+
+- [ ] Column Typing
+  - [ ] Initial typing
+  - [ ] Empty column placement
+  - [ ] Last card remaining
+  - [ ] Type updates
+
+- [ ] Stock/Waste
+  - [ ] Draw operation
+  - [ ] Waste recycling
+  - [ ] Play from waste
+
+- [ ] Pockets
+  - [ ] Single pocket
+  - [ ] Double pocket (mode-specific)
+  - [ ] Placement/retrieval
+
+### 24.4 Game Modes
+
+- [ ] Classic Mode
+- [ ] Double Pocket Mode
+- [ ] Traditional Mode
+- [ ] Expert Mode
+
+### 24.5 Advanced Features
+
+- [ ] Win/Loss Detection
+  - [ ] Win condition check
+  - [ ] Stalemate detection
+  - [ ] Loop detection
+
+- [ ] Hint System
+  - [ ] Move analysis
+  - [ ] Move scoring
+  - [ ] 2-move lookahead
+  - [ ] Stalemate avoidance
+
+- [ ] Efficiency
+  - [ ] Calculation formula
+  - [ ] Mode-specific ratings
+  - [ ] History tracking
+
+- [ ] Statistics
+  - [ ] Global stats
+  - [ ] Per-mode stats
+  - [ ] Per-game stats
+
+- [ ] Save/Load
+  - [ ] State serialization
+  - [ ] Card reconstruction
+  - [ ] Persistence
+
+### 24.6 Integration
+
+- [ ] Engine API
+  - [ ] State queries
+  - [ ] Command execution
+  - [ ] Event notifications
+
+- [ ] UI Connection
+  - [ ] State rendering
+  - [ ] User input handling
+  - [ ] Animations
+
+---
+
+## 25. TESTING SCENARIOS
+
+### 25.1 Basic Gameplay
+
+**Scenario 1: Foundation Placement**
+- Deal cards
+- Find a 7
+- Place on UP foundation
+- Verify foundation accepts 7
+- Place 8 of same suit
+- Verify sequence continues
+
+**Scenario 2: Tableau Building**
+- Find red 5 and black 6
+- Place 5 on 6
+- Verify color alternation
+- Verify sequence direction
+
+**Scenario 3: Column Typing**
+- Clear column to empty
+- Place Ace
+- Verify column types as "ace"
+- Attempt to place descending card
+- Verify rejection
+
+### 25.2 Edge Cases
+
+**Empty Column:**
+- Clear column
+- Attempt to place 5
+- Verify rejection (only A/K allowed)
+
+**Face-Down Reveal:**
+- Traditional mode
+- Remove top cards
+- Verify face-down card flips
+- Verify column types if Ace/King revealed
+
+**Pocket Full:**
+- Place card in pocket
+- Attempt to place another
+- Verify rejection
+
+**Stock Empty:**
+- Draw all 24 cards
+- Verify recycling activates
+- Verify cards return in reverse order
+
+### 25.3 Win Conditions
+
+**Complete Game:**
+- Set up near-win state
+- Place final cards
+- Verify win detection
+- Verify stats update
+
+**Stalemate:**
+- Create no-move situation
+- Verify stalemate detection
+- Verify game ends properly
+
+---
+
+## 26. CONCLUSION
+
+This specification provides complete documentation of the Meridian Master game engine, independent of any UI implementation. An AI agent or developer can use this document to:
+
+1. **Understand** the complete game rules and mechanics
+2. **Implement** the engine in any programming language
+3. **Connect** the engine to any UI framework
+4. **Test** all gameplay scenarios
+5. **Extend** the engine with new features
+
+### Key Principles
+
+- **UI-Agnostic:** Engine handles logic only
+- **State-Driven:** Single source of truth
+- **Validation-First:** All moves validated before execution
+- **Undo-Friendly:** State snapshots enable undo/redo
+- **Mode-Flexible:** 4 game modes with shared core
+
+### Implementation Notes
+
+- Engine should be isolated module/class
+- UI subscribes to state changes
+- Commands return success/failure
+- No UI dependencies in engine code
+- Pure functions where possible
+
+### Next Steps
+
+1. Choose target platform/framework
+2. Implement core systems first
+3. Add game modes incrementally
+4. Connect UI last
+5. Test thoroughly
+
+---
+
+**END OF SPECIFICATION**
+
+*This document comprehensively defines Meridian Master's game engine for implementation in any environment.*
+

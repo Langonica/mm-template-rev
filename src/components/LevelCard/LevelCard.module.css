@@ -1,0 +1,187 @@
+.levelCard {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  user-select: none;
+}
+
+/* Locked state */
+.levelCard.locked {
+  background: linear-gradient(145deg, var(--bg-elevated), var(--bg-surface));
+  border: var(--border-width-medium) solid var(--color-neutral-700);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.levelCard.locked .levelNumber {
+  color: var(--color-neutral-600);
+}
+
+/* Unlocked but not completed */
+.levelCard.unlocked {
+  background: linear-gradient(145deg, var(--color-neutral-600), var(--color-neutral-700));
+  border: var(--border-width-medium) solid var(--color-neutral-500);
+  box-shadow: var(--shadow-md);
+}
+
+.levelCard.unlocked:hover {
+  transform: var(--hover-lift);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-neutral-400);
+}
+
+.levelCard.unlocked:focus {
+  outline: none;
+  border-color: var(--color-success);
+  box-shadow: var(--focus-ring-success);
+}
+
+/* Current level - prominent styling */
+.levelCard.current {
+  background: linear-gradient(145deg, var(--color-success), var(--color-success-dark));
+  border: var(--border-width-medium) solid var(--color-success-light);
+  box-shadow: 0 var(--spacing-1) var(--spacing-5) var(--color-success-20);
+  animation: pulse-current 2s var(--timing-ease-in-out) infinite;
+}
+
+.levelCard.current:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 var(--spacing-2) 25px var(--color-success-30);
+}
+
+@keyframes pulse-current {
+  0%, 100% {
+    box-shadow: 0 var(--spacing-1) var(--spacing-5) var(--color-success-20);
+  }
+  50% {
+    box-shadow: 0 var(--spacing-1) 30px var(--color-success-30);
+  }
+}
+
+/* Completed state */
+.levelCard.completed {
+  background: linear-gradient(145deg, #2d4a3a, #1a3a2a);
+  border: var(--border-width-medium) solid var(--color-success);
+}
+
+.levelCard.completed:hover {
+  transform: var(--hover-lift);
+  box-shadow: 0 var(--spacing-1) var(--spacing-3) var(--color-success-30);
+}
+
+.levelNumber {
+  font-size: 28px;
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+  line-height: 1;
+  text-shadow: 0 var(--spacing-0) var(--spacing-1) rgba(0, 0, 0, 0.3);
+}
+
+.checkmark {
+  position: absolute;
+  top: var(--spacing-1);
+  right: var(--spacing-1);
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  color: var(--color-success);
+}
+
+.checkmark svg {
+  width: 100%;
+  height: 100%;
+}
+
+.lockIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--icon-size-xl);
+  height: var(--icon-size-xl);
+  color: var(--color-neutral-600);
+}
+
+.lockIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.levelCard.locked .levelNumber {
+  opacity: 0;
+}
+
+.stats {
+  position: absolute;
+  bottom: var(--spacing-1);
+  left: 0;
+  right: 0;
+  padding: 0 var(--spacing-1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-0);
+}
+
+.statRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.statLabel {
+  opacity: 0.6;
+}
+
+.statValue {
+  font-weight: var(--font-weight-semibold);
+}
+
+.playIndicator {
+  position: absolute;
+  bottom: var(--spacing-2);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+  letter-spacing: var(--letter-spacing-normal);
+  text-shadow: 0 1px var(--spacing-0) rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .levelCard {
+    width: 60px;
+    height: 75px;
+  }
+
+  .levelNumber {
+    font-size: 22px;
+  }
+
+  .checkmark {
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+    top: var(--spacing-1);
+    right: var(--spacing-1);
+  }
+
+  .lockIcon {
+    width: var(--icon-size-lg);
+    height: var(--icon-size-lg);
+  }
+
+  .stats {
+    display: none;
+  }
+
+  .playIndicator {
+    font-size: var(--font-size-xs);
+    bottom: var(--spacing-1);
+  }
+}

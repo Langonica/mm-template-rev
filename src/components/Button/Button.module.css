@@ -1,0 +1,168 @@
+/**
+ * Button Component Styles
+ *
+ * Variants: primary, secondary, accent, warning, danger, ghost
+ * Sizes: sm, md (default), lg
+ * States: default, hover, active, disabled
+ */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  outline: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.button:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+/* ===== SIZE VARIANTS ===== */
+
+.sm {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  gap: var(--spacing-xs);
+}
+
+.lg {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-lg);
+}
+
+/* ===== COLOR VARIANTS ===== */
+
+/* Primary - Green */
+.primary {
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary-border);
+  color: var(--color-primary);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--color-primary-medium);
+  transform: var(--hover-lift);
+}
+
+.primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Secondary - Blue */
+.secondary {
+  background: var(--color-secondary-light);
+  border: 1px solid var(--color-secondary-border);
+  color: var(--color-secondary);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--color-secondary-medium);
+  transform: var(--hover-lift);
+}
+
+.secondary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Accent - Purple */
+.accent {
+  background: var(--color-accent-light);
+  border: 1px solid var(--color-accent-border);
+  color: var(--color-accent);
+}
+
+.accent:hover:not(:disabled) {
+  background: var(--color-accent-medium);
+  transform: var(--hover-lift);
+}
+
+.accent:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Warning - Yellow */
+.warning {
+  background: var(--color-warning-light);
+  border: 1px solid var(--color-warning-border);
+  color: var(--color-warning);
+}
+
+.warning:hover:not(:disabled) {
+  background: var(--color-warning-medium);
+  transform: var(--hover-lift);
+}
+
+.warning:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Danger - Red */
+.danger {
+  background: var(--color-danger-light);
+  border: 1px solid var(--color-danger-border);
+  color: var(--color-danger);
+}
+
+.danger:hover:not(:disabled) {
+  background: var(--color-danger-medium);
+  transform: var(--hover-lift);
+}
+
+.danger:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Ghost - Neutral/Muted */
+.ghost {
+  background: var(--color-neutral-light);
+  border: 1px solid var(--color-neutral-border);
+  color: var(--color-neutral);
+}
+
+.ghost:hover:not(:disabled) {
+  background: var(--color-neutral-medium);
+  transform: var(--hover-lift);
+}
+
+.ghost:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ===== DISABLED STATE ===== */
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--color-neutral-light);
+  border-color: var(--color-neutral-border);
+  color: var(--color-text-disabled);
+}
+
+/* ===== ICON SUPPORT ===== */
+
+.icon {
+  font-size: var(--font-size-lg);
+  line-height: 1;
+}
+
+.iconOnly {
+  padding: var(--spacing-sm);
+}
+
+.iconOnly.sm {
+  padding: var(--spacing-xs);
+}
+
+.iconOnly.lg {
+  padding: var(--spacing-md);
+}
