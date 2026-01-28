@@ -28,8 +28,9 @@ const StockWaste = ({
   const metadata = snapshot.metadata;
   
   // Calculate depth based on actual card counts
+  // Every 5 cards adds a visual layer, max 5 layers (capped for visual consistency)
   const stockDepthLayers = Math.min(5, Math.floor(currentStockCards.length / 5) + 1);
-  const wasteDepthLayers = Math.min(3, Math.floor(currentWasteCards.length / 3) + 1);
+  const wasteDepthLayers = Math.min(5, Math.floor(currentWasteCards.length / 5) + 1);
   
   // Get top waste card
   const topWasteCard = currentWasteCards.length > 0 
@@ -132,8 +133,10 @@ const StockWaste = ({
                 className="stock-depth-layer"
                 style={{
                   position: 'absolute',
-                  top: `${i * 2}px`,
-                  left: `${i * 2}px`,
+                  // Offset from center: deepest layer at (0,0), layers above go up-left
+                  // (i - (stockDepthLayers - 1)) makes the last (deepest) layer centered
+                  top: `${(i - (stockDepthLayers - 1)) * 2}px`,
+                  left: `${(i - (stockDepthLayers - 1)) * 2}px`,
                   width: '100%',
                   height: '100%',
                   zIndex: 100 - i,
@@ -156,8 +159,10 @@ const StockWaste = ({
               title={`Stock: ${currentStockCards.length} cards\nClick to draw a card`}
               style={{
                 position: 'absolute',
-                top: '0',
-                left: '0',
+                // Position above the shallowest depth layer to stack upward
+                // (same offset as layer 0, which is at index 0)
+                top: `${-(stockDepthLayers - 1) * 2}px`,
+                left: `${-(stockDepthLayers - 1) * 2}px`,
                 width: '100%',
                 height: '100%',
                 zIndex: 110,
@@ -205,7 +210,8 @@ const StockWaste = ({
             justifyContent: 'center',
             fontSize: '11px',
             fontWeight: 'bold',
-            zIndex: 120,
+            // Above stock pile card (z-index 110)
+            zIndex: 130,
             border: '2px solid #1a1a1a',
             boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
           }}>
@@ -233,18 +239,21 @@ const StockWaste = ({
             }} />
           ) : (
             <>
+              {/* Waste pile depth layers - same visual model as stock */}
               {Array.from({ length: wasteDepthLayers }).map((_, i) => (
                 <div 
                   key={`waste-depth-${i}`}
                   className="waste-depth-layer"
                   style={{
                     position: 'absolute',
-                    top: `${i * 2}px`,
-                    left: `${i * 2}px`,
+                    // Offset from center: deepest layer at (0,0), layers above go up-left
+                    top: `${(i - (wasteDepthLayers - 1)) * 2}px`,
+                    left: `${(i - (wasteDepthLayers - 1)) * 2}px`,
                     width: '100%',
                     height: '100%',
-                    zIndex: 100 - i,
-                    opacity: `${0.7 - (i * 0.2)}`,
+                    // Waste pile z-index above stock pile (200 range vs 100 range)
+                    zIndex: 200 - i,
+                    opacity: `${0.7 - (i * 0.15)}`,
                     transform: config.isFun 
                       ? `rotate(${getDepthLayerRotation(i, false)}deg)`
                       : '',
@@ -276,9 +285,11 @@ const StockWaste = ({
                   location={{ type: 'waste', index: currentWasteCards.length - 1 }}
                   style={{
                     position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    zIndex: 110
+                    // Position above the shallowest depth layer
+                    top: -(wasteDepthLayers - 1) * 2,
+                    left: -(wasteDepthLayers - 1) * 2,
+                    // Waste pile z-index above stock pile
+                    zIndex: 210
                   }}
                 />
               )}
@@ -302,7 +313,8 @@ const StockWaste = ({
             justifyContent: 'center',
             fontSize: '11px',
             fontWeight: 'bold',
-            zIndex: 120,
+            // Above waste pile card (z-index 210)
+            zIndex: 220,
             border: '2px solid #1a1a1a',
             boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
           }}>

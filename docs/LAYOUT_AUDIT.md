@@ -228,6 +228,146 @@ Below minimums: Show "rotate device" or "use larger screen" message.
 
 ---
 
+## Phase 6: Large Viewport Scaling & High-DPI Support (COMPLETE)
+
+**Status:** Implemented and tested  
+**Added:** 2026-01-28 | **Completed:** 2026-01-28
+
+### Problem
+Current responsive implementation caps scale at 1.0×, leaving unused space on:
+- 4K displays (3840×2160)
+- Ultrawide monitors (2560×1080, 3440×1440)
+- Large tablets (iPad Pro 12.9")
+- High-DPI laptops (MacBook Retina, Surface)
+
+Additionally, 1× (80×112px) card sprites appear blurry on 2×+ displays.
+
+### Current Scale Caps
+Two independent caps enforce the 1.0× limit:
+
+1. **`useViewportScale.js:27`**
+   ```javascript
+   const scale = Math.min(scaleX, scaleY, 1); // Hard cap at 1.0
+   ```
+
+2. **`useResponsiveDimensions.js:111-113`**
+   ```javascript
+   if (cardWidth > BASE_CARD_WIDTH) {
+     cardWidth = BASE_CARD_WIDTH; // Caps at 80px
+   }
+   ```
+
+### Proposed Solution
+
+#### Part A: Configurable Max Scale
+Replace hard `1` with `MAX_SCALE` constant:
+
+```javascript
+const MAX_SCALE = 2.0; // Allow up to 2560×1440 (1280×2, 720×2)
+// or
+const MAX_SCALE = Infinity; // No upper limit
+```
+
+| MAX_SCALE | Max Resolution | Use Case |
+|-----------|---------------|----------|
+| 1.0 | 1280×720 | Current (locked) |
+| 1.5 | 1920×1080 | 1080p displays |
+| 2.0 | 2560×1440 | 1440p displays, 4K at 200% scaling |
+| Infinity | Unlimited | Any resolution (blurry beyond ~2×) |
+
+#### Part B: High-DPI Asset Support
+
+Create 2× versions of all raster assets for crisp rendering on scaled displays.
+
+#### Required 2× Assets
+
+| Asset | 1× Filename | 2× Filename | 1× Size | 2× Size | Usage |
+|-------|-------------|-------------|---------|---------|-------|
+| **Card Sprite Sheet** | `cardspritesheet.png` | `cardspritesheet@2x.png` | 1040×560 | 2080×1120 | Card faces (REQUIRED) |
+| **Game Board** | `mm-gameboard.png` | `mm-gameboard@2x.png` | ~1280×720 | ~2560×1440 | Background (REQUIRED) |
+| Track: Aces Up | `aces-up.png` | `aces-up@2x.png` | 80×290 | 160×580 | Ace column track (optional) |
+| Track: Kings Down | `kings-down.png` | `kings-down@2x.png` | 80×290 | 160×580 | King column track (optional) |
+| Track: Default | `default-down.png` | `default-down@2x.png` | 80×290 | 160×580 | Traditional track (optional) |
+| Track: Empty | `empty.png` | `empty@2x.png` | 80×290 | 160×580 | Empty column track (optional) |
+| Badge: Ace | `ace-badge.png` | `ace-badge@2x.png` | 80×112 | 160×224 | Ace plinth badge (optional) |
+| Badge: King | `king-badge.png` | `king-badge@2x.png` | 80×112 | 160×224 | King plinth badge (optional) |
+
+#### Priority Tiers
+
+**Tier 1 (Required for MVP):**
+- `cardspritesheet@2x.png` — Cards are the most visually critical element
+- `mm-gameboard@2x.png` — Background visible at all scales
+
+**Tier 2 (Nice to have):**
+- Track backgrounds (`aces-up@2x.png`, `kings-down@2x.png`, etc.)
+- Currently have CSS gradient fallbacks that scale infinitely
+
+**Tier 3 (Optional):**
+- Badge sprites (`ace-badge@2x.png`, `king-badge@2x.png`)
+- Currently have CSS gradient fallbacks
+
+#### Implementation
+
+**CSS Custom Properties Approach:**
+```css
+:root {
+  /* Base sprite - 1× default */
+  --sprite-url: url('/assets/cardspritesheet.png');
+  --gamestage-url: url('/assets/mm-gameboard.png');
+  
+  /* 2× overrides via media query or JS */
+}
+
+/* High-DPI screen support */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  :root {
+    --sprite-url: url('/assets/cardspritesheet@2x.png');
+    --gamestage-url: url('/assets/mm-gameboard@2x.png');
+  }
+}
+```
+
+**JavaScript Approach (more control):**
+```javascript
+// Detect device pixel ratio
+const dpr = window.devicePixelRatio || 1;
+const use2x = dpr >= 2;
+
+// Set CSS custom properties
+const root = document.documentElement;
+root.style.setProperty('--sprite-url', 
+  `url('${use2x ? '/assets/cardspritesheet@2x.png' : '/assets/cardspritesheet.png'}')`);
+root.style.setProperty('--gamestage-url', 
+  `url('${use2x ? '/assets/mm-gameboard@2x.png' : '/assets/mm-gameboard.png'}')`);
+```
+
+**CSS Background Size (Critical):**
+Regardless of asset resolution, CSS renders at 1× logical size:
+```css
+.card {
+  width: var(--card-w); /* 80px */
+  height: var(--card-h); /* 112px */
+  background-image: var(--sprite-url);
+  background-size: 1040px 560px; /* 1× logical grid size */
+  /* 2× asset has 2× pixel density but same visual size */
+}
+```
+
+### Files to Modify
+- `src/hooks/useViewportScale.js` - MAX_SCALE constant (recommend 2.0)
+- `src/styles/App.css` - Add DPR media query or JS-driven sprite selection
+- `src/App.jsx` - Add DPR detection and CSS variable updates (if using JS approach)
+
+### Decisions Made
+1. **MAX_SCALE:** Set to `2.0` (hardcoded). Covers 1440p displays and 4K at 200% scaling. No user preference needed.
+2. **3× assets:** Deferred. 2× assets cover most use cases (MacBook Retina, 4K desktop). Can revisit if needed.
+3. **Asset generation:** Manual creation. Designer provides @2x versions of card spritesheet and gameboard.
+
+### Open Questions
+None remaining - Phase 6 complete.
+
+---
+
 ## Files Requiring Changes
 
 ### High Impact

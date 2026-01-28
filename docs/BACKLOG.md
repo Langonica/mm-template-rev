@@ -100,6 +100,9 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 ### ~~CSS Architecture Refactoring (Phase 1)~~
 **Resolved:** 2026-01-22 | Created tokens.css, Button and Select components with CSS Modules. Refactored Header.jsx as proof of concept. Header reduced from 238 to 127 lines, eliminated all inline styles.
 
+### ~~Responsive Scaling Enhancement (v2.1.0)~~
+**Resolved:** 2026-01-28 | Removed 1.0× scale cap (now supports up to 2.0× / 2560×1440). Added `useHighDPIAssets` hook for automatic @2x asset selection based on viewport scale and DPR. Updated stock/waste pile visuals with centered stacking model. Assets: cardspritesheet@2x.png, mm-gameboard@2x.png.
+
 ---
 
-*Last Updated: 2026-01-24* | *v2.0.0 released: Design system overhaul and responsive layout complete*
+*Last Updated: 2026-01-28* | *v2.1.0 released: Large viewport scaling and high-DPI asset support*

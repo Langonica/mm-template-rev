@@ -14,6 +14,7 @@ import { useGameStats } from './hooks/useGameStats'
 import { useCampaignProgress } from './hooks/useCampaignProgress'
 import { useViewportScale } from './hooks/useViewportScale'
 import { useResponsiveDimensions } from './hooks/useResponsiveDimensions'
+import { useHighDPIAssets } from './hooks/useHighDPIAssets'
 import { useNotification, Notification, NOTIFICATION_MESSAGES } from './hooks/useNotification.jsx'
 import { generateRandomDeal, getGameModes } from './utils/dealGenerator'
 import './styles/App.css'
@@ -89,11 +90,15 @@ function App() {
   } = useCampaignProgress()
 
   // Dynamic viewport scaling - ensures game fits without cropping
-  const { scale, scaledWidth, scaledHeight } = useViewportScale()
+  // Now supports scaling up to 2× for larger viewports (requires 2× assets)
+  const { scale, scaledWidth, scaledHeight, devicePixelRatio } = useViewportScale()
 
   // Responsive dimensions - updates CSS variables based on viewport
   // Currently runs alongside useViewportScale; will replace it in Phase 4
   const responsiveDimensions = useResponsiveDimensions()
+
+  // High-DPI asset loading - selects @2x sprites on Retina/high-DPI displays
+  useHighDPIAssets(scale, devicePixelRatio)
 
   const [selectedSnapshotId, setSelectedSnapshotId] = useState('classic_normal_easy_01')
   const [selectedMode, setSelectedMode] = useState('classic')

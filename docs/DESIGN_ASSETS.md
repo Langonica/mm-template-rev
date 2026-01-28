@@ -17,9 +17,13 @@ This document catalogs all visual assets for Meridian Solitaire and provides spe
 | Asset Type | Status | Notes |
 |------------|--------|-------|
 | Card Sprite Sheet | **REQUIRED** | Cards cannot be rendered without this |
+| Card Sprite Sheet @2x | **REQUIRED** | For crisp cards on high-DPI/scaled displays |
+| Game Board Background | **REQUIRED** | `mm-gameboard.png` - active in current build |
+| Game Board Background @2x | **REQUIRED** | For crisp background on high-DPI/scaled displays |
 | Track Backgrounds | Optional | CSS gradients provide fallback |
+| Track Backgrounds @2x | Optional | Only if using custom track sprites |
 | Column Badges | Optional | CSS gradients provide fallback |
-| Game Board Background | Optional | CSS gradient/solid color fallback |
+| Column Badges @2x | Optional | Only if using custom badge sprites |
 
 ---
 
@@ -48,13 +52,13 @@ Edit `src/styles/App.css` and uncomment the relevant URL variables:
 
 ### 1. Card Sprite Sheet (REQUIRED)
 
-| Property | Value |
-|----------|-------|
-| **Filename** | `cardspritesheet.png` |
-| **Dimensions** | 1040 × 560 px |
-| **Grid** | 13 columns × 5 rows |
-| **Cell Size** | 80 × 112 px |
-| **Format** | PNG-24 with transparency |
+| Property | 1× (@1x) | 2× (@2x) |
+|----------|----------|----------|
+| **Filename** | `cardspritesheet.png` | `cardspritesheet@2x.png` |
+| **Dimensions** | 1040 × 560 px | 2080 × 1120 px |
+| **Grid** | 13 columns × 5 rows | 13 columns × 5 rows |
+| **Cell Size** | 80 × 112 px | 160 × 224 px |
+| **Format** | PNG-24 with transparency | PNG-24 with transparency |
 
 **Grid Layout:**
 ```
@@ -124,21 +128,22 @@ Badges appear at the anchor position of ace/king columns (top for ace, bottom fo
 
 ---
 
-### 4. Game Board Background (OPTIONAL)
+### 4. Game Board Background (REQUIRED)
 
-Full background for the play area.
+Full background for the play area. Currently using `mm-gameboard.png`.
 
-| Property | Value |
-|----------|-------|
-| **Filename** | `gameboardonly.png` |
-| **Dimensions** | 1280 × 720 px |
-| **Format** | PNG-24 or JPEG |
+| Property | 1× (@1x) | 2× (@2x) |
+|----------|----------|----------|
+| **Filename** | `mm-gameboard.png` | `mm-gameboard@2x.png` |
+| **Dimensions** | 1280 × 720 px | 2560 × 1440 px |
+| **Format** | PNG-24 | PNG-24 |
 
 **Design Guidelines:**
-- Dark theme preferred (current: `#003c00` deep green)
+- Dark theme preferred (current: `#1720c3` blue felt)
 - Should not compete with cards
 - Can include subtle texture or pattern
 - Consider leaving track areas transparent for layering
+- Must match current `mm-gameboard.png` layout exactly (just higher resolution)
 
 ---
 
@@ -194,36 +199,48 @@ All dimensions derive from card width. At base size:
 
 When creating/updating assets:
 
-- [ ] Export at @1x base dimensions (listed above)
-- [ ] Optional: Export @2x for retina displays
+### Required Assets (Must Have)
+- [ ] Export `cardspritesheet.png` at 1× (1040×560px)
+- [ ] Export `cardspritesheet@2x.png` at 2× (2080×1120px)
+- [ ] Export `mm-gameboard.png` at 1× (1280×720px)
+- [ ] Export `mm-gameboard@2x.png` at 2× (2560×1440px)
+
+### Optional Assets (Only If Customizing)
+- [ ] Export track sprites at 1× (80×290px) and 2× (160×580px)
+- [ ] Export badge sprites at 1× (80×112px) and 2× (160×224px)
+
+### All Assets
 - [ ] Use PNG-24 for transparency, JPEG only for photos
 - [ ] Verify alignment with grid system
-- [ ] Test against dark background (#003c00)
+- [ ] Test against dark background (`#1720c3` blue felt)
 - [ ] Optimize file size (TinyPNG or similar)
 - [ ] Place files in `/public/assets/`
-- [ ] Update CSS variables to enable new sprites
+- [ ] Ensure @2x versions match @1x layout exactly (just doubled)
 
 ---
 
 ## File Naming Convention
 
 ```
-[category]-[name].[ext]
+[category]-[name].[ext]          # 1× assets
+[category]-[name]@2x.[ext]       # 2× (retina) assets
 
 Examples:
-cardspritesheet.png     (card faces and back)
-aces-up.png            (ace track background)
-kings-down.png         (king track background)
-default-down.png       (traditional track background)
-empty.png              (empty track background)
-ace-badge.png          (ace column badge)
-king-badge.png         (king column badge)
-gameboardonly.png      (game board background)
+cardspritesheet.png              (card faces and back - 1×)
+cardspritesheet@2x.png           (card faces and back - 2×)
+mm-gameboard.png                 (game board background - 1×)
+mm-gameboard@2x.png              (game board background - 2×)
+aces-up.png                      (ace track background - 1×)
+aces-up@2x.png                   (ace track background - 2×)
+ace-badge.png                    (ace column badge - 1×)
+ace-badge@2x.png                 (ace column badge - 2×)
 ```
+
+**Note:** The `@2x` suffix is standard convention for retina/high-DPI assets. CSS and JS will automatically select the appropriate version based on device pixel ratio.
 
 ---
 
-*Document Version: 2.0*
+*Document Version: 2.1*
 *Created: 2026-01-23*
-*Last Updated: 2026-01-24*
-*Phase 5: Asset Independence*
+*Last Updated: 2026-01-28*
+*Phase 5: Asset Independence ✅ | Phase 6: High-DPI Support ✅*

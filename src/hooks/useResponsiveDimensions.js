@@ -102,12 +102,13 @@ const calculateCardWidthFromViewport = (viewportWidth, viewportHeight) => {
   // Height constraints will be added in Phase 3
   let cardWidth = Math.floor(cardWidthFromWidth);
 
-  // Enforce minimum
+  // Enforce minimum for touch usability
   if (cardWidth < MIN_CARD_WIDTH) {
     cardWidth = MIN_CARD_WIDTH;
   }
 
-  // Cap at base size (don't scale up beyond design size)
+  // Cap at base size - scaling beyond this is handled by CSS transform in useViewportScale
+  // This ensures the 1280×720 layout scales proportionally as a unit
   if (cardWidth > BASE_CARD_WIDTH) {
     cardWidth = BASE_CARD_WIDTH;
   }

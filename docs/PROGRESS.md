@@ -6,7 +6,49 @@ Meridian Solitaire is a unique card game implementation with dual foundation sys
 
 ---
 
-## Current Work
+## Completed Work
+
+### Responsive Scaling Enhancement (v2.1.0) - 2026-01-28 - COMPLETE
+
+**Objective:** Enable game to scale beyond 1280×720 base size and support high-DPI displays with 2× assets.
+
+**Problem Statement:**
+- Game capped at 1.0× scale, wasting space on large monitors (4K, ultrawide)
+- 80×112px card sprites appeared blurry on high-DPI displays
+
+**Solution Implemented:**
+
+**Phase 1: Remove Scale Cap**
+- Added `MAX_SCALE = 2.0` constant in `useViewportScale.js`
+- Game now scales proportionally up to 2560×1440
+- Container `transform: scale()` preserves exact 1280×720 layout
+
+**Phase 2: High-DPI Asset Support**
+- Created `useHighDPIAssets.js` hook for dynamic asset selection
+- Automatically selects @2x assets when `scale >= 1.25` or `DPR >= 2`
+- CSS `background-size: 1040px 560px` ensures @2x sprites render correctly
+- Graceful fallback to 1× assets if @2x files not present
+
+**Stock/Waste Pile Visual Improvements:**
+- Both piles now use same centered stacking model (deepest layer centered)
+- Stack rises up-left from center point
+- Waste pile z-index (200+) above stock pile (100+) for proper overlap
+- Count badges (z-index 220/130) sit above cards
+- Inverse visual relationship: stock shrinks as waste grows during play
+
+**Files Modified:**
+- `src/hooks/useViewportScale.js` - MAX_SCALE constant, DPR export
+- `src/hooks/useResponsiveDimensions.js` - MAX_CARD_WIDTH (160px)
+- `src/hooks/useHighDPIAssets.js` - New hook for asset selection
+- `src/components/StockWaste.jsx` - Centered stacking, z-index fixes
+- `src/styles/App.css` - background-size for @2x, relative asset paths
+- `src/App.jsx` - Integrated useHighDPIAssets hook
+
+**Assets Required (User Provided):**
+- `cardspritesheet@2x.png` (2080×1120px) ✅
+- `mm-gameboard@2x.png` (2560×1440px) ✅
+
+---
 
 ### Design System Overhaul (v2.0.0) - 2026-01-24 - COMPLETE
 

@@ -63,11 +63,12 @@
      =========================================== */
 
   /* Card sprite sheet - REQUIRED */
-  --sprite-url: url('/assets/cardspritesheet.png');
+  /* Use relative path (no leading slash) to work with Vite base URL config */
+  --sprite-url: url('assets/cardspritesheet.png');
 
   /* Game board backgrounds - OPTIONAL (CSS gradient used if not set) */
   --gamefield-url: none;
-  --gamestage-url: url('/assets/mm-gameboard.png');
+  --gamestage-url: url('assets/mm-gameboard.png');
 
   /* Track backgrounds - OPTIONAL (CSS gradients used if not set)
    * Uncomment to use custom track sprites:
@@ -274,6 +275,7 @@ header {
   height: 100%;  /* Changed from var(--play-area-h) for full-bleed layout */
   position: relative;
   background-image: var(--gamestage-url);
+  background-size: 100% 100%;  /* Scale background to fit container */
   background-repeat: no-repeat;
   background-color: var(--bg-felt);
   z-index: 1;
@@ -500,6 +502,9 @@ footer {
   width: var(--card-w);
   height: var(--card-h);
   background-image: var(--sprite-url);
+  /* Fixed background size ensures @2x sprites render at correct logical size */
+  /* 1040x560 = 13 columns × 80px × 5 rows × 112px (1× logical grid) */
+  background-size: 1040px 560px;
   position: absolute;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
@@ -632,6 +637,8 @@ footer {
   height: 100%;
   border-radius: var(--radius-md);
   background-image: var(--sprite-url);
+  /* Match .card background-size for consistent @2x rendering */
+  background-size: 1040px 560px;
   background-position: -480px -448px;
   z-index: 110;
   cursor: pointer;

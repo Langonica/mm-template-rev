@@ -7,11 +7,16 @@ const BASE_HEIGHT = 720;
 // Padding from viewport edges (in pixels)
 const VIEWPORT_PADDING = 16;
 
+// Maximum scale factor (2.0 = up to 2560x1440)
+// Set to 2.0 to match 2× asset resolution, prevents excessive blur beyond 2×
+const MAX_SCALE = 2.0;
+
 /**
  * Hook to calculate optimal scale for the game container based on viewport size.
  * Ensures the game fits within the viewport without cropping.
+ * Supports scaling up to MAX_SCALE for larger viewports (requires 2× assets).
  *
- * @returns {object} { scale, scaledWidth, scaledHeight }
+ * @returns {object} { scale, scaledWidth, scaledHeight, devicePixelRatio }
  */
 export const useViewportScale = () => {
   const calculateScale = useCallback(() => {
@@ -23,13 +28,14 @@ export const useViewportScale = () => {
     const scaleY = availableHeight / BASE_HEIGHT;
 
     // Use the smaller scale to ensure it fits both dimensions
-    // Cap at 1 to prevent scaling up beyond designed size
-    const scale = Math.min(scaleX, scaleY, 1);
+    // Cap at MAX_SCALE to prevent excessive blur beyond 2× asset resolution
+    const scale = Math.min(scaleX, scaleY, MAX_SCALE);
 
     return {
       scale: Math.round(scale * 1000) / 1000, // Round to 3 decimal places
       scaledWidth: Math.floor(BASE_WIDTH * scale),
       scaledHeight: Math.floor(BASE_HEIGHT * scale),
+      devicePixelRatio: window.devicePixelRatio || 1,
     };
   }, []);
 
