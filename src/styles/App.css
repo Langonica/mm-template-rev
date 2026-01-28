@@ -40,7 +40,8 @@
 
   /* Bottom zone (stock/waste/pockets) */
   --bottom-zone-top: 490px;     /* theater-top + track-h */
-  --controls-zone-top: 615px;   /* bottom-zone-top + card-h + padding */
+  /* bottom-zone-top + card-h + padding */
+  /* --controls-zone-top: 617px; */   
   --stock-waste-gap: 10px;      /* Gap between stock and waste */
   --waste-pocket-gap: 40px;     /* Gap between waste and pockets */
 
@@ -66,7 +67,7 @@
 
   /* Game board backgrounds - OPTIONAL (CSS gradient used if not set) */
   --gamefield-url: none;
-  --gamestage-url: none;
+  --gamestage-url: url('/assets/mm-gameboard.png');
 
   /* Track backgrounds - OPTIONAL (CSS gradients used if not set)
    * Uncomment to use custom track sprites:
@@ -291,7 +292,7 @@ footer {
   padding: 0 var(--spacing-5);
   z-index: 2000;
   position: relative;
-  border-top: var(--border-width-thin) solid var(--color-neutral-700);
+  /* border-top: var(--border-width-thin) solid var(--color-neutral-700); */
   flex-shrink: 0;
 }
 
@@ -333,7 +334,7 @@ footer {
 
 .f-top {
   top: var(--fnd-top);
-  border-bottom: var(--border-width-thin) solid var(--color-neutral-800);
+/*   border-bottom: var(--border-width-thin) solid var(--color-neutral-800); */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -342,7 +343,7 @@ footer {
 
 .f-bottom {
   top: var(--bottom-zone-top);
-  border-top: var(--border-width-thin) solid var(--color-neutral-800);
+  /* border-top: var(--border-width-thin) solid var(--color-neutral-800); */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -353,7 +354,8 @@ footer {
   position: absolute;
   left: 0;
   width: 100%;
-  top: var(--controls-zone-top);
+/*   top: var(--controls-zone-top); */
+  top: 630px;
   display: flex;
   justify-content: center;
   align-items: center;
