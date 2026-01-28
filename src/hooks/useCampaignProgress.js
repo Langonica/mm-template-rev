@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { validateCampaignProgress, safeParseAndValidate } from '../utils/storageValidation';
 
 const STORAGE_KEY = 'meridian-campaign-progress';
 
@@ -54,17 +55,26 @@ const getDefaultProgress = () => ({
   levels: {},
 });
 
-export const useCampaignProgress = () => {
+export const useCampaignProgress = (onError) => {
   const [progress, setProgress] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved);
+        // Parse and validate the stored data
+        const parseResult = safeParseAndValidate(saved, validateCampaignProgress);
+        
+        if (!parseResult.success) {
+          console.error('Campaign progress validation failed:', parseResult.error);
+          if (onError) onError('Campaign progress was corrupted and has been reset.');
+          return getDefaultProgress();
+        }
+        
         // Merge with defaults to handle new fields
-        return { ...getDefaultProgress(), ...parsed };
+        return { ...getDefaultProgress(), ...parseResult.data };
       }
     } catch (e) {
       console.error('Failed to load campaign progress:', e);
+      if (onError) onError('Failed to load campaign progress. Your level progress may have been reset.');
     }
     return getDefaultProgress();
   });
@@ -75,8 +85,9 @@ export const useCampaignProgress = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
     } catch (e) {
       console.error('Failed to save campaign progress:', e);
+      if (onError) onError('Failed to save campaign progress. Your level progress may not be preserved.');
     }
-  }, [progress]);
+  }, [progress, onError]);
 
   // Get level info by snapshot ID
   const getLevelBySnapshotId = useCallback((snapshotId) => {

@@ -2,9 +2,8 @@ import React, { useState } from 'react'
 import { 
   SNAPSHOT_CATEGORIES, 
   getSnapshotDisplayName,
-  getSnapshotDescription,
   getSnapshotCategory 
-} from '../utils/snapshotLoader'
+} from '../../utils/snapshotLoader'
 
 const SnapshotSelector = ({ selectedSnapshotId, onSnapshotChange, compact = false }) => {
   const [selectedCategory, setSelectedCategory] = useState('easy')

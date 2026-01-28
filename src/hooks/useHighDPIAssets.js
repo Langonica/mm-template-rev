@@ -48,25 +48,21 @@ export const useHighDPIAssets = (scale, devicePixelRatio) => {
     root.style.setProperty('--track-default', `url('${trackDefaultUrl}')`);
     root.style.setProperty('--track-empty', `url('${trackEmptyUrl}')`);
     
-    // Debug: Verify CSS variables were set
-    const computedSprite = getComputedStyle(root).getPropertyValue('--sprite-url').trim();
-    const computedBoard = getComputedStyle(root).getPropertyValue('--gamestage-url').trim();
-    
-    // Debug logging - always log in dev, helpful for troubleshooting
-    console.log('[useHighDPIAssets] DPR:', devicePixelRatio, 'Scale:', scale?.toFixed(2), 'Using @2x:', shouldUse2x);
-    console.log('[useHighDPIAssets] Card sprite set:', cardSpriteUrl, '| Computed:', computedSprite);
-    console.log('[useHighDPIAssets] Game board set:', gameBoardUrl, '| Computed:', computedBoard);
-    console.log('[useHighDPIAssets] Window width:', window.innerWidth, 'shouldUse2x logic:', {
-      dprCheck: devicePixelRatio >= 2,
-      scaleCheck: scale >= 1.25,
-      widthCheck: window.innerWidth >= 1920
-    });
-    
-    // Verify file exists by attempting to load it
-    if (shouldUse2x) {
-      fetch(cardSpriteUrl, { method: 'HEAD' })
-        .then(r => console.log('[useHighDPIAssets] Card sprite fetch:', r.status, r.ok ? '✅ EXISTS' : '❌ NOT FOUND'))
-        .catch(e => console.log('[useHighDPIAssets] Card sprite fetch error:', e.message));
+    // Debug logging - only in development
+    if (import.meta.env.DEV) {
+      const computedSprite = getComputedStyle(root).getPropertyValue('--sprite-url').trim();
+      const computedBoard = getComputedStyle(root).getPropertyValue('--gamestage-url').trim();
+      
+      console.log('[useHighDPIAssets] DPR:', devicePixelRatio, 'Scale:', scale?.toFixed(2), 'Using @2x:', shouldUse2x);
+      console.log('[useHighDPIAssets] Card sprite set:', cardSpriteUrl, '| Computed:', computedSprite);
+      console.log('[useHighDPIAssets] Game board set:', gameBoardUrl, '| Computed:', computedBoard);
+      
+      // Verify file exists by attempting to load it
+      if (shouldUse2x) {
+        fetch(cardSpriteUrl, { method: 'HEAD' })
+          .then(r => console.log('[useHighDPIAssets] Card sprite fetch:', r.status, r.ok ? '✅ EXISTS' : '❌ NOT FOUND'))
+          .catch(e => console.log('[useHighDPIAssets] Card sprite fetch error:', e.message));
+      }
     }
   }, [scale, devicePixelRatio]);
 

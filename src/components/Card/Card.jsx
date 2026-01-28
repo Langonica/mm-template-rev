@@ -1,5 +1,6 @@
 import React from 'react';
-import { getCardRotation } from '../utils/cardUtils';
+import { getCardRotation } from '../../utils/cardUtils';
+import styles from './Card.module.css';
 
 const Card = ({
   cardData,
@@ -31,40 +32,26 @@ const Card = ({
   }
 
   const cardStyle = {
-    backgroundImage: 'var(--sprite-url)',
     backgroundPosition: isBack 
       ? '-480px -448px'
       : `-${cardData.v * 80}px -${cardData.s * 112}px`,
-    width: '80px',
-    height: '112px',
-    position: 'absolute',
-    borderRadius: '6px',
-    boxShadow: isDragging 
-      ? '0 8px 20px rgba(0, 0, 0, 0.8)' 
-      : '0 4px 10px rgba(0, 0, 0, 0.5)',
-    zIndex: 110,
-    transition: isDragging ? 'none' : 'transform 0.2s, box-shadow 0.2s',
-    cursor: isDraggable && !isBack ? 'grab' : 'default',
-    opacity: isDragging ? 0.5 : 1,
-    // Touch-specific styles
-    touchAction: isDraggable && !isBack ? 'none' : 'auto',
-    userSelect: 'none',
-    WebkitUserSelect: 'none',
-    WebkitTouchCallout: 'none',
     ...style
   };
 
-  // Apply rotation if in fun mode
-  if (config.isFun && rotation !== 0) {
-    cardStyle.transform = `rotate(${rotation}deg)`;
-  }
+  // Build className
+  const cardClassName = [
+    styles.card,
+    isDragging && styles.dragging,
+    isValidDropTarget && styles.validDropTarget,
+    className
+  ].filter(Boolean).join(' ');
 
   const handleMouseEnter = (e) => {
     if (!isDraggable || isBack || isDragging) return;
 
     const currentTransform = e.currentTarget.style.transform || '';
     e.currentTarget.style.transform = `${currentTransform} translateY(-5px) scale(1.05)`;
-    e.currentTarget.style.zIndex = '600';
+    e.currentTarget.style.zIndex = 'var(--z-card-hover)';
   };
 
   const handleMouseLeave = (e) => {
@@ -76,15 +63,11 @@ const Card = ({
     } else {
       e.currentTarget.style.transform = '';
     }
-    e.currentTarget.style.zIndex = style.zIndex || '110';
+    e.currentTarget.style.zIndex = style.zIndex || 'calc(var(--z-cards) + 10)';
   };
 
   const handleDragStartInternal = (e) => {
-    console.log(`Drag start attempt: ${cardStr}, isDraggable=${isDraggable}, isBack=${isBack}`);
-    console.log(`Location:`, location);
-
     if (!isDraggable || isBack) {
-      console.log(`Drag blocked: isDraggable=${isDraggable}, isBack=${isBack}`);
       e.preventDefault();
       return;
     }
@@ -102,7 +85,7 @@ const Card = ({
     dragImage.style.width = '80px';
     dragImage.style.height = '112px';
     dragImage.style.position = 'absolute';
-    dragImage.style.top = '-1000px'; // Position off-screen to avoid flash
+    dragImage.style.top = '-1000px';
     document.body.appendChild(dragImage);
     e.dataTransfer.setDragImage(dragImage, 40, 56);
     setTimeout(() => {
@@ -116,7 +99,6 @@ const Card = ({
 
     // Callback to parent
     if (onDragStart) {
-      console.log(`Calling onDragStart callback`);
       onDragStart(cardStr, location);
     }
   };
@@ -140,7 +122,7 @@ const Card = ({
     }
   };
 
-  // Touch event handlers - always enabled since touch events only fire on actual touch
+  // Touch event handlers
   const handleTouchStartInternal = (e) => {
     if (!isDraggable || isBack) return;
 
@@ -171,7 +153,6 @@ const Card = ({
     }
   };
 
-  // Handle drag over - allow drops if this card is a valid target
   const handleDragOverInternal = (e) => {
     if (isValidDropTarget) {
       e.preventDefault();
@@ -182,11 +163,9 @@ const Card = ({
     }
   };
 
-  // Handle drop on this card
   const handleDropInternal = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log(`🃏 Drop on card ${cardStr}, isValidDropTarget=${isValidDropTarget}`);
     if (onDropCard && isValidDropTarget) {
       onDropCard(e, location);
     }
@@ -194,7 +173,7 @@ const Card = ({
 
   return (
     <div
-      className={`card ${className}`.trim()}
+      className={cardClassName}
       data-value={cardData.value}
       data-suit={cardData.suit}
       data-color={cardData.color}

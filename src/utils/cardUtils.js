@@ -154,12 +154,6 @@ export function isValidSequence(cards, columnType = 'traditional') {
     
     const canStack = canStackCards(current, next, columnType);
     if (!canStack) {
-      console.log(`Invalid sequence at position ${i}:`, {
-        current: cards[i],
-        next: cards[i + 1],
-        columnType,
-        reason: 'canStackCards returned false'
-      });
       return false;
     }
   }
@@ -275,9 +269,7 @@ export function isCardAccessible(cardStr, location, gameState) {
     case 'waste':
       // Only top card is accessible
       const wasteLength = gameState.waste?.length || 0;
-      const isTopWaste = location.index === wasteLength - 1;
-      console.log(`Waste accessibility: index=${location.index}, wasteLength=${wasteLength}, isTop=${isTopWaste}`);
-      return isTopWaste;
+      return location.index === wasteLength - 1;
       
     case 'pocket':
       // Card in pocket is always accessible
@@ -297,7 +289,6 @@ export function isCardAccessible(cardStr, location, gameState) {
       
       // Card must be face-up
       if (location.index < faceDownCount) {
-        console.log(`Card ${cardStr} not accessible: face-down (index ${location.index} < ${faceDownCount})`);
         return false;
       }
       
@@ -305,16 +296,7 @@ export function isCardAccessible(cardStr, location, gameState) {
       const cardsAbove = column.slice(location.index);
       const columnType = gameState.columnState?.types?.[location.column] || 'traditional';
       
-      const isValid = isValidSequence(cardsAbove, columnType);
-      console.log(`Card ${cardStr} accessible check:`, {
-        column: location.column,
-        index: location.index,
-        cardsAbove,
-        columnType,
-        isValid
-      });
-      
-      return isValid;
+      return isValidSequence(cardsAbove, columnType);
       
     default:
       return false;
@@ -333,4 +315,38 @@ export function getMovingCards(cardStr, location, gameState) {
   const cards = column.slice(location.index);
   
   return cards;
+}
+
+
+// ============================================================================
+// DEEP CLONE UTILITY (Performance Optimization - Phase 1)
+// ============================================================================
+
+/**
+ * Deep clone an object using the fastest available method
+ * Uses structuredClone (native) when available, falls back to JSON.parse/stringify
+ * 
+ * structuredClone is ~2-3x faster than JSON.parse/stringify and handles:
+ * - undefined values
+ * - Date objects
+ * - Map, Set, ArrayBuffer
+ * - circular references (throws rather than crashing)
+ * 
+ * @param {*} obj - Object to clone
+ * @returns {*} Deep cloned object
+ */
+export function deepClone(obj) {
+  // Use native structuredClone if available (modern browsers)
+  if (typeof structuredClone === 'function') {
+    try {
+      return structuredClone(obj);
+    } catch (e) {
+      // structuredClone throws on circular references or functions
+      // Fall through to JSON method
+    }
+  }
+  
+  // Fallback to JSON.parse/stringify for older browsers
+  // Note: This doesn't handle undefined, Date, Map, Set, or circular references
+  return JSON.parse(JSON.stringify(obj));
 }

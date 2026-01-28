@@ -205,7 +205,7 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 0 var(--spacing-5);
-  z-index: 2000;
+  z-index: var(--z-modal-backdrop);
   position: relative;
   border-bottom: var(--border-width-thin) solid var(--color-neutral-700);
   box-sizing: border-box;
@@ -278,7 +278,7 @@ header {
   background-size: 100% 100%;  /* Scale background to fit container */
   background-repeat: no-repeat;
   background-color: var(--bg-felt);
-  z-index: 1;
+  z-index: var(--z-game-base);
   flex: 1;
   overflow: hidden;
 }
@@ -330,7 +330,7 @@ footer {
   width: 100%;
   height: var(--fnd-height);
 /*   background: var(--bg-deep); */
-  z-index: 100;
+  z-index: var(--z-cards);
   box-sizing: border-box;
 }
 
@@ -362,7 +362,7 @@ footer {
   justify-content: center;
   align-items: center;
   gap: 24px;
-  z-index: 150;
+  z-index: calc(var(--z-controls) - 650);
 }
 
 /* ===== TABLEAU COLUMNS (TRACKS) ===== */
@@ -382,7 +382,7 @@ footer {
   border-radius: var(--radius-lg);
   background: var(--track-grad-neutral);
   border: var(--border-width-thin) solid var(--bg-overlay-light);
-  z-index: 2;
+  z-index: var(--z-plinths);
   box-sizing: border-box;
   /* Sprite overlay (if set) */
   background-size: 100% 100%;
@@ -508,14 +508,14 @@ footer {
   position: absolute;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
-  z-index: 110;
+  z-index: calc(var(--z-cards) + 10);
   transition: var(--transition-normal);
   cursor: pointer;
 }
 
 .card:hover {
   transform: translateY(-5px) scale(1.05);
-  z-index: 600 !important;
+  z-index: var(--z-card-hover) !important;
 }
 
 /* ===== BUTTONS ===== */
@@ -648,7 +648,7 @@ footer {
 
 .stock-top-card:hover {
   transform: translateY(-5px) scale(1.05);
-  z-index: 600;
+  z-index: var(--z-card-hover);
 }
 
 .waste-pile {
@@ -765,11 +765,11 @@ header select option {
 
 /* Ensure dropdowns appear above game */
 header {
-  z-index: 3000;
+  z-index: var(--z-overlay);
 }
 
 header select {
-  z-index: 3001;
+  z-index: calc(var(--z-overlay) + 1);
   position: relative;
 }
 
@@ -993,7 +993,7 @@ header select {
   justify-content: center;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
-  z-index: 120;
+  z-index: calc(var(--z-count-badges) - 380);
   border: var(--border-width-medium) solid var(--bg-surface);
   box-shadow: var(--shadow-sm);
   transition: var(--transition-normal);
@@ -1042,7 +1042,7 @@ header select {
   font-size: 10px;
   font-weight: bold;
   border: 2px solid #1a1a1a;
-  z-index: 1000;
+  z-index: var(--z-overlay);
 }
 
 /* Accessibility - Focus states */
@@ -1203,7 +1203,7 @@ header select {
   background: radial-gradient(circle, rgba(33, 150, 243, 0.3), transparent);
   animation: press-pulse 0.15s ease-out;
   pointer-events: none;
-  z-index: 9998;
+  z-index: var(--z-touch-drag);
 }
 
 @keyframes press-pulse {
@@ -1227,7 +1227,7 @@ header select {
   padding: var(--spacing-2) var(--spacing-4);
   border-radius: var(--radius-lg);
   font-size: var(--font-size-sm);
-  z-index: 9999;
+  z-index: var(--z-tooltip);
   animation: fadeIn var(--duration-slow) ease-out;
 }
 
@@ -1344,7 +1344,7 @@ header select {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 10000;
+  z-index: var(--z-overlay);
   animation: fadeIn var(--duration-slower) ease-out;
 }
 
@@ -1769,7 +1769,7 @@ header select {
 /* ===== SLURP ANIMATION (Card being sucked in) ===== */
 .card.slurping {
   animation: card-slurp 300ms ease-in forwards;
-  z-index: 1000 !important;
+  z-index: var(--z-overlay) !important;
 }
 
 @keyframes card-slurp {
@@ -1923,7 +1923,7 @@ header select {
 /* Pop animation for cards arriving at foundation */
 .card.foundation-popping {
   animation: foundation-pop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  z-index: 200 !important;
+  z-index: calc(var(--z-card-hover) - 400) !important;
 }
 
 @keyframes foundation-pop {
@@ -1966,7 +1966,7 @@ header select {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 15000;
+  z-index: var(--z-notification);
   animation: fadeIn 0.2s ease;
 }
 

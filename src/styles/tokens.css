@@ -220,16 +220,56 @@
 
   /* ========================================
      Z-INDEX SCALE
+     ========================================
+     
+     Game-Specific Layers (0-999):
+     --z-game-base:     Game board background, tracks
+     --z-plinths:       Column plinths
+     --z-cards:         Cards on tableau/foundations
+     --z-card-hover:    Hovered cards (lifted)
+     --z-stock-waste:   Stock/waste pile depth layers
+     --z-foundations:   Foundation pile depth layers
+     --z-count-badges:  Card count badges
+     --z-drag-ghost:    Drag ghost image
+     --z-portal:        Portal animations
+     --z-controls:      Game controls
+     
+     UI Layers (1000-4999):
+     --z-dropdown:      Dropdown menus
+     --z-modal-backdrop: Modal backdrops
+     --z-modal:         Modals
+     --z-overlay:       Pause/game over overlays
+     --z-notification:  Toast notifications
+     --z-tooltip:       Tooltips
+     
+     System Layers (5000+):
+     --z-touch-drag:    Touch drag element (highest)
+     --z-orientation:   Orientation blocker
      ======================================== */
 
-  --z-base: 0;
-  --z-dropdown: 100;
-  --z-sticky: 200;
-  --z-fixed: 300;
-  --z-modal-backdrop: 400;
-  --z-modal: 500;
-  --z-popover: 600;
-  --z-tooltip: 700;
+  /* Game Layer */
+  --z-game-base: 0;
+  --z-plinths: 5;
+  --z-cards: 100;
+  --z-card-hover: 200;
+  --z-stock-waste: 300;
+  --z-foundations: 400;
+  --z-count-badges: 500;
+  --z-drag-ghost: 600;
+  --z-portal: 700;
+  --z-controls: 800;
+  
+  /* UI Layer */
+  --z-dropdown: 1000;
+  --z-modal-backdrop: 2000;
+  --z-modal: 2100;
+  --z-overlay: 3000;
+  --z-notification: 4000;
+  --z-tooltip: 4500;
+  
+  /* System Layer */
+  --z-touch-drag: 5000;
+  --z-orientation: 6000;
 
   /* ========================================
      COMPONENT-SPECIFIC TOKENS

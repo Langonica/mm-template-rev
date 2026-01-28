@@ -1,9 +1,9 @@
 import React from 'react';
-import Column from './Column';
-import StockWaste from './StockWaste';
-import Foundation from './Foundation';
-import GameControls from './GameControls';
-import GameStats from './GameStats';
+import Column from '../Column/Column';
+import StockWaste from '../StockWaste/StockWaste';
+import Foundation from '../Foundation/Foundation';
+import GameControls from '../GameControls';
+import GameStats from '../GameStats';
 
 const GameStage = ({
   snapshot,

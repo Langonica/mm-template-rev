@@ -9,7 +9,7 @@ import {
   getGameStatus,
   getAvailableMoves
 } from '../utils/gameLogic';
-import { findCardLocation, parseCard, canPlaceOnFoundation } from '../utils/cardUtils';
+import { findCardLocation, parseCard, canPlaceOnFoundation, deepClone } from '../utils/cardUtils';
 
 export const useCardGame = () => {
   const [config, setConfig] = useState({
@@ -72,8 +72,6 @@ export const useCardGame = () => {
       mode: snapshot.metadata.mode,
       variant: snapshot.metadata.variant,
     }));
-    
-    console.log(`Loaded snapshot: ${snapshot.metadata.name}`);
   }, [undoSystem]);
 
   // Load a game state directly (for random deals)
@@ -113,8 +111,6 @@ export const useCardGame = () => {
       mode: gameStateData.metadata?.mode || prev.mode,
       variant: gameStateData.metadata?.variant || prev.variant,
     }));
-
-    console.log(`Loaded game: ${gameStateData.metadata?.name || 'Random Deal'}`);
   }, [undoSystem]);
   
   const setMode = useCallback((mode) => {
@@ -148,7 +144,8 @@ export const useCardGame = () => {
     if (!gameState) return;
     
     // Save state for undo
-    const previousState = JSON.parse(JSON.stringify(gameState));
+    // Uses structuredClone when available for better performance (Phase 1)
+    const previousState = deepClone(gameState);
     
     if (currentStockCards.length === 0) {
       // Recycle waste to stock
@@ -211,7 +208,7 @@ export const useCardGame = () => {
     }
 
     // Save state for undo BEFORE executing move
-    const previousState = JSON.parse(JSON.stringify(gameState));
+    const previousState = deepClone(gameState);
 
     const newState = executeMove(cardStr, target, gameState);
 
@@ -442,15 +439,6 @@ export const useCardGame = () => {
   const availableMoves = useMemo(() => {
     return getAvailableMoves(gameState);
   }, [gameState]);
-
-  // Log game status changes
-  useEffect(() => {
-    if (gameStatus.status === 'won') {
-      console.log('GAME WON!');
-    } else if (gameStatus.status === 'stalemate') {
-      console.log('STALEMATE - No moves available');
-    }
-  }, [gameStatus.status]);
 
   return {
     config,

@@ -1,6 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Card from './Card';
-import { parseCard, getColumnType, getColumnTypeName } from '../utils/cardUtils';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import Card from '../Card/Card';
+import { parseCard, getColumnType, getColumnTypeName } from '../../utils/cardUtils';
+
+// CSS-derived constants for card positioning
+// These match the CSS custom properties in App.css
+const CARD_HEIGHT = 112;
+const TRACK_HEIGHT = 290;
+const THEATER_TOP = 190;
+const OVERLAP = 16;
+const CARD_WIDTH = 80;
+const GAP = 20;
+const START_X = 300;
 
 const Column = ({
   columnIndex,
@@ -24,8 +34,21 @@ const Column = ({
   const [portalFlash, setPortalFlash] = useState(false);
   const [poppingCard, setPoppingCard] = useState(null);
   const [slurpingCard, setSlurpingCard] = useState(null); // Card being slurped into portal
-  const prevCardsLengthRef = useRef(cards.length);
   const prevWasEmptyRef = useRef(cards.length === 0);
+
+  // Pre-calculate positioning values based on column type
+  // This avoids calling getComputedStyle in the render loop (Performance fix - Phase 1)
+  const positioning = useMemo(() => {
+    const trackBottom = THEATER_TOP + TRACK_HEIGHT;
+    const plinthHeight = 20;
+    const minTop = THEATER_TOP + plinthHeight;
+    
+    return {
+      trackBottom,
+      minTop,
+      theaterTop: THEATER_TOP
+    };
+  }, []);
 
   // Detect when a card lands via portal (empty column received a card)
   useEffect(() => {
@@ -65,13 +88,8 @@ const Column = ({
     columnTypeName = getColumnTypeName(columnType);
   }
   
-  const overlap = 16;
-  const cardWidth = 80;
-  const gap = 20;
-  
   // Calculate centered position for tableau
-  const startX = 300;
-  const left = startX + (columnIndex * (cardWidth + gap));
+  const left = START_X + (columnIndex * (CARD_WIDTH + GAP));
   
   // Check if this column is a valid drop target
   const isValid = isValidTarget({ type: 'tableau', column: columnIndex });
@@ -144,7 +162,7 @@ const Column = ({
             height: 'var(--track-h)',
             borderRadius: '8px',
             background: 'transparent',
-            zIndex: 100,
+            zIndex: 'var(--z-cards)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -174,7 +192,7 @@ const Column = ({
               textShadow: isValid ? '0 0 10px rgba(76, 175, 80, 0.5)' : 'none',
               whiteSpace: 'nowrap',
               transition: 'all 0.3s ease',
-              zIndex: 10
+              zIndex: 'calc(var(--z-game-base) + 10)',
             }}>
               {isValid ? 'DROP' : 'A / K'}
             </span>
@@ -194,7 +212,7 @@ const Column = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 500,
+            zIndex: 'var(--z-portal)',
             pointerEvents: 'none'
           }}
         >
@@ -222,7 +240,7 @@ const Column = ({
               borderRadius: '6px',
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.8)',
               animation: 'card-slurp 300ms ease-in forwards',
-              zIndex: 501
+              zIndex: 'calc(var(--z-portal) + 1)'
             }}
           />
         </div>
@@ -249,28 +267,19 @@ const Column = ({
         }
         
         // Calculate card position based on column type
+        // Uses pre-calculated positioning values (Performance fix - Phase 1)
         let cardTop;
         if (columnType === 'ace') {
           // For Ace columns: Start from bottom of track and build upward
-          // Read CSS variables from the DOM
-          const trackHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--track-h'));
-          const cardHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-h'));
-          const trackTop = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--theater-top'));
-
-          const trackBottom = trackTop + trackHeight;
           const positionFromBottom = index;
+          cardTop = positioning.trackBottom - CARD_HEIGHT - (positionFromBottom * OVERLAP);
 
-          cardTop = trackBottom - cardHeight - (positionFromBottom * overlap);
-
-          const plinthHeight = 20;
-          const minTop = trackTop + plinthHeight;
-          if (cardTop < minTop) {
-            cardTop = minTop;
+          if (cardTop < positioning.minTop) {
+            cardTop = positioning.minTop;
           }
         } else {
           // For King/Traditional columns: normal top-down stacking
-          const trackTop = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--theater-top'));
-          cardTop = trackTop + (index * overlap);
+          cardTop = positioning.theaterTop + (index * OVERLAP);
         }
         
         const cardStyle = {
@@ -289,7 +298,6 @@ const Column = ({
 
         // Handle drop on card - forward to column drop handler
         const handleCardDrop = (e, cardLocation) => {
-          console.log(`🎴 Card drop forwarded to column ${columnIndex}`);
           if (onDrop) {
             onDrop({ type: 'tableau', column: columnIndex });
           }

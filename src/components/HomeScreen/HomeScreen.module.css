@@ -13,7 +13,7 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(180deg, #0a1a0a 0%, #001a00 50%, #000 100%);
-  z-index: 5000;
+  z-index: var(--z-modal);
   padding: var(--spacing-xl);
   overflow-y: auto;
 }

@@ -1,6 +1,7 @@
 import React from 'react';
-import Card from './Card';
-import { parseCard } from '../utils/cardUtils';
+import Card from '../Card/Card';
+import CountBadge from '../CountBadge';
+import { parseCard } from '../../utils/cardUtils';
 
 const Foundation = ({
   zone,
@@ -123,7 +124,7 @@ const Foundation = ({
               color: 'rgba(255, 255, 255, 0.4)',
               textShadow: '0 1px 2px rgba(0,0,0,0.5)',
               pointerEvents: 'none',
-              zIndex: 1
+              zIndex: 'var(--z-game-base)'
             }}>
               {isDownFoundation ? '↓6' : '↑7'}
             </div>
@@ -141,7 +142,7 @@ const Foundation = ({
                   height: 'var(--card-h)',
                   transform: 'scale(var(--fnd-card-scale))',
                   transformOrigin: 'top left',
-                  zIndex: 300 - i,
+                  zIndex: `calc(var(--z-foundations) - ${i})`,
                   opacity: `${0.6 - (i * 0.1)}`,
                   borderRadius: '6px',
                   background: 'rgba(255, 255, 255, 0.03)',
@@ -162,7 +163,7 @@ const Foundation = ({
                 height: 'var(--card-h)',
                 transform: 'scale(var(--fnd-card-scale))',
                 transformOrigin: 'top left',
-                zIndex: 310
+                zIndex: 'calc(var(--z-foundations) + 10)'
               }}>
                 <Card
                   cardData={parseCard(topCard)}
@@ -173,7 +174,6 @@ const Foundation = ({
                   onDragStart={onDragStart}
                   onDragEnd={onDragEnd}
                   onDropCard={(e) => {
-                    console.log(`Foundation card drop forwarded: zone=${zone}, suit=${suit}`);
                     if (onDrop) {
                       onDrop({ type: 'foundation', zone, suit });
                     }
@@ -205,31 +205,10 @@ const Foundation = ({
             )}
             
             {/* Card count indicator for non-empty foundations */}
-            {foundationCards.length > 0 && (
-              <div style={{
-                position: 'absolute',
-                bottom: '-6px',
-                right: '-6px',
-                background: isDownFoundation
-                  ? 'rgba(158, 158, 158, 0.9)'
-                  : 'rgba(255, 193, 7, 0.9)',
-                color: 'white',
-                borderRadius: '50%',
-                width: '16px',
-                height: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '9px',
-                fontWeight: 'bold',
-                // Above foundation stack (z-index 310)
-                zIndex: 320,
-                border: '1px solid #1a1a1a',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
-              }}>
-                {foundationCards.length}
-              </div>
-            )}
+            <CountBadge 
+              count={foundationCards.length} 
+              variant={isDownFoundation ? 'foundation-down' : 'foundation-up'} 
+            />
           </div>
         );
       })}

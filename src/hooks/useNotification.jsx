@@ -116,7 +116,7 @@ export const Notification = ({ notification, onClose }) => {
         top: '80px',
         left: '50%',
         transform: 'translateX(-50%)',
-        zIndex: 10000,
+        zIndex: 'var(--z-notification)',
         background: style.background,
         color: style.color,
         padding: '12px 20px',

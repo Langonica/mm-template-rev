@@ -1,6 +1,7 @@
 import React from 'react';
-import Card from './Card';
-import { parseCard, getCardRotation } from '../utils/cardUtils';
+import Card from '../Card/Card';
+import CountBadge from '../CountBadge';
+import { parseCard, getCardRotation } from '../../utils/cardUtils';
 
 const StockWaste = ({
   snapshot,
@@ -139,7 +140,7 @@ const StockWaste = ({
                   left: `${(i - (stockDepthLayers - 1)) * 2}px`,
                   width: '100%',
                   height: '100%',
-                  zIndex: 100 - i,
+                  zIndex: `calc(var(--z-stock-waste) - 200 - ${i})`,
                   opacity: `${0.8 - (i * 0.15)}`,
                   transform: config.isFun 
                     ? `rotate(${getDepthLayerRotation(i, true)}deg)`
@@ -165,7 +166,7 @@ const StockWaste = ({
                 left: `${-(stockDepthLayers - 1) * 2}px`,
                 width: '100%',
                 height: '100%',
-                zIndex: 110,
+                zIndex: 'calc(var(--z-stock-waste) - 190)',
                 cursor: 'pointer',
                 backgroundImage: 'var(--sprite-url)',
                 backgroundPosition: '-480px -448px',
@@ -182,42 +183,20 @@ const StockWaste = ({
                   ? `rotate(${getCardRotation("stock-back", config.rotationSeed)}deg) `
                   : '';
                 e.currentTarget.style.transform = `${currentRotation}translateY(-5px) scale(1.05)`;
-                e.currentTarget.style.zIndex = '600';
+                e.currentTarget.style.zIndex = 'var(--z-card-hover)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = config.isFun 
                   ? `rotate(${getCardRotation("stock-back", config.rotationSeed)}deg)`
                   : '';
-                e.currentTarget.style.zIndex = '110';
+                e.currentTarget.style.zIndex = 'calc(var(--z-stock-waste) - 190)';
               }}
             />
           </div>
         )}
         
         {/* Card count badge */}
-        {currentStockCards.length > 0 && (
-          <div style={{
-            position: 'absolute',
-            bottom: '-8px',
-            right: '-8px',
-            background: 'rgba(33, 150, 243, 0.9)',
-            color: 'white',
-            borderRadius: '50%',
-            width: '24px',
-            height: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '11px',
-            fontWeight: 'bold',
-            // Above stock pile card (z-index 110)
-            zIndex: 130,
-            border: '2px solid #1a1a1a',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
-          }}>
-            {currentStockCards.length}
-          </div>
-        )}
+        <CountBadge count={currentStockCards.length} variant="stock" />
       </div>
       
       {/* Waste Pile */}
@@ -252,7 +231,7 @@ const StockWaste = ({
                     width: '100%',
                     height: '100%',
                     // Waste pile z-index above stock pile (200 range vs 100 range)
-                    zIndex: 200 - i,
+                    zIndex: `calc(var(--z-stock-waste) - 100 - ${i})`,
                     opacity: `${0.7 - (i * 0.15)}`,
                     transform: config.isFun 
                       ? `rotate(${getDepthLayerRotation(i, false)}deg)`
@@ -289,7 +268,7 @@ const StockWaste = ({
                     top: -(wasteDepthLayers - 1) * 2,
                     left: -(wasteDepthLayers - 1) * 2,
                     // Waste pile z-index above stock pile
-                    zIndex: 210
+                    zIndex: 'calc(var(--z-stock-waste) + 10)'
                   }}
                 />
               )}
@@ -298,29 +277,7 @@ const StockWaste = ({
         </div>
         
         {/* Waste count badge */}
-        {currentWasteCards.length > 1 && (
-          <div style={{
-            position: 'absolute',
-            bottom: '-8px',
-            right: '-8px',
-            background: 'rgba(156, 39, 176, 0.9)',
-            color: 'white',
-            borderRadius: '50%',
-            width: '24px',
-            height: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '11px',
-            fontWeight: 'bold',
-            // Above waste pile card (z-index 210)
-            zIndex: 220,
-            border: '2px solid #1a1a1a',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
-          }}>
-            {currentWasteCards.length}
-          </div>
-        )}
+        <CountBadge count={currentWasteCards.length > 1 ? currentWasteCards.length : 0} variant="waste" />
       </div>
 
       {controls && controls}

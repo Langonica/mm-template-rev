@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { validateStats, safeParseAndValidate } from '../utils/storageValidation';
 
 const STORAGE_KEY = 'meridian_solitaire_stats';
 
@@ -29,12 +30,21 @@ const MODE_MIGRATION = {
   expert: 'hidden_double'
 };
 
-// Load stats from localStorage
-const loadStats = () => {
+// Load stats from localStorage with validation
+const loadStats = (onError) => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-      const parsed = JSON.parse(stored);
+      // Parse and validate the stored data
+      const parseResult = safeParseAndValidate(stored, validateStats);
+      
+      if (!parseResult.success) {
+        console.error('Stats validation failed:', parseResult.error);
+        if (onError) onError('Game statistics were corrupted and have been reset.');
+        return { ...DEFAULT_STATS };
+      }
+      
+      const parsed = parseResult.data;
 
       // Migrate old mode names to new ones
       const migratedByMode = { ...DEFAULT_STATS.byMode };
@@ -74,21 +84,23 @@ const loadStats = () => {
     }
   } catch (e) {
     console.error('Failed to load stats:', e);
+    if (onError) onError('Failed to load game statistics. Your progress may have been reset.');
   }
   return { ...DEFAULT_STATS };
 };
 
 // Save stats to localStorage
-const saveStats = (stats) => {
+const saveStats = (stats, onError) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
   } catch (e) {
     console.error('Failed to save stats:', e);
+    if (onError) onError('Failed to save game statistics. Your progress may not be preserved.');
   }
 };
 
-export const useGameStats = () => {
-  const [stats, setStats] = useState(loadStats);
+export const useGameStats = (onError) => {
+  const [stats, setStats] = useState(() => loadStats(onError));
   const gameStartTimeRef = useRef(null);
   const [currentGameTime, setCurrentGameTime] = useState(0);
   const timerIntervalRef = useRef(null);
@@ -220,7 +232,7 @@ export const useGameStats = () => {
       }
 
       // Save to localStorage
-      saveStats(newStats);
+      saveStats(newStats, onError);
 
       return newStats;
     });
@@ -231,7 +243,7 @@ export const useGameStats = () => {
       moves,
       won
     };
-  }, [getGameDuration, stopTimer]);
+  }, [getGameDuration, stopTimer, onError]);
 
   // Record a forfeit (abandoned game)
   const recordForfeit = useCallback((moves, mode) => {
@@ -258,23 +270,23 @@ export const useGameStats = () => {
       }
 
       // Save to localStorage
-      saveStats(newStats);
+      saveStats(newStats, onError);
 
       return newStats;
     });
 
     return { duration, moves, forfeited: true };
-  }, [getGameDuration, stopTimer]);
+  }, [getGameDuration, stopTimer, onError]);
 
   // Reset all stats
   const resetStats = useCallback(() => {
     const freshStats = { ...DEFAULT_STATS };
     setStats(freshStats);
-    saveStats(freshStats);
+    saveStats(freshStats, onError);
     gameStartTimeRef.current = null;
     setCurrentGameTime(0);
     stopTimer();
-  }, [stopTimer]);
+  }, [stopTimer, onError]);
 
   // Calculate derived stats
   const getWinRate = useCallback(() => {

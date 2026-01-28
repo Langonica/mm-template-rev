@@ -1,0 +1,50 @@
+/* CountBadge Component Styles */
+
+.badge {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  z-index: var(--z-count-badges);
+  border: 2px solid #1a1a1a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-family: var(--font-family, 'Segoe UI', sans-serif);
+}
+
+/* Variant: Stock (Blue) */
+.stock {
+  background: rgba(33, 150, 243, 0.9);
+}
+
+/* Variant: Waste (Purple) */
+.waste {
+  background: rgba(156, 39, 176, 0.9);
+}
+
+/* Variant: Foundation UP (Gold) */
+.foundationUp {
+  width: 16px;
+  height: 16px;
+  font-size: 9px;
+  bottom: -6px;
+  right: -6px;
+  background: rgba(255, 193, 7, 0.9);
+}
+
+/* Variant: Foundation DOWN (Silver) */
+.foundationDown {
+  width: 16px;
+  height: 16px;
+  font-size: 9px;
+  bottom: -6px;
+  right: -6px;
+  background: rgba(158, 158, 158, 0.9);
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import GameStage from './components/GameStage'
+import GameStage from './components/GameStage/GameStage'
 import GameMenu from './components/GameMenu'
 import ConfirmDialog from './components/ConfirmDialog'
 import StatsModal from './components/StatsModal'
@@ -13,7 +13,6 @@ import { useCardGame } from './hooks/useCardGame'
 import { useGameStats } from './hooks/useGameStats'
 import { useCampaignProgress } from './hooks/useCampaignProgress'
 import { useViewportScale } from './hooks/useViewportScale'
-import { useResponsiveDimensions } from './hooks/useResponsiveDimensions'
 import { useHighDPIAssets } from './hooks/useHighDPIAssets'
 import { useNotification, Notification, NOTIFICATION_MESSAGES } from './hooks/useNotification.jsx'
 import { generateRandomDeal, getGameModes } from './utils/dealGenerator'
@@ -73,7 +72,7 @@ function App() {
     resumeTimer,
     getWinRate,
     formatTime
-  } = useGameStats()
+  } = useGameStats(showError)
 
   const {
     progress: campaignProgress,
@@ -87,15 +86,11 @@ function App() {
     getTierProgress,
     getCampaignProgress,
     resetProgress: resetCampaignProgress,
-  } = useCampaignProgress()
+  } = useCampaignProgress(showError)
 
   // Dynamic viewport scaling - ensures game fits without cropping
   // Now supports scaling up to 2× for larger viewports (requires 2× assets)
   const { scale, scaledWidth, scaledHeight, devicePixelRatio } = useViewportScale()
-
-  // Responsive dimensions - updates CSS variables based on viewport
-  // Currently runs alongside useViewportScale; will replace it in Phase 4
-  const responsiveDimensions = useResponsiveDimensions()
 
   // High-DPI asset loading - selects @2x sprites on Retina/high-DPI displays
   useHighDPIAssets(scale, devicePixelRatio)
@@ -110,6 +105,10 @@ function App() {
   const [lastGameResult, setLastGameResult] = useState(null) // Stores result for game-over display
   const [currentCampaignLevel, setCurrentCampaignLevel] = useState(null) // Track active campaign level
   const gameEndedRef = useRef(false) // Prevent double-recording
+  
+  // Refs for stats values to avoid excessive useEffect dependencies (Performance fix - Phase 1)
+  const statsRef = useRef(stats)
+  statsRef.current = stats
 
   // Mode options for GameMenu
   const GAME_MODES = getGameModes()
@@ -400,6 +399,7 @@ function App() {
   }, [currentSnapshot, moveCount, recordGameStart])
 
   // Record game end when status changes to won or stalemate
+  // Uses statsRef to avoid excessive dependencies (Performance fix - Phase 1)
   useEffect(() => {
     if (gameStatus?.isGameOver && !gameEndedRef.current) {
       gameEndedRef.current = true
@@ -411,20 +411,21 @@ function App() {
         recordCampaignCompletion(currentCampaignLevel.id, moveCount, result.duration)
       }
 
-      // Calculate if this is a new personal best
-      const isNewBestMoves = won && (stats.bestWinMoves === null || moveCount < stats.bestWinMoves || moveCount === stats.bestWinMoves)
-      const isNewBestTime = won && (stats.bestWinTime === null || result.duration < stats.bestWinTime || result.duration === stats.bestWinTime)
+      // Calculate if this is a new personal best (using ref to avoid dep array issues)
+      const currentStats = statsRef.current
+      const isNewBestMoves = won && (currentStats.bestWinMoves === null || moveCount < currentStats.bestWinMoves || moveCount === currentStats.bestWinMoves)
+      const isNewBestTime = won && (currentStats.bestWinTime === null || result.duration < currentStats.bestWinTime || result.duration === currentStats.bestWinTime)
 
       setLastGameResult({
         ...result,
-        isNewBestMoves: isNewBestMoves && stats.wins > 0, // Only show if not first win
-        isNewBestTime: isNewBestTime && stats.wins > 0,
-        previousBestMoves: stats.bestWinMoves,
-        previousBestTime: stats.bestWinTime,
+        isNewBestMoves: isNewBestMoves && currentStats.wins > 0, // Only show if not first win
+        isNewBestTime: isNewBestTime && currentStats.wins > 0,
+        previousBestMoves: currentStats.bestWinMoves,
+        previousBestTime: currentStats.bestWinTime,
         campaignLevel: currentCampaignLevel // Include level info for display
       })
     }
-  }, [gameStatus, moveCount, selectedMode, recordGameEnd, stats.bestWinMoves, stats.bestWinTime, stats.wins, currentCampaignLevel, recordCampaignCompletion])
+  }, [gameStatus, moveCount, selectedMode, recordGameEnd, currentCampaignLevel, recordCampaignCompletion])
 
   return (
     <div
@@ -719,7 +720,7 @@ function App() {
             position: 'absolute',
             top: '8px',
             right: '8px',
-            zIndex: 300
+            zIndex: 'var(--z-controls)'
           }}>
             <GearButton onClick={handleMenuToggle} />
             <GameMenu

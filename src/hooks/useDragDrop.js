@@ -18,36 +18,25 @@ export const useDragDrop = (gameState, onMove) => {
    * Start dragging a card
    */
   const startDrag = useCallback((cardStr, location) => {
-    console.time('startDrag');
     if (!gameState) {
-      console.warn('⚠️ No game state');
+      console.warn('No game state available for drag');
       return;
     }
 
     const source = location || findCardLocation(cardStr, gameState);
     if (!source) {
       console.warn('Cannot find card location for drag:', cardStr);
-      console.timeEnd('startDrag');
       return;
     }
 
-    console.log('Checking accessibility for:', cardStr, source);
-    
-    // CHECK IF CARD IS ACCESSIBLE - THIS WAS MISSING!
+    // Check if card is accessible
     if (!isCardAccessible(cardStr, source, gameState)) {
       console.warn('Card not accessible for dragging:', cardStr, source);
-      console.timeEnd('startDrag');
       return;
     }
 
-    console.log('Card is accessible, getting moving cards...');
     const movingCards = getMovingCards(cardStr, source, gameState);
-    console.log('Moving cards:', movingCards);
-
-    console.log('Calculating valid targets...');
-    // Calculate valid drop targets
     const validTargets = calculateValidTargets(cardStr, source, gameState);
-    console.log('Valid targets:', validTargets);
 
     setDragState({
       isDragging: true,
@@ -56,8 +45,6 @@ export const useDragDrop = (gameState, onMove) => {
       sourceLocation: source,
       validTargets
     });
-    
-    console.timeEnd('startDrag');
   }, [gameState]);
 
   /**
@@ -82,25 +69,14 @@ export const useDragDrop = (gameState, onMove) => {
       return false;
     }
 
-    console.log('Attempting drop:', {
-      card: dragState.draggedCard,
-      target,
-      validTargets: dragState.validTargets
-    });
-
     const validation = validateMove(dragState.draggedCard, target, gameState);
 
-    console.log('Drop validation result:', validation);
-
     if (validation.valid) {
-      console.log('Drop VALID - executing move');
       // Execute move through callback
       const success = onMove(dragState.draggedCard, target);
-      console.log('Move execution result:', success);
       endDrag();
       return true;
     } else {
-      console.log('Invalid drop:', validation.reason);
       endDrag();
       return false;
     }

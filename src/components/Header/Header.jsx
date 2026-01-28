@@ -1,8 +1,8 @@
 import React from 'react';
-import Button from './Button';
-import GameMenu from './GameMenu';
-import SnapshotSelector from './SnapshotSelector';
-import { getGameModes } from '../utils/dealGenerator';
+import Button from '../Button';
+import GameMenu from '../GameMenu';
+import SnapshotSelector from '../SnapshotSelector/SnapshotSelector';
+import { getGameModes } from '../../utils/dealGenerator';
 
 const GAME_MODES = getGameModes();
 

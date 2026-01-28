@@ -6,35 +6,20 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ## In Progress
 
-*No items currently in progress.*
-
----
-
-## Queued (Ready to Implement)
-
-### Code Audit - Phase 1: Critical Performance & Error Handling
-**Priority:** 🔴 Critical | **Complexity:** Medium | **Added:** 2026-01-28
+### Code Audit - Phase 2: Debug Cleanup & Component Refactoring
+**Priority:** 🟡 High | **Complexity:** Low-Medium | **Added:** 2026-01-28 | **Started:** 2026-01-28
 
 See `docs/CODE_AUDIT.md` for full details.
-
-**Tasks:**
-1. Fix `getComputedStyle` in render loop (`Column.jsx:256-273`) - causes layout thrashing
-2. Optimize `JSON.parse(JSON.stringify())` deep cloning (`useCardGame.js`, `useUndo.js`)
-3. Reduce useEffect dependencies in `App.jsx:403-427` (9 deps causing re-runs)
-4. Add user notification for localStorage failures (currently silent data loss)
-
-**Quick Win Completed:** ✅ Error Boundary added to `main.jsx`
-
----
-
-### Code Audit - Phase 2: Debug Cleanup & Component Refactoring
-**Priority:** 🟡 High | **Complexity:** Low-Medium | **Added:** 2026-01-28
 
 **Tasks:**
 1. Remove ~30 console.log statements (keep error handling)
 2. Create reusable `CountBadge` component (dedupe stock/waste badges)
 3. Delete duplicate `useNotification.js` file (keep `.jsx`)
 4. Audit and consolidate z-index scale (currently 110-15000 chaos)
+
+---
+
+## Queued (Ready to Implement)
 
 ---
 
@@ -104,6 +89,9 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 ## Completed Items
 
 *Move items here when resolved, with date and brief note:*
+
+### ~~Code Audit - Phase 1: Critical Performance & Error Handling~~
+**Resolved:** 2026-01-28 | Fixed 4 critical issues: (1) Removed `getComputedStyle` from Column.jsx render loop - eliminated layout thrashing, (2) Created `deepClone()` utility using native `structuredClone()` with JSON fallback - ~2-3x faster deep cloning, (3) Reduced useEffect dependencies in App.jsx from 10 → 6 using statsRef pattern, (4) Added user-facing error notifications for localStorage failures via onError callbacks. All changes maintain backward compatibility.
 
 ### ~~Design System Overhaul (v2.0.0)~~
 **Resolved:** 2026-01-24 | Complete redesign with new blue color palette (#1720c3), comprehensive design tokens, full-bleed tabbed interfaces. RulesModal (5 tabs), StatsModal (3 tabs), CampaignScreen (tier tabs). ConfirmDialog and StatsModal refactored to CSS modules. Breaking changes: color palette green→blue, modals full-bleed without scrolling.

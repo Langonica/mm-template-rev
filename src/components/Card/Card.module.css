@@ -1,0 +1,31 @@
+.card {
+  background-image: var(--sprite-url);
+  width: 80px;
+  height: 112px;
+  position: absolute;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  z-index: calc(var(--z-cards) + 10);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: grab;
+  opacity: 1;
+  touch-action: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.card:hover {
+  z-index: var(--z-card-hover) !important;
+}
+
+.dragging {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
+  transition: none;
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.validDropTarget {
+  box-shadow: 0 0 20px var(--color-success-50);
+}

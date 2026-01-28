@@ -1,8 +1,10 @@
 import { useState, useCallback, useRef } from 'react';
+import { deepClone } from '../utils/cardUtils';
 
 /**
  * Undo/Redo Manager Class
  * Manages move history with efficient state snapshots
+ * Uses native structuredClone when available (Performance fix - Phase 1)
  */
 class UndoManager {
   constructor(maxHistorySize = 100) {
@@ -21,9 +23,10 @@ class UndoManager {
     }
 
     // Add new move with deep clone of state
+    // Uses structuredClone when available for better performance (Phase 1)
     this.history.push({
       move,
-      previousState: JSON.parse(JSON.stringify(previousState)),
+      previousState: deepClone(previousState),
       timestamp: Date.now()
     });
 

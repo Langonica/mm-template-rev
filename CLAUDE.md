@@ -120,16 +120,17 @@ HTML5 Drag API for desktop, custom touch handling for mobile (100ms long-press, 
 
 **See `docs/CODE_AUDIT.md` for comprehensive audit findings.**
 
-**Current Status (post-v2.1.0 audit):**
-- Phase 1 Critical: Performance fixes, error handling improvements
-- Phase 2 High: Debug cleanup, component refactoring  
-- Phase 3 Medium: Style migration, file organization
+**Current Status:**
+- ✅ **Phase 1 Complete (2026-01-28):** Performance fixes, Error Boundary, localStorage notifications
+- 🔄 **Phase 2 In Progress:** Debug cleanup, component refactoring  
+- ⏳ **Phase 3 Queued:** Style migration, file organization
 
-**Quick Reference for Critical Issues:**
-- `Column.jsx:256-273` - `getComputedStyle` in render (performance)
-- `useCardGame.js:151` - Deep cloning on every move (performance)
-- `App.jsx:403-427` - Excessive useEffect dependencies (re-renders)
-- Error Boundary: ✅ Added to `main.jsx`
+**Recently Fixed:**
+- ✅ `Column.jsx` - Replaced `getComputedStyle` with module constants + useMemo
+- ✅ `useCardGame.js` / `useUndo.js` - Optimized deep cloning with `structuredClone()`
+- ✅ `App.jsx` - Reduced useEffect dependencies (10 → 6)
+- ✅ `useGameStats.js` / `useCampaignProgress.js` - Added error notifications
+- ✅ `main.jsx` - Added Error Boundary wrapper
 
 **When modifying code:**
 - Check CODE_AUDIT.md for context on existing issues
