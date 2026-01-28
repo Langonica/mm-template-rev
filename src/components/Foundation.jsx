@@ -49,6 +49,10 @@ const Foundation = ({
         const topCard = foundationCards.length > 0
           ? foundationCards[foundationCards.length - 1]
           : null;
+        
+        // Calculate depth layers for foundation stacking visual
+        // Every 2 cards adds a layer, max 4 layers (subtle but visible)
+        const foundationDepthLayers = Math.min(4, Math.floor(foundationCards.length / 2) + 1);
 
         const isValid = isValidTarget({ type: 'foundation', zone, suit });
 
@@ -124,15 +128,41 @@ const Foundation = ({
               {isDownFoundation ? '↓6' : '↑7'}
             </div>
             
+            {/* Foundation depth layers - stack rises up-left from base card */}
+            {foundationDepthLayers > 1 && Array.from({ length: foundationDepthLayers }).map((_, i) => (
+              <div 
+                key={`${zone}-fnd-depth-${suit}-${i}`}
+                style={{
+                  position: 'absolute',
+                  // Center the deepest layer, layers above go up-left
+                  top: `${(i - (foundationDepthLayers - 1)) * 2}px`,
+                  left: `${(i - (foundationDepthLayers - 1)) * 2}px`,
+                  width: 'var(--card-w)',
+                  height: 'var(--card-h)',
+                  transform: 'scale(var(--fnd-card-scale))',
+                  transformOrigin: 'top left',
+                  zIndex: 300 - i,
+                  opacity: `${0.6 - (i * 0.1)}`,
+                  borderRadius: '6px',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  boxSizing: 'border-box',
+                  pointerEvents: 'none'
+                }}
+              />
+            ))}
+            
             {topCard && (
               <div style={{
                 position: 'absolute',
-                top: 0,
-                left: 0,
+                // Position above the shallowest depth layer
+                top: `${-(foundationDepthLayers - 1) * 2}px`,
+                left: `${-(foundationDepthLayers - 1) * 2}px`,
                 width: 'var(--card-w)',
                 height: 'var(--card-h)',
                 transform: 'scale(var(--fnd-card-scale))',
-                transformOrigin: 'top left'
+                transformOrigin: 'top left',
+                zIndex: 310
               }}>
                 <Card
                   cardData={parseCard(topCard)}
@@ -192,7 +222,8 @@ const Foundation = ({
                 justifyContent: 'center',
                 fontSize: '9px',
                 fontWeight: 'bold',
-                zIndex: 120,
+                // Above foundation stack (z-index 310)
+                zIndex: 320,
                 border: '1px solid #1a1a1a',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
               }}>

@@ -116,6 +116,27 @@ Design tokens in `src/styles/tokens.css`. CSS Modules used for newer components.
 
 HTML5 Drag API for desktop, custom touch handling for mobile (100ms long-press, 10px movement threshold). Valid targets pre-calculated at drag start for performance.
 
+## Technical Debt & Code Quality
+
+**See `docs/CODE_AUDIT.md` for comprehensive audit findings.**
+
+**Current Status (post-v2.1.0 audit):**
+- Phase 1 Critical: Performance fixes, error handling improvements
+- Phase 2 High: Debug cleanup, component refactoring  
+- Phase 3 Medium: Style migration, file organization
+
+**Quick Reference for Critical Issues:**
+- `Column.jsx:256-273` - `getComputedStyle` in render (performance)
+- `useCardGame.js:151` - Deep cloning on every move (performance)
+- `App.jsx:403-427` - Excessive useEffect dependencies (re-renders)
+- Error Boundary: ✅ Added to `main.jsx`
+
+**When modifying code:**
+- Check CODE_AUDIT.md for context on existing issues
+- Avoid adding new console.logs (use proper error handling)
+- Prefer CSS modules over inline styles
+- Follow z-index token scale (`--z-*` variables)
+
 ## Model Selection
 
 **Use the right-sized model for each task.** Delegate to agents when appropriate:

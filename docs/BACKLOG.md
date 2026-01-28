@@ -12,6 +12,41 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ## Queued (Ready to Implement)
 
+### Code Audit - Phase 1: Critical Performance & Error Handling
+**Priority:** 🔴 Critical | **Complexity:** Medium | **Added:** 2026-01-28
+
+See `docs/CODE_AUDIT.md` for full details.
+
+**Tasks:**
+1. Fix `getComputedStyle` in render loop (`Column.jsx:256-273`) - causes layout thrashing
+2. Optimize `JSON.parse(JSON.stringify())` deep cloning (`useCardGame.js`, `useUndo.js`)
+3. Reduce useEffect dependencies in `App.jsx:403-427` (9 deps causing re-runs)
+4. Add user notification for localStorage failures (currently silent data loss)
+
+**Quick Win Completed:** ✅ Error Boundary added to `main.jsx`
+
+---
+
+### Code Audit - Phase 2: Debug Cleanup & Component Refactoring
+**Priority:** 🟡 High | **Complexity:** Low-Medium | **Added:** 2026-01-28
+
+**Tasks:**
+1. Remove ~30 console.log statements (keep error handling)
+2. Create reusable `CountBadge` component (dedupe stock/waste badges)
+3. Delete duplicate `useNotification.js` file (keep `.jsx`)
+4. Audit and consolidate z-index scale (currently 110-15000 chaos)
+
+---
+
+### Code Audit - Phase 3: Style Migration & Organization
+**Priority:** 🟢 Medium | **Complexity:** Medium | **Added:** 2026-01-28
+
+**Tasks:**
+1. Folderize 8 loose components (Card, Column, Footer, Foundation, GameStage, Header, SnapshotSelector, StockWaste)
+2. Extract inline styles to CSS modules (53 blocks across 12 files)
+3. Remove unused imports and variables (12+ instances)
+4. Add localStorage schema validation
+
 ---
 
 ## Animation Refinements
