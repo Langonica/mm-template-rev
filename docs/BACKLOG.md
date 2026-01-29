@@ -7,7 +7,7 @@ A living document tracking deferred improvements, technical debt, and items to r
 ## In Progress
 
 ### Game State Analyzer & Smart Detection System
-**Priority:** 🔴 High | **Complexity:** High | **Added:** 2026-01-28 | **Status:** Phase 2 Complete, Phase 3 Ready
+**Priority:** 🔴 High | **Complexity:** High | **Added:** 2026-01-28 | **Status:** Phase 3 Complete, Phase 4 Ready
 
 **Goal:** Detect stalemates, circular play, and offer auto-complete for trivially winnable games.
 
@@ -26,28 +26,19 @@ A living document tracking deferred improvements, technical debt, and items to r
 - ✅ Visual indicators in GameStats
 - ✅ Warning levels: caution, critical, stalled
 
-**Phase 3: Stalemate UX Modal** 🛑 IN PROGRESS
-- Create `StalemateModal` component
-- Stats display (moves, time, foundation cards)
-- Action buttons: [New Deal] [Restart] [Undo]
+**Phase 3: Stalemate UX Modal** ✅ COMPLETE
+- ✅ `StalemateModal` component
+- ✅ Stats display (moves, time, cards on foundation)
+- ✅ Actions: [New Deal] [Restart] [Undo]
+- ✅ Auto-trigger on stalemate detection
 
-**Phase 2: Circular Play Detection** 🔄
-- Detect 3+ identical states = circular play
-- Count stock/waste cycles
-- 20 moves without foundation progress = warning
-
-**Phase 3: Stalemate UX Modal** 🛑
-- `StalemateModal` component
-- Stats display (moves, time, cards on foundation)
-- Actions: [New Deal] [Restart] [Undo]
-
-**Phase 4: Auto-Complete Detection** ✨
+**Phase 4: Auto-Complete Detection** ✨ IN PROGRESS
 - Conditions: stock/waste/pockets empty + all face-up + no blocked sequences
 - `canAutoComplete()` function
 - Check after every move
+- Show "Auto-Complete" button when available
 
 **Phase 5: Auto-Complete Execution** ⚡
-- "Auto-Complete" button appears when available
 - Chain obvious moves with animation delays
 - Record as single move for undo
 - Cancel option

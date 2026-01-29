@@ -169,15 +169,15 @@ circularPlayState: {
 
 ---
 
-**Phase 3: Stalemate UX Modal 🛑 IN PROGRESS**
+**Phase 3: Stalemate UX Modal 🛑 COMPLETE**
 
-| Task | Description | Files |
-|------|-------------|-------|
-| Create `StalemateModal` component | Modal for unwinnable games | `components/StalemateModal/` |
-| Stats display | Moves, time, foundation progress | `StalemateModal.jsx` |
-| Action buttons | [New Deal] [Restart] [Undo] | `StalemateModal.jsx` |
-| Integration | Wire to game status detection | `App.jsx`, `useCardGame.js` |
-| Trigger logic | Show when stalemate detected | `getGameStatus()` enhancement |
+| Task | Status | Files |
+|------|--------|-------|
+| Create `StalemateModal` component | ✅ Done | `components/StalemateModal/` |
+| Stats display | ✅ Done | `StalemateModal.jsx` |
+| Action buttons | ✅ Done | `StalemateModal.jsx` |
+| Integration | ✅ Done | `App.jsx` |
+| Auto-trigger | ✅ Done | useEffect on gameStatus |
 
 **Modal Content:**
 ```
@@ -189,7 +189,8 @@ circularPlayState: {
 │  Stats:                         │
 │  • Moves: 47                    │
 │  • Time: 5:32                   │
-│  • Foundation: 12/52 cards      │
+│  • Foundation: 12/52 cards (23%)│
+│  [==========>              ]     │
 │                                 │
 │  [New Deal] [Restart] [Undo 5]  │
 └─────────────────────────────────┘
@@ -197,34 +198,23 @@ circularPlayState: {
 
 **Actions:**
 - **New Deal**: Generate new random deal (same mode)
-- **Restart**: Reset to original snapshot/level
-- **Undo**: Go back N moves (configurable, default 5)
+- **Restart Level**: Replay current level/snapshot
+- **Undo 5 Moves**: Go back to explore alternatives
 
-**Stalemate Detection Triggers:**
-1. Immediate: No moves + empty stock
-2. Circular: 3+ cycles detected
-3. No Progress: 20+ moves, no foundation cards added
-
----
-
-**Phase 3: Stalemate UX Modal
-| Component | Purpose |
-|-----------|---------|
-| `StalemateModal` | Display when game unwinnable |
-| Stats display | Moves made, time elapsed, cards on foundation |
-| Action buttons | [New Deal] [Restart Level] [Undo Moves] |
-| Soft warning | Subtle indicator before hard stalemate |
-
-**UX Flow:**
+**Implementation:**
+```javascript
+// Auto-trigger when stalemate detected
+useEffect(() => {
+  if (gameStatus?.status === 'stalemate') {
+    setStalemateModalOpen(true)
+  }
+}, [gameStatus])
 ```
-Detect Stalemate
-    ↓
-Show Modal with stats
-    ↓
-[New Deal] → Generate new random deal (same mode)
-[Restart]  → Reset to original snapshot
-[Undo]     → Go back N moves (let player explore)
-```
+
+**Files Created:**
+- `src/components/StalemateModal/StalemateModal.jsx`
+- `src/components/StalemateModal/StalemateModal.module.css`
+- `src/components/StalemateModal/index.js`
 
 ---
 
