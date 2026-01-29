@@ -29,11 +29,57 @@ export const useCardGame = () => {
   const [animatingCard, setAnimatingCard] = useState(null); // For portal animations
   const [autoMoveAnimation, setAutoMoveAnimation] = useState(null); // For foundation auto-move animations
 
+  // Circular play detection state
+  const [circularPlayState, setCircularPlayState] = useState({
+    isCircular: false,
+    cycleCount: 0,
+    isNoProgress: false,
+    movesSinceProgress: 0,
+    warningLevel: 'none' // 'none' | 'caution' | 'critical' | 'stalled'
+  });
+
   // Initialize undo system
   const undoSystem = useUndo();
 
   // Initialize game state tracker (for circular play detection)
   const [stateTracker] = useState(() => new GameStateTracker());
+
+  // Helper: Calculate warning level based on tracker state
+  const calculateWarningLevel = useCallback((trackerResult) => {
+    const { cycleCount, movesSinceProgress, isCircular, isNoProgress } = trackerResult;
+    
+    // Stalled: 20+ moves without progress
+    if (isNoProgress || movesSinceProgress >= 20) {
+      return 'stalled';
+    }
+    
+    // Critical: 3+ cycles (circular play detected)
+    if (isCircular || cycleCount >= 3) {
+      return 'critical';
+    }
+    
+    // Caution: 2 cycles or 15+ moves without progress
+    if (cycleCount >= 2 || movesSinceProgress >= 15) {
+      return 'caution';
+    }
+    
+    return 'none';
+  }, []);
+
+  // Helper: Update circular play state after move
+  const updateCircularPlayState = useCallback((trackerResult) => {
+    const warningLevel = calculateWarningLevel(trackerResult);
+    
+    setCircularPlayState({
+      isCircular: trackerResult.circular,
+      cycleCount: trackerResult.cycleCount,
+      isNoProgress: trackerResult.noProgress,
+      movesSinceProgress: trackerResult.movesSinceProgress,
+      warningLevel
+    });
+    
+    return warningLevel;
+  }, [calculateWarningLevel]);
 
   // Note: No auto-load on mount. Game loads when user clicks "Play Game" from HomeScreen.
   // This prevents the flash of a dealt game before HomeScreen renders.
@@ -182,7 +228,8 @@ export const useCardGame = () => {
       }, previousState);
       
       // Track state for circular play detection (recycle is a significant state change)
-      stateTracker.recordMove(newState);
+      const trackingResult = stateTracker.recordMove(newState);
+      updateCircularPlayState(trackingResult);
       
     } else {
       // Draw a card
@@ -210,11 +257,12 @@ export const useCardGame = () => {
       }, previousState);
       
       // Track state for circular play detection
-      stateTracker.recordMove(newState);
+      const trackingResult = stateTracker.recordMove(newState);
+      updateCircularPlayState(trackingResult);
     }
     
     setMoveCount(prev => prev + 1);
-  }, [currentStockCards, currentWasteCards, gameState, undoSystem, stateTracker]);
+  }, [currentStockCards, currentWasteCards, gameState, undoSystem, stateTracker, updateCircularPlayState]);
   
   // Handle card move with undo tracking
   const handleMove = useCallback((cardStr, target) => {
@@ -288,6 +336,7 @@ export const useCardGame = () => {
 
       // Track state for circular play detection
       const trackingResult = stateTracker.recordMove(newState);
+      const warningLevel = updateCircularPlayState(trackingResult);
       
       // Log warnings for development (can be removed in production)
       if (trackingResult.circular) {
@@ -300,7 +349,7 @@ export const useCardGame = () => {
     }
 
     return false;
-  }, [gameState, undoSystem, stateTracker]);
+  }, [gameState, undoSystem, stateTracker, updateCircularPlayState]);
   
   // Handle double-click auto-move with slurp/pop animation
   // Tries foundation first, then tableau builds, then empty columns
@@ -407,7 +456,8 @@ export const useCardGame = () => {
       }, previousState);
 
       // Track state for circular play detection
-      stateTracker.recordMove(testState);
+      const trackingResult = stateTracker.recordMove(testState);
+      updateCircularPlayState(trackingResult);
 
       setMoveCount(prev => prev + 1);
 
@@ -421,7 +471,7 @@ export const useCardGame = () => {
     }, 300);
 
     return true;
-  }, [gameState, undoSystem, stateTracker]);
+  }, [gameState, undoSystem, stateTracker, updateCircularPlayState]);
   
   // Undo last move
   const handleUndo = useCallback(() => {
@@ -525,6 +575,8 @@ export const useCardGame = () => {
     availableMoves,
     // State tracker for circular play detection
     stateTrackerStats: stateTracker ? stateTracker.getStats() : null,
+    // Circular play warning state (Phase 2)
+    circularPlayState,
     ...dragDrop,
     ...touchDrag
   };

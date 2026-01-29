@@ -30,7 +30,8 @@ const GameStage = ({
   onPause,
   moveCount,
   currentTime,
-  formatTime
+  formatTime,
+  circularPlayState
 }) => {
   if (!snapshot) {
     return (
@@ -161,6 +162,7 @@ const GameStage = ({
           moveCount={moveCount}
           currentTime={currentTime}
           formatTime={formatTime}
+          circularPlayState={circularPlayState}
         />
       </div>
     </main>

@@ -120,19 +120,36 @@ Current stalemate detection is basic (no moves + empty stock = stalemate). It mi
 
 ---
 
-**Phase 2: Circular Play Detection**
-| Task | Description | Trigger |
-|------|-------------|---------|
-| Detect repeated states | Same fingerprint seen 3+ times | 3 cycles = stalemate |
-| Track moves without progress | No foundation cards added | 20 moves = warning |
-| Cycle counter | Increment on stock recycle | Reset on new state |
+**Phase 2: Circular Play Detection 🔄 IN PROGRESS**
 
-**Stalemate Detection Levels:**
-| Level | Condition | Action |
-|-------|-----------|--------|
-| 1 - Immediate | No moves + stock empty | Stalemate modal |
-| 2 - Circular | 3+ identical states | Stalemate modal |
-| 3 - No Progress | 20 moves, no foundation adds | Warning indicator |
+**Detection System (Already Implemented in Phase 1):**
+| Detection | Threshold | Method |
+|-----------|-----------|--------|
+| Circular play | 3+ identical states | `tracker.isCircularPlay()` |
+| No progress | 20 moves w/o foundation | `tracker.isNoProgress()` |
+| Cycle count | Consecutive repeats | `tracker.cycleCount` |
+
+**UI Implementation Tasks:**
+| Task | Description | Files |
+|------|-------------|-------|
+| Warning indicator | Subtle UI when 2 cycles detected | `GameControls.jsx` or stats bar |
+| Progress counter | Show "X moves since foundation" | `GameStats` component |
+| Cycle indicator | Visual indicator (⚠️) in header | `Header.jsx` |
+| Soft notification | Toast when entering circular pattern | `useNotification.jsx` |
+
+**Warning Levels:**
+| Level | Condition | UI | Action |
+|-------|-----------|-----|--------|
+| 🟡 Caution | 2 cycles (same state seen 3x) | Yellow indicator | "Consider undoing moves" tooltip |
+| 🔴 Critical | 3+ cycles | Red indicator + pulse | "Circular play detected" notification |
+| 📊 Progress | 15+ moves w/o foundation | Counter turns amber | Shows "15 moves since progress" |
+| 🛑 Stalled | 20+ moves w/o foundation | Counter turns red | Prepare for stalemate modal |
+
+**Components to Modify:**
+- `GameStats.jsx` - Add progress counter
+- `Header.jsx` - Add circular play indicator
+- `useCardGame.js` - Expose warning state
+- `useNotification.jsx` - Add CIRCULAR_PLAY notification type |
 
 ---
 

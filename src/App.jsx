@@ -49,7 +49,8 @@ function App() {
     handleTouchEnd,
     handleTouchCancel,
     gameStatus,
-    availableMoves
+    availableMoves,
+    circularPlayState
   } = useCardGame()
 
   const {
@@ -713,6 +714,7 @@ function App() {
             moveCount={moveCount}
             currentTime={currentGameTime}
             formatTime={formatTime}
+            circularPlayState={circularPlayState}
           />
 
           {/* Gear Button - fixed top-right, triggers settings menu */}
