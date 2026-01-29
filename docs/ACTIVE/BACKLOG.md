@@ -12,14 +12,34 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ---
 
-### Code Audit - Phase 3: Style Migration & Organization
-**Priority:** 🟢 Medium | **Complexity:** Medium | **Added:** 2026-01-28
+### Stabilization & Hardening - Phase 2a/2b (v2.3.2)
+**Priority:** 🟡 High | **Complexity:** Medium | **Added:** 2026-01-29
 
-**Tasks:**
-1. Folderize 8 loose components (Card, Column, Footer, Foundation, GameStage, Header, SnapshotSelector, StockWaste)
-2. Extract inline styles to CSS modules (53 blocks across 12 files)
-3. Remove unused imports and variables (12+ instances)
-4. Add localStorage schema validation
+**Phase 2a: Game State Detection Tuning**
+- Add telemetry hook to track false positive/negative rates
+- Make notification thresholds configurable via localStorage
+- Add user feedback mechanism ("I can still win this" button)
+
+**Phase 2b: Game State Detection Hardening**
+- Add "ignore this game" option for edge cases
+- Harden solver against timeout edge cases
+- Add detection failure recovery (don't crash game)
+
+**Status:** Ready to implement when testing reveals threshold issues
+
+---
+
+### CSS Inline Style Migration (Deferred)
+**Priority:** 🟢 Low | **Complexity:** Medium | **Added:** 2026-01-28
+
+**Context:** ~53 inline style blocks remain across 12 files. These work correctly but should eventually be migrated to CSS modules for consistency.
+
+**Files with most inline styles:**
+- StockWaste.jsx (15 blocks)
+- Foundation.jsx (8 blocks)
+- Column.jsx (7 blocks)
+
+**Note:** This is cosmetic cleanup - no functional impact. Can be done incrementally when touching those files for features.
 
 ---
 

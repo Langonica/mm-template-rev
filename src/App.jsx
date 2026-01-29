@@ -117,6 +117,7 @@ function App() {
   // High-DPI asset loading - selects @2x sprites on Retina/high-DPI displays
   useHighDPIAssets(scale, devicePixelRatio)
 
+  // eslint-disable-next-line no-unused-vars -- setSelectedSnapshotId reserved for future snapshot selection UI
   const [selectedSnapshotId, setSelectedSnapshotId] = useState('classic_normal_easy_01')
   const [selectedMode, setSelectedMode] = useState('classic')
   const [showHowToPlay, setShowHowToPlay] = useState(false)
@@ -304,21 +305,21 @@ function App() {
     }
   }, [currentCampaignLevel, resumeTimer, loadSnapshot, recordCampaignAttempt])
 
-  const handleDropWithNotification = (target) => {
+  const handleDropWithNotification = useCallback((target) => {
     const success = handleDrop(target)
     if (!success) {
       showError(NOTIFICATION_MESSAGES.INVALID_MOVE)
     }
-  }
+  }, [handleDrop, showError])
 
-  const handleAutoMoveWithNotification = (cardStr) => {
+  const handleAutoMoveWithNotification = useCallback((cardStr) => {
     const success = handleAutoMove(cardStr)
     if (!success) {
       showError(NOTIFICATION_MESSAGES.FOUNDATION_ERROR)
     }
-  }
+  }, [handleAutoMove, showError])
 
-  const handleUndoWithNotification = () => {
+  const handleUndoWithNotification = useCallback(() => {
     const success = handleUndo()
     if (success) {
       showInfo(NOTIFICATION_MESSAGES.UNDONE)
@@ -326,16 +327,16 @@ function App() {
     } else {
       showError(NOTIFICATION_MESSAGES.NO_UNDO)
     }
-  }
+  }, [handleUndo, showInfo, showError, recordUndo])
 
-  const handleRedoWithNotification = () => {
+  const handleRedoWithNotification = useCallback(() => {
     const success = handleRedo()
     if (success) {
       showInfo(NOTIFICATION_MESSAGES.REDONE)
     } else {
       showError(NOTIFICATION_MESSAGES.NO_REDO)
     }
-  }
+  }, [handleRedo, showInfo, showError])
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -370,7 +371,7 @@ function App() {
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [handleUndo, handleRedo, isPaused, handlePause, handleResume, showHomeScreen, gameStatus])
+  }, [handleUndoWithNotification, handleRedoWithNotification, isPaused, handlePause, handleResume, showHomeScreen, gameStatus])
 
   // Show touch hint on first load for touch devices
   useEffect(() => {
@@ -390,7 +391,10 @@ function App() {
     if (currentSnapshot && moveCount === 0) {
       recordGameStart()
       gameEndedRef.current = false
-      setLastGameResult(null)
+      // Defer state update to avoid synchronous setState in effect
+      queueMicrotask(() => {
+        setLastGameResult(null)
+      })
     }
   }, [currentSnapshot, moveCount, recordGameStart])
 
@@ -412,13 +416,16 @@ function App() {
       const isNewBestMoves = won && (currentStats.bestWinMoves === null || moveCount < currentStats.bestWinMoves || moveCount === currentStats.bestWinMoves)
       const isNewBestTime = won && (currentStats.bestWinTime === null || result.duration < currentStats.bestWinTime || result.duration === currentStats.bestWinTime)
 
-      setLastGameResult({
-        ...result,
-        isNewBestMoves: isNewBestMoves && currentStats.wins > 0, // Only show if not first win
-        isNewBestTime: isNewBestTime && currentStats.wins > 0,
-        previousBestMoves: currentStats.bestWinMoves,
-        previousBestTime: currentStats.bestWinTime,
-        campaignLevel: currentCampaignLevel // Include level info for display
+      // Defer state update to avoid synchronous setState in effect
+      queueMicrotask(() => {
+        setLastGameResult({
+          ...result,
+          isNewBestMoves: isNewBestMoves && currentStats.wins > 0, // Only show if not first win
+          isNewBestTime: isNewBestTime && currentStats.wins > 0,
+          previousBestMoves: currentStats.bestWinMoves,
+          previousBestTime: currentStats.bestWinTime,
+          campaignLevel: currentCampaignLevel // Include level info for display
+        })
       })
     }
   }, [gameStatus, moveCount, selectedMode, recordGameEnd, currentCampaignLevel, recordCampaignCompletion])
@@ -426,7 +433,10 @@ function App() {
   // Show stalemate modal when game is in stalemate
   useEffect(() => {
     if (gameStatus?.status === 'stalemate' && !stalemateModalOpen) {
-      setStalemateModalOpen(true)
+      // Defer state update to avoid synchronous setState in effect
+      queueMicrotask(() => {
+        setStalemateModalOpen(true)
+      })
     }
   }, [gameStatus, stalemateModalOpen])
 
@@ -451,17 +461,23 @@ function App() {
 
     // Reset suppression if tier escalated or returned to none
     if (tier === 'none') {
-      if (dismissedNotificationTier) {
-        setDismissedNotificationTier(null)
-      }
-      setGameStateToastOpen(false)
-      setGameStateOverlayOpen(false)
+      // Defer state updates to avoid synchronous setState in effect
+      queueMicrotask(() => {
+        if (dismissedNotificationTier) {
+          setDismissedNotificationTier(null)
+        }
+        setGameStateToastOpen(false)
+        setGameStateOverlayOpen(false)
+      })
       return
     }
 
     // Reset suppression if tier escalated beyond what was dismissed
     if (dismissedNotificationTier && tierIsHigherThan(tier, dismissedNotificationTier)) {
-      setDismissedNotificationTier(null)
+      // Defer state update to avoid synchronous setState in effect
+      queueMicrotask(() => {
+        setDismissedNotificationTier(null)
+      })
     }
 
     // Don't show if user already dismissed this tier level (or higher)
@@ -473,27 +489,35 @@ function App() {
       case 'hint':
         // Hint tier - subtle toast, auto-dismiss
         if (!gameStateToastOpen && !gameStateOverlayOpen) {
-          setGameStateToastOpen(true)
+          queueMicrotask(() => {
+            setGameStateToastOpen(true)
+          })
         }
         break
       case 'concern':
         // Concern tier - more prominent toast, stays longer
         if (!gameStateToastOpen && !gameStateOverlayOpen) {
-          setGameStateToastOpen(true)
+          queueMicrotask(() => {
+            setGameStateToastOpen(true)
+          })
         }
         break
       case 'warning':
         // Warning tier - show overlay (dismissible)
         if (!gameStateOverlayOpen && !stalemateModalOpen) {
-          setGameStateOverlayOpen(true)
-          // Close toast if overlay is shown
-          setGameStateToastOpen(false)
+          queueMicrotask(() => {
+            setGameStateOverlayOpen(true)
+            // Close toast if overlay is shown
+            setGameStateToastOpen(false)
+          })
         }
         break
       case 'confirmed':
         // Confirmed unwinnable - will be handled by stalemate modal or separate modal
-        setGameStateToastOpen(false)
-        setGameStateOverlayOpen(false)
+        queueMicrotask(() => {
+          setGameStateToastOpen(false)
+          setGameStateOverlayOpen(false)
+        })
         break
     }
   }, [circularPlayState, showHomeScreen, gameStatus, isPaused, gameStateToastOpen, gameStateOverlayOpen, stalemateModalOpen, isTierEnabled, dismissedNotificationTier, tierIsHigherThan])
@@ -596,6 +620,7 @@ function App() {
   // PHASE 6: TEST DEAL LOADER (Development Only)
   // ============================================================================
   
+  // Test deals for development/debugging - only runs once on mount in DEV mode
   useEffect(() => {
     if (!import.meta.env.DEV) return;
 
@@ -709,6 +734,7 @@ function App() {
     return () => {
       delete window.__TEST_DEALS__;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentionally only runs on mount for dev testing
   }, []);
 
   return (

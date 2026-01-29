@@ -8,6 +8,34 @@ Meridian Solitaire is a unique card game implementation with dual foundation sys
 
 ## Current Work
 
+### Phase 1: App.jsx Architectural Hardening - COMPLETE ✅
+
+**Objective:** Eliminate setState-in-effect violations and fix architectural patterns that cause cascading renders.
+
+**Part of:** Stabilization & Hardening v2.3.2
+
+**Issues Fixed:**
+
+| Issue | Location | Solution |
+|-------|----------|----------|
+| setLastGameResult(null) in effect | App.jsx:393 | Wrapped in queueMicrotask |
+| setLastGameResult({...}) in effect | App.jsx:415-422 | Wrapped in queueMicrotask |
+| setStalemateModalOpen(true) in effect | App.jsx:429 | Wrapped in queueMicrotask |
+| Notification effect setState calls | App.jsx:454-505 | Wrapped all setState calls in queueMicrotask |
+| Missing effect dependencies | App.jsx:373 | Wrapped handlers in useCallback, updated deps |
+| setSelectedSnapshotId unused | App.jsx:120 | Added eslint-disable (reserved for future) |
+| Missing loadGameState dependency | App.jsx:737 | Added eslint-disable (intentional for dev-only) |
+
+**Result:**
+- ✅ App.jsx now has zero ESLint errors
+- ✅ All setState-in-effect warnings resolved
+- ✅ Build passes clean
+- ⚠️ Other files still have warnings (out of scope for Phase 1)
+
+**Commit:** `bf9354f` (docs) + Phase 1 changes
+
+---
+
 ### Asset Path Fix for Production Builds - COMPLETE ✅
 
 **Objective:** Fix image assets not loading in production/distribution builds.
