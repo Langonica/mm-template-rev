@@ -101,6 +101,73 @@ export const useCardGame = () => {
     return available;
   }, []);
   
+  // ============================================================================
+  // HINT SYSTEM (Phase 6) - MUST BE BEFORE AUTO-COMPLETE (uses clearHint)
+  // ============================================================================
+  
+  const [currentHint, setCurrentHint] = useState(null);
+  const [hintsRemaining, setHintsRemaining] = useState(3);
+  const [hintCards, setHintCards] = useState([]); // Cards to highlight
+  
+  // Clear current hint - defined early so auto-complete can use it
+  const clearHint = useCallback(() => {
+    setCurrentHint(null);
+    setHintCards([]);
+  }, []);
+  
+  // Show a hint
+  const showHint = useCallback(() => {
+    if (!gameState || hintsRemaining <= 0) return;
+    
+    const hint = getBestHint(gameState);
+    if (!hint) {
+      // No hints available
+      setCurrentHint({ type: 'none', message: 'No moves available' });
+      setTimeout(() => setCurrentHint(null), 2000);
+      return;
+    }
+    
+    // Set the hint
+    setCurrentHint(hint);
+    
+    // Highlight the card(s) that can move
+    if (hint.card) {
+      setHintCards([hint.card]);
+    }
+    
+    // Decrement hints
+    setHintsRemaining(prev => prev - 1);
+    
+    // Auto-clear hint after 5 seconds
+    setTimeout(() => {
+      setCurrentHint(null);
+      setHintCards([]);
+    }, 5000);
+  }, [gameState, hintsRemaining]);
+  
+  // Reset hints (for new game)
+  const resetHints = useCallback(() => {
+    setHintsRemaining(3);
+    setCurrentHint(null);
+    setHintCards([]);
+  }, []);
+  
+  // Keyboard shortcut for hints (H key)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'h' || e.key === 'H') {
+        // Don't trigger if typing in an input
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+          return;
+        }
+        showHint();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showHint]);
+  
   // State for auto-complete execution (Phase 5)
   const [isAutoCompleting, setIsAutoCompleting] = useState(false);
   const autoCompleteAbortRef = useRef(false);
@@ -186,73 +253,6 @@ export const useCardGame = () => {
   const cancelAutoComplete = useCallback(() => {
     autoCompleteAbortRef.current = true;
   }, []);
-  
-  // ============================================================================
-  // HINT SYSTEM (Phase 6)
-  // ============================================================================
-  
-  const [currentHint, setCurrentHint] = useState(null);
-  const [hintsRemaining, setHintsRemaining] = useState(3);
-  const [hintCards, setHintCards] = useState([]); // Cards to highlight
-  
-  // Show a hint
-  const showHint = useCallback(() => {
-    if (!gameState || hintsRemaining <= 0) return;
-    
-    const hint = getBestHint(gameState);
-    if (!hint) {
-      // No hints available
-      setCurrentHint({ type: 'none', message: 'No moves available' });
-      setTimeout(() => setCurrentHint(null), 2000);
-      return;
-    }
-    
-    // Set the hint
-    setCurrentHint(hint);
-    
-    // Highlight the card(s) that can move
-    if (hint.card) {
-      setHintCards([hint.card]);
-    }
-    
-    // Decrement hints
-    setHintsRemaining(prev => prev - 1);
-    
-    // Auto-clear hint after 5 seconds
-    setTimeout(() => {
-      setCurrentHint(null);
-      setHintCards([]);
-    }, 5000);
-  }, [gameState, hintsRemaining]);
-  
-  // Clear current hint
-  const clearHint = useCallback(() => {
-    setCurrentHint(null);
-    setHintCards([]);
-  }, []);
-  
-  // Reset hints (for new game)
-  const resetHints = useCallback(() => {
-    setHintsRemaining(3);
-    setCurrentHint(null);
-    setHintCards([]);
-  }, []);
-  
-  // Keyboard shortcut for hints (H key)
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'h' || e.key === 'H') {
-        // Don't trigger if typing in an input
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-          return;
-        }
-        showHint();
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showHint]);
 
   // Note: No auto-load on mount. Game loads when user clicks "Play Game" from HomeScreen.
   // This prevents the flash of a dealt game before HomeScreen renders.
