@@ -272,6 +272,97 @@
   --z-orientation: 6000;
 
   /* ========================================
+     THEME SEMANTIC TOKENS (v2.2+)
+     These map to theme-specific constants
+     ======================================== */
+  
+  /* ACCENT */
+  --accent-primary: var(--theme-accent-primary, #00D4FF);
+  --accent-secondary: var(--theme-accent-secondary, #00B8D4);
+  --accent-glow: var(--theme-accent-glow, rgba(0, 212, 255, 0.4));
+  --accent-subtle: var(--theme-accent-subtle, rgba(0, 212, 255, 0.1));
+  
+  /* SEMANTIC STATES */
+  --color-success: var(--theme-success, #00E5FF);
+  --color-success-bg: var(--theme-success-bg, rgba(0, 229, 255, 0.15));
+  --color-success-glow: var(--theme-success-glow, rgba(0, 229, 255, 0.3));
+  --color-success-border: var(--theme-success-border, rgba(0, 229, 255, 0.3));
+  
+  --color-warning: var(--theme-warning, #FFB74D);
+  --color-warning-bg: var(--theme-warning-bg, rgba(255, 183, 77, 0.15));
+  --color-warning-border: var(--theme-warning-border, rgba(255, 183, 77, 0.3));
+  
+  --color-danger: var(--theme-error, #FF5252);
+  --color-danger-bg: var(--theme-error-bg, rgba(255, 82, 82, 0.15));
+  --color-danger-border: var(--theme-error-border, rgba(255, 82, 82, 0.3));
+  
+  --color-info: var(--theme-info, #448AFF);
+  --color-info-bg: var(--theme-info-bg, rgba(68, 138, 255, 0.15));
+  --color-info-border: var(--theme-info-border, rgba(68, 138, 255, 0.3));
+  
+  /* BACKGROUND HIERARCHY */
+  --bg-deepest: var(--theme-bg-deepest, #0A1628);
+  --bg-deep: var(--theme-bg-deep, #0D1B2A);
+  --bg-surface: var(--theme-bg-surface, #1B2838);
+  --bg-elevated: var(--theme-bg-elevated, #233347);
+  --bg-overlay: var(--theme-bg-overlay, rgba(13, 27, 42, 0.85));
+  
+  /* TRACKS (Ace/King distinction) */
+  --track-up: var(--theme-track-up, rgba(227, 242, 253, 0.08));
+  --track-up-border: var(--theme-track-border-up, rgba(0, 212, 255, 0.2));
+  --track-down: var(--theme-track-down, rgba(13, 71, 113, 0.15));
+  --track-down-border: var(--theme-track-border-down, rgba(0, 150, 200, 0.15));
+  --track-neutral: var(--theme-track-neutral, rgba(27, 40, 56, 0.1));
+  --track-neutral-border: var(--theme-track-border-neutral, rgba(255, 255, 255, 0.1));
+  --track-empty: var(--theme-track-empty, rgba(10, 22, 40, 0.5));
+  
+  /* BORDERS */
+  --border-subtle: var(--theme-border-subtle, rgba(255, 255, 255, 0.1));
+  --border-light: var(--theme-border-light, rgba(255, 255, 255, 0.15));
+  --border-medium: var(--theme-border-medium, rgba(255, 255, 255, 0.2));
+  --border-strong: var(--theme-border-strong, rgba(255, 255, 255, 0.3));
+  --border-accent: var(--theme-border-accent, rgba(0, 212, 255, 0.5));
+  --border-accent-subtle: var(--theme-border-accent-subtle, rgba(0, 212, 255, 0.25));
+  
+  /* SHADOWS */
+  --shadow-sm: var(--theme-shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.3));
+  --shadow-md: var(--theme-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.4));
+  --shadow-lg: var(--theme-shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.5));
+  --shadow-xl: var(--theme-shadow-xl, 0 12px 32px rgba(0, 0, 0, 0.6));
+  --shadow-glow: var(--theme-shadow-glow, 0 0 20px rgba(0, 212, 255, 0.4));
+  --shadow-glow-sm: var(--theme-shadow-glow-sm, 0 0 10px rgba(0, 212, 255, 0.3));
+  --shadow-inset: var(--theme-shadow-inset, inset 0 2px 4px rgba(0, 0, 0, 0.3));
+  
+  /* CARDS (Sacred) */
+  --card-bg: var(--theme-card-bg, #FFFFFF);
+  --card-shadow: var(--theme-card-shadow, 0 4px 10px rgba(0, 0, 0, 0.5));
+  --card-shadow-hover: var(--theme-card-shadow-hover, 0 8px 20px rgba(0, 0, 0, 0.6));
+  
+  /* TEXT */
+  --text-primary: var(--theme-text-primary, rgba(255, 255, 255, 1));
+  --text-secondary: var(--theme-text-secondary, rgba(255, 255, 255, 0.7));
+  --text-muted: var(--theme-text-muted, rgba(255, 255, 255, 0.5));
+  --text-disabled: var(--theme-text-disabled, rgba(255, 255, 255, 0.3));
+  
+  /* INTERACTIVE */
+  --hover-bg: var(--theme-hover-bg, rgba(255, 255, 255, 0.05));
+  --hover-border: var(--theme-hover-border, rgba(255, 255, 255, 0.25));
+  --active-bg: var(--theme-active-bg, rgba(255, 255, 255, 0.1));
+  --active-border: var(--theme-active-border, rgba(0, 212, 255, 0.5));
+  --focus-ring: 0 0 0 2px var(--accent-primary);
+  
+  /* FOUNDATION ZONES */
+  --foundation-up-bg: var(--theme-foundation-up-bg, rgba(0, 212, 255, 0.05));
+  --foundation-up-border: var(--theme-foundation-up-border, rgba(0, 212, 255, 0.15));
+  --foundation-down-bg: var(--theme-foundation-down-bg, rgba(255, 255, 255, 0.03));
+  --foundation-down-border: var(--theme-foundation-down-border, rgba(255, 255, 255, 0.1));
+  
+  /* CONTROLS */
+  --control-bg: var(--theme-control-bg, var(--bg-surface));
+  --control-border: var(--theme-control-border, var(--border-subtle));
+  --control-hover-bg: var(--theme-control-hover-bg, var(--bg-elevated));
+
+  /* ========================================
      COMPONENT-SPECIFIC TOKENS
      ======================================== */
 

@@ -1,0 +1,186 @@
+/**
+ * Blue Casino Theme v1.0
+ * Deep blue casino aesthetic with cyan accents
+ * Default theme for Meridian Solitaire v2.2.0
+ */
+
+:root[data-theme="blue-casino"] {
+  /* ========================================
+     THEME IDENTITY
+     ======================================== */
+  --theme-name: "Deep Blue Casino";
+  --theme-version: "1.0";
+  
+  /* ========================================
+     ACCENT FAMILY (Cyan)
+     ======================================== */
+  --theme-accent-primary: #00D4FF;
+  --theme-accent-secondary: #00B8D4;
+  --theme-accent-glow: rgba(0, 212, 255, 0.4);
+  --theme-accent-subtle: rgba(0, 212, 255, 0.1);
+  
+  /* ========================================
+     SEMANTIC STATES
+     ======================================== */
+  /* Success: Cyan with green tint */
+  --theme-success: #00E5FF;
+  --theme-success-bg: rgba(0, 229, 255, 0.15);
+  --theme-success-glow: rgba(0, 229, 255, 0.3);
+  --theme-success-border: rgba(0, 229, 255, 0.3);
+  
+  /* Warning: Soft orange (universal) */
+  --theme-warning: #FFB74D;
+  --theme-warning-bg: rgba(255, 183, 77, 0.15);
+  --theme-warning-border: rgba(255, 183, 77, 0.3);
+  
+  /* Error: Card-suit red */
+  --theme-error: #FF5252;
+  --theme-error-bg: rgba(255, 82, 82, 0.15);
+  --theme-error-border: rgba(255, 82, 82, 0.3);
+  
+  /* Info: Blue-tinted cyan */
+  --theme-info: #448AFF;
+  --theme-info-bg: rgba(68, 138, 255, 0.15);
+  --theme-info-border: rgba(68, 138, 255, 0.3);
+  
+  /* ========================================
+     BACKGROUND HIERARCHY
+     ======================================== */
+  --theme-bg-deepest: #0A1628;
+  --theme-bg-deep: #0D1B2A;
+  --theme-bg-surface: #1B2838;
+  --theme-bg-elevated: #233347;
+  --theme-bg-overlay: rgba(13, 27, 42, 0.85);
+  
+  /* ========================================
+     TRACK COLORS (Ace/King Distinction)
+     ======================================== */
+  /* Ace columns: Light = rising */
+  --theme-track-up: rgba(227, 242, 253, 0.08);
+  --theme-track-border-up: rgba(0, 212, 255, 0.2);
+  --theme-track-shadow-up: rgba(0, 212, 255, 0.05);
+  
+  /* King columns: Dark = foundation */
+  --theme-track-down: rgba(13, 71, 113, 0.15);
+  --theme-track-border-down: rgba(0, 150, 200, 0.15);
+  --theme-track-shadow-down: rgba(0, 150, 200, 0.05);
+  
+  /* Neutral columns */
+  --theme-track-neutral: rgba(27, 40, 56, 0.1);
+  --theme-track-border-neutral: rgba(255, 255, 255, 0.1);
+  --theme-track-shadow-neutral: rgba(0, 0, 0, 0.1);
+  
+  /* Empty columns */
+  --theme-track-empty: rgba(10, 22, 40, 0.5);
+  --theme-track-border-empty: rgba(255, 255, 255, 0.05);
+  
+  /* ========================================
+     BORDERS
+     ======================================== */
+  --theme-border-subtle: rgba(255, 255, 255, 0.1);
+  --theme-border-light: rgba(255, 255, 255, 0.15);
+  --theme-border-medium: rgba(255, 255, 255, 0.2);
+  --theme-border-strong: rgba(255, 255, 255, 0.3);
+  --theme-border-accent: rgba(0, 212, 255, 0.5);
+  --theme-border-accent-subtle: rgba(0, 212, 255, 0.25);
+  
+  /* ========================================
+     SHADOWS
+     ======================================== */
+  --theme-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --theme-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --theme-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --theme-shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --theme-shadow-glow: 0 0 20px rgba(0, 212, 255, 0.4);
+  --theme-shadow-glow-sm: 0 0 10px rgba(0, 212, 255, 0.3);
+  --theme-shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  
+  /* ========================================
+     CARDS (SACRED - NEVER CHANGE)
+     ======================================== */
+  --theme-card-bg: #FFFFFF;
+  --theme-card-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  --theme-card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.6);
+  --theme-card-border: rgba(0, 0, 0, 0.1);
+  
+  /* Card back (sprite-based, but styled) */
+  --theme-card-back-bg: #1E3A5F;
+  --theme-card-back-border: rgba(255, 255, 255, 0.2);
+  
+  /* ========================================
+     TEXT COLORS
+     ======================================== */
+  --theme-text-primary: rgba(255, 255, 255, 1);
+  --theme-text-secondary: rgba(255, 255, 255, 0.7);
+  --theme-text-muted: rgba(255, 255, 255, 0.5);
+  --theme-text-disabled: rgba(255, 255, 255, 0.3);
+  --theme-text-accent: var(--theme-accent-primary);
+  
+  /* ========================================
+     BADGES
+     ======================================== */
+  --theme-badge-primary-bg: var(--theme-accent-primary);
+  --theme-badge-primary-text: var(--theme-bg-deepest);
+  --theme-badge-secondary-bg: var(--theme-bg-elevated);
+  --theme-badge-secondary-text: var(--theme-text-primary);
+  --theme-badge-success-bg: var(--theme-success);
+  --theme-badge-success-text: var(--theme-bg-deepest);
+  --theme-badge-warning-bg: var(--theme-warning);
+  --theme-badge-warning-text: var(--theme-bg-deepest);
+  --theme-badge-error-bg: var(--theme-error);
+  --theme-badge-error-text: var(--theme-text-primary);
+  
+  /* ========================================
+     INTERACTIVE STATES
+     ======================================== */
+  --theme-hover-bg: rgba(255, 255, 255, 0.05);
+  --theme-hover-border: rgba(255, 255, 255, 0.25);
+  --theme-active-bg: rgba(255, 255, 255, 0.1);
+  --theme-active-border: var(--theme-border-accent);
+  --theme-focus-ring: 0 0 0 2px var(--theme-accent-primary);
+  
+  /* ========================================
+     FOUNDATION ZONES
+     ======================================== */
+  --theme-foundation-up-bg: rgba(0, 212, 255, 0.05);
+  --theme-foundation-up-border: rgba(0, 212, 255, 0.15);
+  --theme-foundation-up-accent: #FFD700; /* Keep gold for up */
+  
+  --theme-foundation-down-bg: rgba(255, 255, 255, 0.03);
+  --theme-foundation-down-border: rgba(255, 255, 255, 0.1);
+  --theme-foundation-down-accent: #C0C0C0; /* Keep silver for down */
+  
+  /* ========================================
+     GAME CONTROLS
+     ======================================== */
+  --theme-control-bg: var(--theme-bg-surface);
+  --theme-control-border: var(--theme-border-subtle);
+  --theme-control-hover-bg: var(--theme-bg-elevated);
+  --theme-control-active-bg: var(--theme-accent-subtle);
+  --theme-control-disabled-bg: rgba(255, 255, 255, 0.05);
+  --theme-control-disabled-text: var(--theme-text-disabled);
+  
+  /* ========================================
+     PORTAL ANIMATIONS
+     ======================================== */
+  --theme-portal-glow: rgba(0, 212, 255, 0.3);
+  --theme-portal-active: rgba(76, 175, 80, 0.5); /* Keep green for valid */
+  --theme-slurp-trail: rgba(0, 212, 255, 0.4);
+  --theme-pop-glow: rgba(0, 229, 255, 0.5);
+  
+  /* ========================================
+     MENU & DROPDOWNS
+     ======================================== */
+  --theme-menu-bg: var(--theme-bg-surface);
+  --theme-menu-border: var(--theme-border-subtle);
+  --theme-menu-item-hover: var(--theme-hover-bg);
+  --theme-menu-item-active: var(--theme-active-bg);
+  --theme-menu-shadow: var(--theme-shadow-lg);
+  
+  /* ========================================
+     SCROLLBARS
+     ======================================== */
+  --theme-scrollbar-track: rgba(255, 255, 255, 0.05);
+  --theme-scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --theme-scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
+}

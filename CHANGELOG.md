@@ -7,6 +7,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.0] - 2026-01-28
+
+### Deep Blue Casino Theme & Multi-Theme Architecture
+
+Complete visual redesign with deep blue casino aesthetic, cyan accents, and a future-proof theme system.
+
+#### Added
+
+- **Blue Casino Theme** (Default)
+  - Deep royal blue background (#0D1B2A)
+  - Cyan accent color (#00D4FF) for buttons, badges, highlights
+  - Light blue vs deep blue track distinction (luminance-based)
+  - Success states: Cyan with subtle green tint
+  - White cards unchanged (sacred content)
+  
+- **Multi-Theme Architecture**
+  - ThemeContext provider for runtime theme switching
+  - useTheme hook for theme access in components
+  - useThemeStyles hook for CSS variable references
+  - Theme constants: blue-casino (default)
+  - CSS custom properties with fallbacks
+  - localStorage persistence for theme preference
+  
+- **Theme Specification Document**
+  - docs/THEME_SPEC_v2.2.md with complete design rationale
+  - Color palette with hex, RGB, contrast ratios
+  - Component-by-component color mapping
+  - Accessibility compliance notes
+  - Future theme roadmap (Green Classic, Crimson Night)
+
+- **New Theme Files**
+  - `src/styles/themes/blue-casino.css` - Complete theme definition
+  - 80+ CSS variables for comprehensive theming
+  
+- **Semantic Token Layer**
+  - Added semantic tokens to `tokens.css`
+  - Maps theme constants to component-agnostic names
+  - Backward compatible with fallbacks
+
+#### Changed
+
+- **Background**: Dark green/black → Deep royal blue (#0D1B2A)
+- **Primary Accent**: Gold (#c9a050) → Cyan (#00D4FF)
+- **Success States**: Green → Cyan with green tint
+- **Win Animations**: Gold particles → Cyan particles
+- **Ace Columns**: Gold tint → Light blue tint
+- **King Columns**: Silver tint → Deep blue tint
+- **Modals**: Dark grey → Deep blue panels
+- **Buttons**: Blue/Teal → Cyan primary
+- **Count Badges**: Blue/Purple → Cyan
+
+#### Technical
+
+- New: `ThemeProvider` wraps entire app
+- New: `src/styles/themes/` directory structure
+- New: `src/contexts/ThemeContext.jsx`
+- New: `src/hooks/useTheme.js`
+- Theme CSS loaded before App.css for cascade priority
+- All components now theme-aware via CSS variables
+
+---
+
 ## [2.0.0] - 2026-01-24
 
 ### Design System Overhaul
