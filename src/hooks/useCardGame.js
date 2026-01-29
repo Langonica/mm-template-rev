@@ -13,7 +13,8 @@ import {
   getAllFoundationMoves,
   executeFoundationMove,
   getHints,
-  getBestHint
+  getBestHint,
+  detectUnwinnableState
 } from '../utils/gameLogic';
 import { findCardLocation, parseCard, canPlaceOnFoundation, deepClone } from '../utils/cardUtils';
 
@@ -33,13 +34,14 @@ export const useCardGame = (callbacks = {}) => {
   const [animatingCard, setAnimatingCard] = useState(null); // For portal animations
   const [autoMoveAnimation, setAutoMoveAnimation] = useState(null); // For foundation auto-move animations
 
-  // Circular play detection state
-  const [circularPlayState, setCircularPlayState] = useState({
-    isCircular: false,
-    cycleCount: 0,
-    isNoProgress: false,
+  // Game state notification system (Phase 1 - Enhanced Detection)
+  // Three-tier system: normal -> concern -> warning -> confirmed
+  const [gameStateNotification, setGameStateNotification] = useState({
+    tier: 'none', // 'none' | 'concern' | 'warning' | 'confirmed'
+    unproductiveCycles: 0,
     movesSinceProgress: 0,
-    warningLevel: 'none' // 'none' | 'caution' | 'critical' | 'stalled'
+    wasProductive: true,
+    details: null
   });
 
   // Auto-complete detection state (Phase 4)
@@ -58,42 +60,84 @@ export const useCardGame = (callbacks = {}) => {
   // Initialize game state tracker (for circular play detection)
   const [stateTracker] = useState(() => new GameStateTracker());
 
-  // Helper: Calculate warning level based on tracker state
-  const calculateWarningLevel = useCallback((trackerResult) => {
-    const { cycleCount, movesSinceProgress, isCircular, isNoProgress } = trackerResult;
+  // Helper: Calculate notification tier based on tracker state
+  // Conservative thresholds to reduce false positives
+  const calculateNotificationTier = useCallback((trackerResult, unwinnableCheck = null) => {
+    const { 
+      unproductiveCycleCount, 
+      movesSinceProgress 
+    } = trackerResult;
     
-    // Stalled: 20+ moves without progress
-    if (isNoProgress || movesSinceProgress >= 20) {
-      return 'stalled';
+    // Tier 4: Confirmed unwinnable (solver-based detection)
+    // Only check when we've had significant unproductive cycles
+    if (unwinnableCheck?.isUnwinnable === true) {
+      return { tier: 'confirmed', reason: 'solver', confidence: unwinnableCheck.confidence };
     }
     
-    // Critical: 3+ cycles (circular play detected)
-    if (isCircular || cycleCount >= 3) {
-      return 'critical';
+    // Tier 3: Warning (6+ unproductive cycles - high confidence proxy)
+    if (unproductiveCycleCount >= 6) {
+      return { tier: 'warning', reason: 'cycles', value: unproductiveCycleCount };
     }
     
-    // Caution: 2 cycles or 15+ moves without progress
-    if (cycleCount >= 2 || movesSinceProgress >= 15) {
-      return 'caution';
+    // Tier 2: Concern (4 unproductive cycles)
+    if (unproductiveCycleCount >= 4) {
+      return { tier: 'concern', reason: 'cycles', value: unproductiveCycleCount };
     }
     
-    return 'none';
+    // Tier 1: Hint (2 unproductive cycles - subtle indicator)
+    if (unproductiveCycleCount >= 2) {
+      return { tier: 'hint', reason: 'cycles', value: unproductiveCycleCount };
+    }
+    
+    return { tier: 'none' };
   }, []);
 
-  // Helper: Update circular play state after move
-  const updateCircularPlayState = useCallback((trackerResult) => {
-    const warningLevel = calculateWarningLevel(trackerResult);
+  // Helper: Run unwinnable detection when appropriate
+  // Returns cached result or runs new check if conditions met
+  const runUnwinnableCheck = useCallback((currentState, trackerResult) => {
+    // Only check if we have enough unproductive cycles to warrant it
+    if (trackerResult.unproductiveCycleCount < 4) {
+      return null;
+    }
     
-    setCircularPlayState({
-      isCircular: trackerResult.circular,
-      cycleCount: trackerResult.cycleCount,
-      isNoProgress: trackerResult.noProgress,
+    // Use deeper check for higher cycle counts
+    const useDeepCheck = trackerResult.unproductiveCycleCount >= 6;
+    const maxNodes = useDeepCheck ? 8000 : 3000;
+    const maxDepth = useDeepCheck ? 15 : 10;
+    
+    return detectUnwinnableState(currentState, { maxNodes, maxDepth });
+  }, []);
+
+  // Helper: Update game state notification after move
+  const updateGameStateNotification = useCallback((trackerResult, currentState) => {
+    // Run unwinnable check if conditions warrant
+    const unwinnableCheck = currentState ? runUnwinnableCheck(currentState, trackerResult) : null;
+    
+    const { tier, reason, confidence } = calculateNotificationTier(trackerResult, unwinnableCheck);
+    
+    // Debug logging in development
+    if (import.meta.env.DEV && tier !== 'none') {
+      console.log('[GSN] Notification updated:', {
+        tier,
+        reason,
+        cycles: trackerResult.unproductiveCycleCount,
+        movesSinceProgress: trackerResult.movesSinceProgress,
+        wasProductive: trackerResult.wasProductive
+      });
+    }
+    
+    setGameStateNotification(prev => ({
+      ...prev,
+      tier,
+      unproductiveCycles: trackerResult.unproductiveCycleCount,
       movesSinceProgress: trackerResult.movesSinceProgress,
-      warningLevel
-    });
+      wasProductive: trackerResult.wasProductive,
+      details: trackerResult.productivityDetails,
+      unwinnableCheck: unwinnableCheck || prev.unwinnableCheck
+    }));
     
-    return warningLevel;
-  }, [calculateWarningLevel]);
+    return tier;
+  }, [calculateNotificationTier, runUnwinnableCheck]);
 
   // Helper: Check if auto-complete is available (Phase 4)
   const checkAutoComplete = useCallback((currentState) => {
@@ -301,8 +345,8 @@ export const useCardGame = (callbacks = {}) => {
       setMoveCount(prev => prev + movesMade);
       
       // Update tracking
-      const trackingResult = stateTracker.recordMove(currentState);
-      updateCircularPlayState(trackingResult);
+      const trackingResult = stateTracker.recordMove(currentState, 'auto-complete');
+      updateGameStateNotification(trackingResult, currentState);
       
       // Check win condition - but DON'T trigger win screen yet
       const status = getGameStatus(currentState);
@@ -315,7 +359,7 @@ export const useCardGame = (callbacks = {}) => {
     setIsAutoCompleting(false);
     setAutoCompleteAvailable(false);
     clearHint();
-  }, [gameState, isAutoCompleting, undoSystem, stateTracker, updateCircularPlayState, clearHint, onFoundationCompleted]);
+  }, [gameState, isAutoCompleting, undoSystem, stateTracker, updateGameStateNotification, clearHint, onFoundationCompleted]);
   
   // Cancel auto-complete execution
   const cancelAutoComplete = useCallback(() => {
@@ -470,9 +514,9 @@ export const useCardGame = (callbacks = {}) => {
         cardCount: currentWasteCards.length
       }, previousState);
       
-      // Track state for circular play detection (recycle is a significant state change)
-      const trackingResult = stateTracker.recordMove(newState);
-      updateCircularPlayState(trackingResult);
+      // Track state for notification system
+      const trackingResult = stateTracker.recordMove(newState, 'recycle');
+      updateGameStateNotification(trackingResult, newState);
       checkAutoComplete(newState);
       clearHint(); // Clear hints after move
       
@@ -501,15 +545,15 @@ export const useCardGame = (callbacks = {}) => {
         to: 'waste'
       }, previousState);
       
-      // Track state for circular play detection
-      const trackingResult = stateTracker.recordMove(newState);
-      updateCircularPlayState(trackingResult);
+      // Track state for notification system
+      const trackingResult = stateTracker.recordMove(newState, 'draw');
+      updateGameStateNotification(trackingResult, newState);
       checkAutoComplete(newState);
       clearHint(); // Clear hints after move
     }
     
     setMoveCount(prev => prev + 1);
-  }, [currentStockCards, currentWasteCards, gameState, undoSystem, stateTracker, updateCircularPlayState, checkAutoComplete, clearHint]);
+  }, [currentStockCards, currentWasteCards, gameState, undoSystem, stateTracker, updateGameStateNotification, checkAutoComplete, clearHint]);
   
   // Handle card move with undo tracking
   const handleMove = useCallback((cardStr, target) => {
@@ -581,18 +625,13 @@ export const useCardGame = (callbacks = {}) => {
         target: target
       }, previousState);
 
-      // Track state for circular play detection
-      const trackingResult = stateTracker.recordMove(newState);
-      updateCircularPlayState(trackingResult);
+      // Track state for notification system
+      const trackingResult = stateTracker.recordMove(newState, target?.type === 'foundation' ? 'foundation' : 'tableau');
+      updateGameStateNotification(trackingResult, newState);
       
       // Check auto-complete availability (Phase 4)
       checkAutoComplete(newState);
       clearHint(); // Clear hints after move
-      
-      // Log warnings for development (can be removed in production)
-      if (trackingResult.circular) {
-        console.warn('Circular play detected - consider undoing moves');
-      }
 
       setMoveCount(prev => prev + 1);
       
@@ -613,7 +652,7 @@ export const useCardGame = (callbacks = {}) => {
     }
 
     return false;
-  }, [gameState, undoSystem, stateTracker, updateCircularPlayState, checkAutoComplete, clearHint, onCardsMoved, onFoundationCompleted]);
+  }, [gameState, undoSystem, stateTracker, updateGameStateNotification, checkAutoComplete, clearHint, onCardsMoved, onFoundationCompleted]);
   
   // Handle double-click auto-move with arc animation (Phase 2)
   // Tries foundation first, then tableau builds, then empty columns
@@ -723,9 +762,9 @@ export const useCardGame = (callbacks = {}) => {
         to: moveDestination
       }, previousState);
 
-      // Track state for circular play detection
-      const trackingResult = stateTracker.recordMove(testState);
-      updateCircularPlayState(trackingResult);
+      // Track state for notification system
+      const trackingResult = stateTracker.recordMove(testState, isFoundationMove ? 'foundation' : 'tableau');
+      updateGameStateNotification(trackingResult, testState);
       
       // Check auto-complete availability (Phase 4)
       checkAutoComplete(testState);
@@ -769,7 +808,7 @@ export const useCardGame = (callbacks = {}) => {
     }, 100);
 
     return true;
-  }, [gameState, undoSystem, stateTracker, updateCircularPlayState, checkAutoComplete, clearHint, onCardsMoved, onFoundationCompleted]);
+  }, [gameState, undoSystem, stateTracker, updateGameStateNotification, checkAutoComplete, clearHint, onCardsMoved, onFoundationCompleted]);
   
   // Undo last move
   const handleUndo = useCallback(() => {
@@ -848,6 +887,89 @@ export const useCardGame = (callbacks = {}) => {
     return getAvailableMoves(gameState);
   }, [gameState]);
 
+  // ============================================================================
+  // PHASE 6: DEBUG TOOLS (Development Only)
+  // ============================================================================
+  
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    
+    // Expose debugging functions on window
+    window.__GSN_DEBUG__ = {
+      // Get current tracker state
+      getTrackerState: () => stateTracker ? stateTracker.getStats() : null,
+      
+      // Get current notification state
+      getNotificationState: () => gameStateNotification,
+      
+      // Get current game state
+      getGameState: () => gameState,
+      
+      // Force a specific tier (for UI testing)
+      forceTier: (tier) => {
+        console.log('[GSN] Forcing tier:', tier);
+        setGameStateNotification(prev => ({ ...prev, tier }));
+        if (tier === 'hint' || tier === 'concern') {
+          setGameStateToastOpen(true);
+        } else if (tier === 'warning') {
+          setGameStateOverlayOpen(true);
+          setGameStateToastOpen(false);
+        } else if (tier === 'none') {
+          setGameStateToastOpen(false);
+          setGameStateOverlayOpen(false);
+        }
+      },
+      
+      // Run unwinnable check manually
+      checkUnwinnable: (options = {}) => {
+        if (!gameState) {
+          console.log('[GSN] No game state available');
+          return null;
+        }
+        const startTime = performance.now();
+        const result = detectUnwinnableState(gameState, { 
+          maxNodes: options.maxNodes || 10000, 
+          maxDepth: options.maxDepth || 20,
+          trackPaths: options.trackPaths || true 
+        });
+        const duration = performance.now() - startTime;
+        console.log('[GSN] Manual unwinnable check:', { ...result, duration: `${duration.toFixed(2)}ms` });
+        return result;
+      },
+      
+      // Reset notification state
+      resetNotifications: () => {
+        console.log('[GSN] Resetting notifications');
+        setGameStateNotification({
+          tier: 'none',
+          unproductiveCycles: 0,
+          movesSinceProgress: 0,
+          wasProductive: true,
+          details: null,
+          unwinnableCheck: null
+        });
+        setGameStateToastOpen(false);
+        setGameStateOverlayOpen(false);
+        stateTracker.reset();
+      },
+      
+      // Simulate unproductive cycles
+      simulateCycles: (count = 5) => {
+        console.log(`[GSN] Simulating ${count} unproductive cycles`);
+        for (let i = 0; i < count; i++) {
+          stateTracker.unproductiveCycleCount++;
+        }
+        console.log('[GSN] Current cycles:', stateTracker.unproductiveCycleCount);
+      }
+    };
+    
+    console.log('[GSN] Debug tools available. Try: __GSN_DEBUG__.getTrackerState()');
+    
+    return () => {
+      delete window.__GSN_DEBUG__;
+    };
+  }, [stateTracker, gameState, gameStateNotification]);
+
   return {
     config,
     currentSnapshot,
@@ -873,8 +995,10 @@ export const useCardGame = (callbacks = {}) => {
     availableMoves,
     // State tracker for circular play detection
     stateTrackerStats: stateTracker ? stateTracker.getStats() : null,
-    // Circular play warning state (Phase 2)
-    circularPlayState,
+    // Game state notification system (Phase 1 - Enhanced Detection)
+    gameStateNotification,
+    // Deprecated: keeping for backward compatibility during transition
+    circularPlayState: gameStateNotification,
     // Auto-complete (Phase 5)
     canAutoComplete: autoCompleteAvailable,
     isAutoCompleting,

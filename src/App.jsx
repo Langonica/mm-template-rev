@@ -12,12 +12,15 @@ import GearButton from './components/GearButton'
 import StalemateModal from './components/StalemateModal'
 import AutoCompleteButton from './components/AutoCompleteButton'
 import HintDisplay from './components/HintDisplay'
+import GameStateToast from './components/GameStateToast'
+import GameStateOverlay from './components/GameStateOverlay'
 import { useCardGame } from './hooks/useCardGame'
 import { useGameStats } from './hooks/useGameStats'
 import { useCampaignProgress } from './hooks/useCampaignProgress'
 import { useViewportScale } from './hooks/useViewportScale'
 import { useHighDPIAssets } from './hooks/useHighDPIAssets'
 import { useNotification, Notification, NOTIFICATION_MESSAGES } from './hooks/useNotification.jsx'
+import { useNotificationSettings, shouldShowNotification } from './contexts/NotificationSettingsContext'
 import { generateRandomDeal, getGameModes } from './utils/dealGenerator'
 import './styles/App.css'
 
@@ -29,6 +32,9 @@ function App() {
     showInfo,
     clearNotification
   } = useNotification()
+
+  // Notification settings
+  const { settings: notificationSettings, isTierEnabled } = useNotificationSettings()
 
   // Stats hook must come before useCardGame (needed for tracking callbacks)
   const {
@@ -127,6 +133,8 @@ function App() {
   const [showCampaignScreen, setShowCampaignScreen] = useState(false)
 
   const [stalemateModalOpen, setStalemateModalOpen] = useState(false)
+  const [gameStateToastOpen, setGameStateToastOpen] = useState(false)
+  const [gameStateOverlayOpen, setGameStateOverlayOpen] = useState(false)
   const [lastGameResult, setLastGameResult] = useState(null) // Stores result for game-over display
   const [currentCampaignLevel, setCurrentCampaignLevel] = useState(null) // Track active campaign level
   const gameEndedRef = useRef(false) // Prevent double-recording
@@ -453,6 +461,54 @@ function App() {
     }
   }, [gameStatus, stalemateModalOpen])
 
+  // Phase 3: Game State Notification System - Toast and Overlay
+  // Phase 4: Respects notification settings
+  useEffect(() => {
+    if (!circularPlayState || showHomeScreen || gameStatus?.isGameOver) return
+    
+    const { tier, unproductiveCycles, movesSinceProgress } = circularPlayState
+    
+    // Don't show notifications if game is over or paused
+    if (isPaused) return
+    
+    // Check settings - skip if disabled or minimal mode excludes this tier
+    if (!isTierEnabled(tier)) return
+    
+    switch (tier) {
+      case 'hint':
+        // Hint tier - subtle toast, auto-dismiss
+        if (!gameStateToastOpen && !gameStateOverlayOpen) {
+          setGameStateToastOpen(true)
+        }
+        break
+      case 'concern':
+        // Concern tier - more prominent toast, stays longer
+        if (!gameStateToastOpen && !gameStateOverlayOpen) {
+          setGameStateToastOpen(true)
+        }
+        break
+      case 'warning':
+        // Warning tier - show overlay (dismissible)
+        if (!gameStateOverlayOpen && !stalemateModalOpen) {
+          setGameStateOverlayOpen(true)
+          // Close toast if overlay is shown
+          setGameStateToastOpen(false)
+        }
+        break
+      case 'confirmed':
+        // Confirmed unwinnable - will be handled by stalemate modal or separate modal
+        setGameStateToastOpen(false)
+        setGameStateOverlayOpen(false)
+        break
+      default:
+        // Reset when tier goes back to 'none'
+        if (tier === 'none') {
+          setGameStateToastOpen(false)
+          setGameStateOverlayOpen(false)
+        }
+    }
+  }, [circularPlayState, showHomeScreen, gameStatus, isPaused, gameStateToastOpen, gameStateOverlayOpen, stalemateModalOpen, isTierEnabled])
+
   // Calculate foundation cards for stalemate modal stats
   const getFoundationCardCount = useCallback(() => {
     if (!currentSnapshot?.foundations) return 0
@@ -492,6 +548,177 @@ function App() {
       handleUndo()
     }
   }, [handleUndo])
+
+  // Phase 3: Game State Notification handlers
+  const handleToastDismiss = useCallback(() => {
+    setGameStateToastOpen(false)
+  }, [])
+
+  const handleOverlayDismiss = useCallback(() => {
+    setGameStateOverlayOpen(false)
+  }, [])
+
+  const handleOverlayUndo = useCallback(() => {
+    setGameStateOverlayOpen(false)
+    // Undo up to 5 moves
+    for (let i = 0; i < 5; i++) {
+      handleUndo()
+    }
+  }, [handleUndo])
+
+  const handleOverlayHint = useCallback(() => {
+    setGameStateOverlayOpen(false)
+    showHint()
+  }, [showHint])
+
+  const handleOverlayNewDeal = useCallback(() => {
+    setGameStateOverlayOpen(false)
+    handleNewGame()
+  }, [handleNewGame])
+
+  // Get toast content based on current tier
+  const getToastContent = useCallback(() => {
+    const { tier, unproductiveCycles, movesSinceProgress } = circularPlayState || {}
+    
+    switch (tier) {
+      case 'concern':
+        return {
+          message: 'Consider undoing some moves',
+          subtext: `You've cycled ${unproductiveCycles || 4} times without progress`,
+          tier: 'concern',
+          duration: 8000 // Stay longer for concern tier
+        }
+      case 'hint':
+      default:
+        return {
+          message: 'Tip: Try a different approach',
+          subtext: movesSinceProgress > 20 
+            ? `${movesSinceProgress} moves since last foundation card`
+            : 'If you\'re stuck, consider undoing moves',
+          tier: 'hint',
+          duration: 5000
+        }
+    }
+  }, [circularPlayState])
+
+  // ============================================================================
+  // PHASE 6: TEST DEAL LOADER (Development Only)
+  // ============================================================================
+  
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    
+    // Test scenarios for notification system testing
+    window.__TEST_DEALS__ = {
+      // Nearly won - all face up, ready for auto-complete
+      nearlyWon: () => {
+        const testState = {
+          metadata: { mode: 'classic', variant: 'normal' },
+          tableau: {
+            0: ['Ah', '2h', '3h', '4h', '5h', '6h'],
+            1: ['Ad', '2d', '3d', '4d', '5d', '6d'],
+            2: ['Ac', '2c', '3c', '4c', '5c', '6c'],
+            3: ['As', '2s', '3s', '4s', '5s', '6s'],
+            4: ['7h', '8h', '9h', '10h', 'Jh', 'Qh', 'Kh'],
+            5: ['7d', '8d', '9d', '10d', 'Jd', 'Qd', 'Kd'],
+            6: ['7c', '8c', '9c', '10c', 'Jc', 'Qc', 'Kc']
+          },
+          foundations: {
+            up: { h: [], d: [], c: [], s: [] },
+            down: { h: [], d: [], c: [], s: [] }
+          },
+          stock: ['7s', '8s', '9s', '10s', 'Js', 'Qs', 'Ks'],
+          waste: [],
+          pocket1: null,
+          pocket2: null,
+          columnState: {
+            faceDownCounts: [0, 0, 0, 0, 0, 0, 0],
+            types: ['traditional', 'traditional', 'traditional', 'traditional', 'traditional', 'traditional', 'traditional']
+          }
+        };
+        loadGameState(testState);
+        console.log('[TEST] Loaded nearly-won game state');
+      },
+      
+      // Blocked game - requires cycling without progress
+      blocked: () => {
+        const testState = {
+          metadata: { mode: 'classic', variant: 'normal' },
+          tableau: {
+            0: ['Kh', 'Qd', 'Jh', '10d', '9h'],
+            1: ['Kd', 'Qc', 'Jd', '10c', '9d'],
+            2: ['Kc', 'Qs', 'Jc', '10s', '9c'],
+            3: ['Ks', 'Qh', 'Js', '10h', '9s'],
+            4: ['8h', '7d', '6h', '5d', '4h'],
+            5: ['8d', '7c', '6d', '5c', '4d'],
+            6: ['8c', '7s', '6c', '5s', '4c']
+          },
+          foundations: {
+            up: { h: [], d: [], c: [], s: [] },
+            down: { h: [], d: [], c: [], s: [] }
+          },
+          stock: ['Ah', '2h', '3h', 'Ad', '2d', '3d', 'Ac', '2c', '3c', 'As', '2s', '3s'],
+          waste: [],
+          pocket1: null,
+          pocket2: null,
+          columnState: {
+            faceDownCounts: [0, 0, 0, 0, 0, 0, 0],
+            types: ['traditional', 'traditional', 'traditional', 'traditional', 'traditional', 'traditional', 'traditional']
+          }
+        };
+        loadGameState(testState);
+        console.log('[TEST] Loaded blocked game state (for testing cycles)');
+      },
+      
+      // High cycles - simulate by loading blocked and setting cycles
+      highCycles: () => {
+        window.__TEST_DEALS__.blocked();
+        // Wait for state to load then simulate cycles
+        setTimeout(() => {
+          if (window.__GSN_DEBUG__) {
+            window.__GSN_DEBUG__.simulateCycles(6);
+            console.log('[TEST] Simulated 6 unproductive cycles - warning overlay should appear');
+          }
+        }, 100);
+      },
+      
+      // Unwinnable - specific configuration
+      unwinnable: () => {
+        const testState = {
+          metadata: { mode: 'classic', variant: 'normal' },
+          tableau: {
+            0: ['Kh', 'Qd'],
+            1: ['Kd', 'Qc'],
+            2: ['Kc', 'Qs'],
+            3: ['Ks', 'Qh'],
+            4: [],
+            5: [],
+            6: []
+          },
+          foundations: {
+            up: { h: ['7h', '8h', '9h', '10h', 'Jh'], d: ['7d', '8d', '9d', '10d', 'Jd'], c: ['7c', '8c', '9c', '10c', 'Jc'], s: ['7s', '8s', '9s', '10s', 'Js'] },
+            down: { h: ['6h', '5h', '4h', '3h', '2h', 'Ah'], d: ['6d', '5d', '4d', '3d', '2d', 'Ad'], c: ['6c', '5c', '4c', '3c', '2c', 'Ac'], s: ['6s', '5s', '4s', '3s', '2s', 'As'] }
+          },
+          stock: [],
+          waste: [],
+          pocket1: null,
+          pocket2: null,
+          columnState: {
+            faceDownCounts: [0, 0, 0, 0, 0, 0, 0],
+            types: ['traditional', 'traditional', 'traditional', 'traditional', 'traditional', 'traditional', 'traditional']
+          }
+        };
+        loadGameState(testState);
+        console.log('[TEST] Loaded unwinnable game state');
+      }
+    };
+    
+    console.log('[TEST] Test deals available. Try: __TEST_DEALS__.blocked()');
+    
+    return () => {
+      delete window.__TEST_DEALS__;
+    };
+  }, [loadGameState]);
 
   return (
     <div
@@ -592,6 +819,26 @@ function App() {
         onRestart={handleStalemateRestart}
         onUndo={handleStalemateUndo}
         undoMoves={5}
+      />
+
+      {/* Phase 3: Game State Toast (hint/concern tiers) */}
+      <GameStateToast
+        isOpen={gameStateToastOpen}
+        {...getToastContent()}
+        onDismiss={handleToastDismiss}
+        onAction={handleOverlayDismiss}
+        actionLabel="Dismiss"
+      />
+
+      {/* Phase 3: Game State Overlay (warning tier) */}
+      <GameStateOverlay
+        isOpen={gameStateOverlayOpen}
+        cycleCount={circularPlayState?.unproductiveCycles || 0}
+        movesSinceProgress={circularPlayState?.movesSinceProgress || 0}
+        onDismiss={handleOverlayDismiss}
+        onUndo={handleOverlayUndo}
+        onHint={handleOverlayHint}
+        onNewDeal={handleOverlayNewDeal}
       />
 
       {/* Game UI - only render when not on home screen */}
@@ -806,7 +1053,6 @@ function App() {
             moveCount={moveCount}
             currentTime={currentGameTime}
             formatTime={formatTime}
-            circularPlayState={circularPlayState}
             canAutoComplete={canAutoComplete}
             isAutoCompleting={isAutoCompleting}
             onAutoComplete={executeAutoComplete}

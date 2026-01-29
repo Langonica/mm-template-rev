@@ -9,11 +9,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.3.0] - TBD
 
-### Game State Analyzer & Smart Detection System
+### Game State Notification System (Enhanced)
 
-Comprehensive game state tracking to detect stalemates, recognize circular play patterns, and offer auto-complete for trivially winnable games. Foundation for future hint system.
+Complete redesign of game state detection with intelligent progress tracking, reduced false positives, and solver-based unwinnable detection.
 
 #### Added
+
+- **Phase 1: Enhanced Progress Detection**
+  - Multi-metric productivity tracking:
+    - Foundation cards placed (primary progress)
+    - Face-down cards revealed (board unlock)
+    - Valid sequences built (3+ card runs)
+    - Strategic column utilization (Ace/King placement)
+    - Pocket cards played to board
+  - Unproductive cycle counting (cycles without ANY progress)
+  - Four-tier notification system: hint → concern → warning → confirmed
+  - Conservative thresholds (2/4/6 cycles) to minimize false positives
+  - Full backward compatibility with existing `circularPlayState` API
+
+- **Phase 2: Unwinnable Detection Algorithm**
+  - BFS-based solver with configurable depth/node limits
+  - Two-tier checking: quick (3K nodes) vs deep (8K nodes)
+  - Time-limited execution (100ms max) to prevent UI blocking
+  - Confidence levels: low/medium/high/certain based on search space
+  - Triggers automatically at 4+ unproductive cycles
+  - Caches results to avoid redundant computation
+
+- **Phase 3: Toast UI Components**
+  - `GameStateToast` component for hint/concern tiers
+  - `GameStateOverlay` component for warning tier
+  - Auto-dismiss (5s hint, 8s concern) with manual close option
+  - Slide-in/out animations with reduced motion support
+  - Action buttons: Undo, Hint, New Deal, Keep Playing
+  - Responsive design for mobile/desktop
+  - Integrated into App.jsx with automatic tier-based display
+
+- **Phase 4: Settings Integration**
+  - `NotificationSettingsContext` for state management
+  - `NOTIFICATION_LEVELS`: On / Minimal / Off
+  - `useNotificationSettings` hook with `isTierEnabled()` helper
+  - Settings UI in GameMenu (Settings section)
+  - localStorage persistence
+  - Respects user preference for all notification tiers
+
+- **Phase 5: Remove Stats Bar Warning**
+  - Removed `circularPlayState` prop from GameStats component
+  - Removed warning indicator styles from GameStats.module.css
+  - Simplified GameStats to show only moves and time
+  - Updated GameStage to not pass warning prop
+  - Warnings now exclusively via toast/overlay (Phase 3)
+
+- **Phase 6: Testing & Polish**
+  - Debug logging (conditional on `import.meta.env.DEV`)
+  - Console debugging API: `window.__GSN_DEBUG__`
+  - Test deal loader: `window.__TEST_DEALS__`
+  - Solver performance logging with duration tracking
+  - Test scenarios: nearlyWon, blocked, highCycles, unwinnable
 
 - **State Fingerprinting & Tracking**
   - `GameStateTracker` class for tracking board state history

@@ -33,7 +33,6 @@ const GameStage = ({
   moveCount,
   currentTime,
   formatTime,
-  circularPlayState,
   canAutoComplete,
   isAutoCompleting,
   onAutoComplete,
@@ -179,7 +178,6 @@ const GameStage = ({
           moveCount={moveCount}
           currentTime={currentTime}
           formatTime={formatTime}
-          circularPlayState={circularPlayState}
         />
         <HintButton
           hintsRemaining={hintsRemaining}

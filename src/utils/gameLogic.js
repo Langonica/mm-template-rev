@@ -810,26 +810,43 @@ export function getGameStatus(gameState) {
 /**
  * GameStateTracker - Tracks game state history to detect circular play
  * and monitor progression toward win condition
+ * 
+ * Phase 1 Enhanced: Tracks productive vs unproductive moves for better
+ * game state notifications (unwinnable detection, stall warnings)
  */
 export class GameStateTracker {
   constructor() {
     this.stateHistory = new Map(); // fingerprintKey -> visitCount
     this.moveNumber = 0;
-    this.lastProgressMove = 0; // Move number when last foundation card was added
+    this.lastProgressMove = 0; // Move number when last progress was made
     this.cycleCount = 0; // Consecutive cycles without new state
+    this.unproductiveCycleCount = 0; // Cycles without ANY productive moves
     this.currentFingerprint = null;
-    this.maxFoundationCount = 0; // Highest foundation count seen
+    this.previousFingerprint = null;
+    
+    // Progress tracking (all metrics, not just foundation)
+    this.maxFoundationCount = 0;
+    this.minFaceDownCount = Infinity;
+    this.maxValidSequences = 0;
+    
+    // Game state for comparison
+    this.lastState = null;
+    
+    // Phase 2: Unwinnable detection cache
+    this.lastUnwinnableCheck = null;
   }
 
   /**
    * Record a move and update tracking state
    * @param {object} gameState - Current game state after move
-   * @returns {object} Analysis result: { isNewState, visitCount, circular, noProgress }
+   * @param {string} moveType - Type of move made ('foundation', 'tableau', 'draw', 'recycle', etc.)
+   * @returns {object} Analysis result with enhanced progress detection
    */
-  recordMove(gameState) {
+  recordMove(gameState, moveType = 'unknown') {
     const fingerprint = getStateFingerprint(gameState);
     const key = fingerprintToKey(fingerprint);
     
+    this.previousFingerprint = this.currentFingerprint;
     this.currentFingerprint = fingerprint;
     this.moveNumber++;
 
@@ -838,35 +855,112 @@ export class GameStateTracker {
     const isNewState = visitCount === 0;
     
     if (isNewState) {
-      // Reset cycle count on new state
       this.cycleCount = 0;
     } else {
-      // Increment cycle count on repeat
       this.cycleCount++;
     }
 
     // Update visit count
     this.stateHistory.set(key, visitCount + 1);
 
-    // Check for progress (foundation cards increased)
-    if (fingerprint.totalFoundationCards > this.maxFoundationCount) {
-      this.maxFoundationCount = fingerprint.totalFoundationCards;
+    // Determine if move was productive
+    const productivity = this.analyzeProductivity(fingerprint, moveType);
+    
+    if (productivity.wasProductive) {
+      this.unproductiveCycleCount = 0;
       this.lastProgressMove = this.moveNumber;
+    } else if (!isNewState) {
+      // Same state AND unproductive = true unproductive cycle
+      this.unproductiveCycleCount++;
     }
+
+    // Update progress metrics
+    this.updateProgressMetrics(fingerprint);
 
     // Determine status
     const circular = this.isCircularPlay();
     const noProgress = this.isNoProgress();
+    const potentiallyStuck = this.isPotentiallyStuck();
 
     return {
       isNewState,
       visitCount: visitCount + 1,
       circular,
       noProgress,
+      potentiallyStuck,
       cycleCount: this.cycleCount,
+      unproductiveCycleCount: this.unproductiveCycleCount,
       movesSinceProgress: this.moveNumber - this.lastProgressMove,
-      totalFoundationCards: fingerprint.totalFoundationCards
+      totalFoundationCards: fingerprint.totalFoundationCards,
+      wasProductive: productivity.wasProductive,
+      productivityDetails: productivity.details
     };
+  }
+
+  /**
+   * Analyze if a move was productive (made meaningful progress)
+   * @param {object} fingerprint - Current state fingerprint
+   * @param {string} moveType - Type of move
+   * @returns {object} { wasProductive: boolean, details: object }
+   */
+  analyzeProductivity(fingerprint, moveType) {
+    const details = {
+      foundationProgress: false,
+      faceDownRevealed: false,
+      sequencesBuilt: false,
+      strategicColumnFill: false
+    };
+
+    // Foundation placement is always productive
+    if (fingerprint.totalFoundationCards > this.maxFoundationCount) {
+      details.foundationProgress = true;
+      return { wasProductive: true, details };
+    }
+
+    // Face-down cards revealed
+    if (fingerprint.faceDownCount < this.minFaceDownCount) {
+      details.faceDownRevealed = true;
+      return { wasProductive: true, details };
+    }
+
+    // Valid sequences created
+    if (fingerprint.validSequences > this.maxValidSequences) {
+      details.sequencesBuilt = true;
+      return { wasProductive: true, details };
+    }
+
+    // Strategic moves to empty columns (Ace or King)
+    if (moveType === 'tableau-empty' && this.previousFingerprint) {
+      if (fingerprint.emptyColumns < this.previousFingerprint.emptyColumns) {
+        details.strategicColumnFill = true;
+        return { wasProductive: true, details };
+      }
+    }
+
+    // Pocket card played (not stored)
+    if (moveType === 'pocket-to-foundation' || moveType === 'pocket-to-tableau') {
+      return { wasProductive: true, details };
+    }
+
+    return { wasProductive: false, details };
+  }
+
+  /**
+   * Update stored progress metrics
+   * @param {object} fingerprint - Current fingerprint
+   */
+  updateProgressMetrics(fingerprint) {
+    if (fingerprint.totalFoundationCards > this.maxFoundationCount) {
+      this.maxFoundationCount = fingerprint.totalFoundationCards;
+    }
+    
+    if (fingerprint.faceDownCount < this.minFaceDownCount) {
+      this.minFaceDownCount = fingerprint.faceDownCount;
+    }
+    
+    if (fingerprint.validSequences > this.maxValidSequences) {
+      this.maxValidSequences = fingerprint.validSequences;
+    }
   }
 
   /**
@@ -874,7 +968,6 @@ export class GameStateTracker {
    * @returns {boolean}
    */
   isCircularPlay() {
-    // 3+ cycles without a new state = circular play
     return this.cycleCount >= 3;
   }
 
@@ -883,8 +976,16 @@ export class GameStateTracker {
    * @returns {boolean}
    */
   isNoProgress() {
-    // 20+ moves without foundation progress = no progress
-    return (this.moveNumber - this.lastProgressMove) > 20;
+    // 30+ moves without progress = no progress (conservative threshold)
+    return (this.moveNumber - this.lastProgressMove) > 30;
+  }
+
+  /**
+   * Check if player is potentially stuck (5+ unproductive cycles)
+   * @returns {boolean}
+   */
+  isPotentiallyStuck() {
+    return this.unproductiveCycleCount >= 5;
   }
 
   /**
@@ -897,11 +998,16 @@ export class GameStateTracker {
       uniqueStates: this.stateHistory.size,
       totalVisits: Array.from(this.stateHistory.values()).reduce((a, b) => a + b, 0),
       cycleCount: this.cycleCount,
+      unproductiveCycleCount: this.unproductiveCycleCount,
       lastProgressMove: this.lastProgressMove,
       movesSinceProgress: this.moveNumber - this.lastProgressMove,
       maxFoundationCount: this.maxFoundationCount,
+      minFaceDownCount: this.minFaceDownCount,
+      maxValidSequences: this.maxValidSequences,
       isCircular: this.isCircularPlay(),
-      isNoProgress: this.isNoProgress()
+      isNoProgress: this.isNoProgress(),
+      isPotentiallyStuck: this.isPotentiallyStuck(),
+      unwinnableStatus: this.lastUnwinnableCheck
     };
   }
 
@@ -913,8 +1019,14 @@ export class GameStateTracker {
     this.moveNumber = 0;
     this.lastProgressMove = 0;
     this.cycleCount = 0;
+    this.unproductiveCycleCount = 0;
     this.currentFingerprint = null;
+    this.previousFingerprint = null;
     this.maxFoundationCount = 0;
+    this.minFaceDownCount = Infinity;
+    this.maxValidSequences = 0;
+    this.lastState = null;
+    this.lastUnwinnableCheck = null;
   }
 
   /**
@@ -926,6 +1038,228 @@ export class GameStateTracker {
     const key = fingerprintToKey(this.currentFingerprint);
     return this.stateHistory.get(key) || 0;
   }
+
+  /**
+   * Check if game is unwinnable (Phase 2)
+   * Triggers solver-based detection when unproductive cycles are high
+   * 
+   * @param {object} gameState - Current game state
+   * @param {boolean} forceDeep - Force deep check even if cycles are low
+   * @returns {object|null} Unwinnable check result or null if not checked
+   */
+  checkUnwinnable(gameState, forceDeep = false) {
+    // Only check if we've had significant unproductive cycles or forced
+    const shouldCheck = forceDeep || this.unproductiveCycleCount >= 4;
+    
+    if (!shouldCheck) {
+      return null;
+    }
+
+    // Use quick check first, deep check if cycles are very high
+    const useDeepCheck = forceDeep || this.unproductiveCycleCount >= 6;
+    const result = useDeepCheck 
+      ? deepUnwinnableCheck(gameState)
+      : quickUnwinnableCheck(gameState);
+
+    // Cache the result
+    this.lastUnwinnableCheck = {
+      ...result,
+      checkedAt: this.moveNumber,
+      cycleCountAtCheck: this.unproductiveCycleCount
+    };
+
+    return this.lastUnwinnableCheck;
+  }
+
+  /**
+   * Get cached unwinnable check result
+   * @returns {object|null}
+   */
+  getUnwinnableStatus() {
+    return this.lastUnwinnableCheck;
+  }
+}
+
+// ============================================================================
+// UNWINNABLE DETECTION (Phase 2)
+// ============================================================================
+
+/**
+ * UnwinnableStateDetector - Uses limited-depth BFS to detect unwinnable games
+ * 
+ * This is a "best effort" solver that explores possible moves from the current
+ * state to determine if a win is still possible. It's designed to be fast
+ * enough to run during gameplay while providing high confidence results.
+ * 
+ * Algorithm:
+ * 1. Use BFS to explore move tree from current state
+ * 2. Track visited states to avoid cycles
+ * 3. Limit search by node count (performance guard)
+ * 4. If win found -> definitely winnable
+ * 5. If search exhausted -> likely unwinnable (high confidence)
+ * 6. If hit node limit -> unknown (medium confidence)
+ * 
+ * @param {object} gameState - Current game state
+ * @param {object} options - Configuration options
+ * @returns {object} Detection result { isUnwinnable, confidence, nodesExplored }
+ */
+export function detectUnwinnableState(gameState, options = {}) {
+  const {
+    maxNodes = 5000,        // Limit search to prevent UI blocking
+    maxDepth = 15,          // Max moves to look ahead
+    trackPaths = false      // For debugging - returns winning path if found
+  } = options;
+
+  const startTime = performance.now();
+
+  if (!gameState || checkWinCondition(gameState)) {
+    return { isUnwinnable: false, confidence: 'certain', nodesExplored: 0, reason: 'already_won' };
+  }
+
+  // Quick check: if no moves available, definitely stuck
+  const immediateMoves = getAvailableMoves(gameState);
+  const realMoves = immediateMoves.filter(m => !m.isStockDraw && !m.isRecycle);
+  if (realMoves.length === 0 && gameState.stock.length === 0) {
+    return { isUnwinnable: true, confidence: 'high', nodesExplored: 1, reason: 'no_moves' };
+  }
+
+  // BFS setup
+  const visited = new Set();
+  const queue = [{ state: gameState, depth: 0, path: [] }];
+  let nodesExplored = 0;
+  const maxTime = 100; // 100ms time limit
+
+  while (queue.length > 0 && nodesExplored < maxNodes) {
+    // Time check to prevent UI blocking
+    if (performance.now() - startTime > maxTime) {
+      return { 
+        isUnwinnable: null, // Unknown - hit time limit
+        confidence: 'low', 
+        nodesExplored, 
+        reason: 'time_limit',
+        message: 'Search incomplete - game may still be winnable'
+      };
+    }
+
+    const { state, depth, path } = queue.shift();
+    nodesExplored++;
+
+    // Get state fingerprint for cycle detection
+    const fingerprint = getStateFingerprint(state);
+    const stateKey = fingerprintToKey(fingerprint);
+
+    // Skip if already visited
+    if (visited.has(stateKey)) continue;
+    visited.add(stateKey);
+
+    // Get all possible moves from this state
+    const moves = getAvailableMoves(state);
+
+    // Filter to actual moves (exclude just cycling stock)
+    const productiveMoves = moves.filter(m => 
+      !m.isStockDraw && !m.isRecycle
+    );
+
+    // If no productive moves but stock has cards, consider stock draws
+    const movesToTry = productiveMoves.length > 0 
+      ? productiveMoves 
+      : moves.filter(m => m.isStockDraw);
+
+    for (const move of movesToTry) {
+      // Execute move to get new state
+      let newState;
+      try {
+        newState = executeMove(move.card, move.target, state);
+      } catch (e) {
+        continue; // Skip invalid moves
+      }
+
+      if (!newState) continue;
+
+      // Check for win
+      if (checkWinCondition(newState)) {
+        const duration = performance.now() - startTime;
+        const result = {
+          isUnwinnable: false,
+          confidence: 'certain',
+          nodesExplored,
+          winningPath: trackPaths ? [...path, move] : undefined,
+          reason: 'win_found',
+          duration
+        };
+        if (import.meta.env.DEV) {
+          console.log('[GSN] Solver: Win found', { nodesExplored, duration: `${duration.toFixed(2)}ms` });
+        }
+        return result;
+      }
+
+      // Add to queue if within depth limit
+      if (depth < maxDepth) {
+        queue.push({
+          state: newState,
+          depth: depth + 1,
+          path: trackPaths ? [...path, move] : undefined
+        });
+      }
+    }
+  }
+
+  // Search exhausted without finding win
+  const confidence = nodesExplored > 1000 ? 'high' : nodesExplored > 500 ? 'medium' : 'low';
+  const duration = performance.now() - startTime;
+  
+  const result = {
+    isUnwinnable: true,
+    confidence,
+    nodesExplored,
+    reason: nodesExplored >= maxNodes ? 'node_limit' : 'exhausted',
+    duration,
+    message: confidence === 'high' 
+      ? 'Extensive search found no path to win'
+      : 'Limited search found no path to win'
+  };
+  
+  if (import.meta.env.DEV) {
+    console.log('[GSN] Solver: No win found', { 
+      isUnwinnable: true, 
+      confidence, 
+      nodesExplored, 
+      duration: `${duration.toFixed(2)}ms`,
+      reason: result.reason
+    });
+  }
+  
+  return result;
+}
+
+/**
+ * Quick unwinnable check for use during normal gameplay
+ * Uses lighter parameters for responsiveness
+ * 
+ * @param {object} gameState - Current game state
+ * @returns {object} { isUnwinnable, confidence }
+ */
+export function quickUnwinnableCheck(gameState) {
+  return detectUnwinnableState(gameState, {
+    maxNodes: 1000,
+    maxDepth: 10,
+    trackPaths: false
+  });
+}
+
+/**
+ * Deep unwinnable check for "confirmed" tier notification
+ * Uses heavier parameters for higher confidence
+ * 
+ * @param {object} gameState - Current game state
+ * @returns {object} { isUnwinnable, confidence, nodesExplored }
+ */
+export function deepUnwinnableCheck(gameState) {
+  return detectUnwinnableState(gameState, {
+    maxNodes: 10000,
+    maxDepth: 20,
+    trackPaths: false
+  });
 }
 
 // ============================================================================

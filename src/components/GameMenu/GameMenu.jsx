@@ -3,6 +3,7 @@ import styles from './GameMenu.module.css';
 import MenuItem from '../MenuItem';
 import Select from '../Select';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useNotificationSettings, NOTIFICATION_LEVELS } from '../../contexts/NotificationSettingsContext';
 
 /**
  * GameMenu Component
@@ -94,6 +95,20 @@ const GameMenu = ({
     onClose();
   };
 
+  // Notification settings
+  const { settings, updateSettings } = useNotificationSettings();
+  
+  const notificationOptions = [
+    { value: NOTIFICATION_LEVELS.ON, label: 'On' },
+    { value: NOTIFICATION_LEVELS.MINIMAL, label: 'Minimal' },
+    { value: NOTIFICATION_LEVELS.OFF, label: 'Off' }
+  ];
+  
+  const handleNotificationChange = (e) => {
+    updateSettings({ gameStateNotifications: e.target.value });
+    onClose();
+  };
+
   return (
     <div className={styles.menuContainer} ref={menuRef}>
       {/* Hamburger Button */}
@@ -149,6 +164,8 @@ const GameMenu = ({
 
         {/* Settings */}
         <div className={styles.section}>
+          <MenuItem sectionHeader="Settings" />
+          
           {/* Theme Selector */}
           <div className={styles.themeGroup}>
             <span className={styles.themeLabel}>Theme</span>
@@ -158,6 +175,19 @@ const GameMenu = ({
               options={themeOptions}
               value={theme}
               onChange={handleThemeChange}
+              className={styles.themeSelect}
+            />
+          </div>
+          
+          {/* Notification Settings */}
+          <div className={styles.themeGroup}>
+            <span className={styles.themeLabel}>Notifications</span>
+            <Select
+              variant="primary"
+              size="sm"
+              options={notificationOptions}
+              value={settings.gameStateNotifications}
+              onChange={handleNotificationChange}
               className={styles.themeSelect}
             />
           </div>

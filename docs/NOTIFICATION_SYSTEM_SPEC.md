@@ -1,7 +1,18 @@
 # Game State Notification System - Implementation Specification
 
-**Status:** Ready for Implementation  
+**Status:** Phase 2 Complete, Phase 3 In Progress  
 **Based On:** DESIGN_PRINCIPLES.md - Conservative, User-Controllable, Signal Over Noise
+
+## Implementation Status
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| Phase 1 | Enhanced Progress Detection | ✅ Complete |
+| Phase 2 | Unwinnable Detection Algorithm | ✅ Complete |
+| Phase 3 | Toast UI Components | ✅ Complete |
+| Phase 4 | Settings Integration | ✅ Complete |
+| Phase 5 | Remove Stats Bar Warning | 🔄 In Progress |
+| Phase 6 | Testing & Polish | ✅ Complete |
 
 ---
 
@@ -256,46 +267,75 @@ function isGameUnwinnable(gameState, searchDepth = 5) {
 
 ## Implementation Plan
 
-### Phase 1: Enhanced Detection (Core)
+### Phase 1: Enhanced Detection (Core) ✅
 
 **Files:**
-- `src/utils/gameLogic.js` - Add isProductiveMove(), enhanced GameStateTracker
-- `src/hooks/useCardGame.js` - Update tracking logic
+- `src/utils/gameLogic.js` - Enhanced GameStateTracker with productivity tracking
+- `src/hooks/useCardGame.js` - Four-tier notification logic
+- `src/utils/cardUtils.js` - Enhanced state fingerprinting
 
-**Tasks:**
-1. Add face-down count, valid sequences to state fingerprint
-2. Implement isProductiveMove() function
-3. Track "unproductive cycle count" separately from "total moves"
-4. Update calculateWarningLevel() with new thresholds
+**Implemented:**
+1. ✅ Face-down count, valid sequences, empty columns in fingerprint
+2. ✅ `isProductiveMove()` - 6 types of productive moves tracked
+3. ✅ `unproductiveCycleCount` - Separate from total moves
+4. ✅ Four-tier system: hint → concern → warning → confirmed
 
-### Phase 2: Unwinnable Detection
-
-**Files:**
-- `src/utils/gameLogic.js` - Add isGameUnwinnable()
-
-**Tasks:**
-1. Implement foundation reachability check
-2. Implement circular dependency detection
-3. Add limited-depth exhaustive search
-4. Cache results to avoid recomputation
-
-### Phase 3: UI Components
+### Phase 2: Unwinnable Detection ✅
 
 **Files:**
-- `src/components/GameStateToast/` - NEW
-- `src/components/GameStateOverlay/` - NEW (or enhance existing)
-- `src/components/StalemateModal/` - Enhance
+- `src/utils/gameLogic.js` - `detectUnwinnableState()`, `quick/deepUnwinnableCheck()`
+- `src/hooks/useCardGame.js` - `runUnwinnableCheck()` integration
 
-**Tasks:**
-1. Create toast component
-2. Create overlay component
-3. Update StalemateModal with new stats
-4. Add CSS animations
+**Implemented:**
+1. ✅ BFS-based solver with node/time/depth limits
+2. ✅ Quick (3K nodes) vs Deep (8K nodes) checks
+3. ✅ Confidence levels (low/medium/high/certain)
+4. ✅ Automatic triggering at 4+ unproductive cycles
+5. ✅ Result caching in GameStateTracker
 
-### Phase 4: Settings Integration
+### Phase 3: UI Components ✅
 
 **Files:**
-- `src/components/GameMenu/SettingsPanel.jsx` - Add toggle
+- `src/components/GameStateToast/` - Toast for hint/concern tiers
+- `src/components/GameStateOverlay/` - Overlay for warning tier
+- `src/App.jsx` - Integration with game state
+
+**Implemented:**
+1. ✅ `GameStateToast` - Auto-dismiss, tier-specific styling, action button
+2. ✅ `GameStateOverlay` - Semi-transparent backdrop, action buttons
+3. ✅ CSS animations with `prefers-reduced-motion` support
+4. ✅ Responsive mobile/desktop layouts
+5. ✅ Integration in App.jsx with automatic display logic
+
+### Phase 5: Stats Bar Cleanup ✅
+
+**Files:**
+- `src/components/GameStats/GameStats.jsx` - Simplified component
+- `src/components/GameStats/GameStats.module.css` - Removed warning styles
+- `src/components/GameStage/GameStage.jsx` - Removed prop
+- `src/App.jsx` - Removed prop
+
+**Implemented:**
+1. ✅ Removed `circularPlayState` prop from GameStats
+2. ✅ Removed warning indicator logic and CSS
+3. ✅ Component now shows only moves and time
+4. ✅ All warnings now via GameStateToast/GameStateOverlay
+
+### Phase 4: Settings Integration ✅
+
+**Files:**
+- `src/contexts/NotificationSettingsContext.jsx` - Context provider
+- `src/components/GameMenu/GameMenu.jsx` - Settings UI
+- `src/main.jsx` - Provider integration
+- `src/App.jsx` - Settings-aware display logic
+
+**Implemented:**
+1. ✅ `NotificationSettingsContext` with localStorage persistence
+2. ✅ Three levels: On / Minimal / Off
+3. ✅ `shouldShowNotification()` utility function
+4. ✅ Settings UI in GameMenu (Notifications dropdown)
+5. ✅ `isTierEnabled()` hook method for conditional display
+6. ✅ App.jsx effect respects user preferences
 - `src/contexts/SettingsContext.jsx` - Update schema
 - `src/hooks/useSettings.js` - Handle new setting
 

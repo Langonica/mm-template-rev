@@ -345,6 +345,11 @@ export function getStateFingerprint(gameState) {
 
   // Pocket contents
   const pockets = [gameState.pocket1, gameState.pocket2];
+  
+  // Enhanced metrics for better progress detection (Phase 1 Notification System)
+  const faceDownCount = countFaceDownCards(gameState);
+  const validSequences = countValidSequences(gameState);
+  const emptyColumns = countEmptyColumns(gameState);
 
   return {
     tableauHash,
@@ -352,8 +357,66 @@ export function getStateFingerprint(gameState) {
     wasteTop,
     foundationCounts,
     pockets,
-    totalFoundationCards
+    totalFoundationCards,
+    faceDownCount,
+    validSequences,
+    emptyColumns
   };
+}
+
+/**
+ * Count total face-down cards across all tableau columns
+ * @param {object} gameState - Current game state
+ * @returns {number} Total face-down cards
+ */
+function countFaceDownCards(gameState) {
+  if (!gameState?.columnState?.faceDownCounts) return 0;
+  
+  return gameState.columnState.faceDownCounts.reduce((sum, count) => sum + (count || 0), 0);
+}
+
+/**
+ * Count valid sequences (3+ cards in sequence) in tableau
+ * @param {object} gameState - Current game state
+ * @returns {number} Number of valid sequences
+ */
+function countValidSequences(gameState) {
+  if (!gameState?.tableau) return 0;
+  
+  let sequences = 0;
+  
+  for (let col = 0; col < 7; col++) {
+    const column = gameState.tableau[col.toString()] || [];
+    if (column.length < 3) continue;
+    
+    const faceDownCount = gameState.columnState?.faceDownCounts?.[col] || 0;
+    const faceUpCards = column.slice(faceDownCount);
+    
+    if (faceUpCards.length >= 3) {
+      const columnType = gameState.columnState?.types?.[col] || 'traditional';
+      if (isValidSequence(faceUpCards, columnType)) {
+        sequences++;
+      }
+    }
+  }
+  
+  return sequences;
+}
+
+/**
+ * Count empty tableau columns
+ * @param {object} gameState - Current game state
+ * @returns {number} Number of empty columns
+ */
+function countEmptyColumns(gameState) {
+  if (!gameState?.tableau) return 0;
+  
+  let empty = 0;
+  for (let col = 0; col < 7; col++) {
+    const column = gameState.tableau[col.toString()] || [];
+    if (column.length === 0) empty++;
+  }
+  return empty;
 }
 
 /**
