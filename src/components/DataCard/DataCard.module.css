@@ -1,0 +1,52 @@
+/**
+ * DataCard Component Styles
+ *
+ * Card for displaying statistics with large value and label.
+ */
+
+.card {
+  padding: var(--spacing-6);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius-lg);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  transition: all var(--transition-fast);
+  min-height: var(--card-data-min-height);
+}
+
+.card:hover {
+  border-color: var(--accent-primary);
+  transform: var(--hover-lift);
+}
+
+.value {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--accent-primary);
+  font-family: var(--font-family-mono);
+  line-height: 1.2;
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+/* Responsive sizing */
+@media (max-width: 640px) {
+  .card {
+    padding: var(--spacing-4);
+    min-height: auto;
+  }
+  
+  .value {
+    font-size: var(--font-size-2xl);
+  }
+}

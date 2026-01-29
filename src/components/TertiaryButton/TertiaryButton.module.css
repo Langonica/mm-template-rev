@@ -1,0 +1,40 @@
+/**
+ * TertiaryButton Component Styles
+ *
+ * Text link style button for supporting actions.
+ */
+
+.button {
+  padding: var(--spacing-2) var(--spacing-4);
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  color: var(--text-secondary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  text-decoration: none;
+}
+
+.button:hover:not(:disabled) {
+  color: var(--accent-primary);
+  background: var(--bg-overlay-light);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Separator style for button groups */
+.button + .button::before {
+  content: '•';
+  margin-right: var(--spacing-4);
+  color: var(--text-muted);
+}

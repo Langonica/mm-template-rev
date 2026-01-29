@@ -1,0 +1,49 @@
+/**
+ * TextLinkGroup Component Styles
+ *
+ * Group of text links with bullet separators.
+ */
+
+.group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.link {
+  padding: var(--spacing-2) var(--spacing-3);
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  color: var(--text-secondary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.link:hover {
+  color: var(--accent-primary);
+  background: var(--bg-overlay-light);
+}
+
+.separator {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  user-select: none;
+}
+
+/* Responsive: Stack on very small screens */
+@media (max-width: 400px) {
+  .group {
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+  
+  .separator {
+    display: none;
+  }
+}

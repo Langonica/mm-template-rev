@@ -1,0 +1,46 @@
+/**
+ * ProgressBar Component Styles
+ *
+ * Visual progress indicator.
+ */
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  width: 100%;
+}
+
+.bar {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-elevated);
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  border-radius: var(--border-radius-sm);
+  transition: width var(--transition-normal);
+  min-width: 4px;
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  min-width: 50px;
+  text-align: right;
+}
+
+/* Compact variant */
+.container[data-compact="true"] .bar {
+  height: 4px;
+}
+
+.container[data-compact="true"] .label {
+  font-size: var(--font-size-xs);
+}

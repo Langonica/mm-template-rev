@@ -1,0 +1,50 @@
+/**
+ * PrimaryButton Component Styles
+ *
+ * Main CTA button. Dimensions: 240px × 56px (sprite target)
+ */
+
+.button {
+  width: var(--btn-primary-width);
+  height: var(--btn-primary-height);
+  background: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+  border-radius: var(--border-radius-md);
+  color: var(--bg-deepest);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.button:hover:not(:disabled) {
+  background: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+  transform: var(--hover-lift);
+  box-shadow: var(--shadow-glow-sm);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive: Full width on mobile */
+@media (max-width: 640px) {
+  .button {
+    width: 100%;
+    max-width: var(--btn-primary-width);
+  }
+}

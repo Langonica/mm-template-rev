@@ -412,4 +412,29 @@
   --hover-lift: translateY(-2px);
   --hover-scale: scale(1.05);
   --hover-brightness: brightness(1.1);
+  
+  /* ========================================
+     UI REDUX - Screen System (v2.3.0)
+     ======================================== */
+  
+  /* Z-Index Layers for Screen System */
+  --z-home: 100;              /* HomeScreen when game active underneath */
+  --z-content: 500;           /* Full-bleed content screens (Rules, Stats) */
+  
+  /* Screen Layout */
+  --screen-header-height: 60px;
+  --screen-max-width: 960px;
+  --screen-padding: var(--spacing-8); /* 32px */
+  
+  /* Button Dimensions (Sprite Targets) */
+  --btn-primary-width: 240px;
+  --btn-primary-height: 56px;
+  --btn-secondary-width: 200px;
+  --btn-secondary-height: 48px;
+  --btn-icon-size: 40px;
+  
+  /* Card Dimensions */
+  --card-info-min-height: 120px;
+  --card-data-min-height: 160px;
+  --card-feature-min-height: 200px;
 }
