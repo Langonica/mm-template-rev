@@ -141,7 +141,10 @@ function App() {
   
   // Refs for stats values to avoid excessive useEffect dependencies (Performance fix - Phase 1)
   const statsRef = useRef(stats)
-  statsRef.current = stats
+
+  useEffect(() => {
+    statsRef.current = stats
+  }, [stats])
 
   // Menu handlers
   const handleMenuToggle = useCallback(() => {

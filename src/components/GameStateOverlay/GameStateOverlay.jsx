@@ -3,6 +3,7 @@ import styles from './GameStateOverlay.module.css';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import TertiaryButton from '../TertiaryButton';
+import { AlertTriangle } from '../Icon';
 
 /**
  * GameStateOverlay Component (Phase 3)
@@ -84,7 +85,7 @@ const GameStateOverlay = ({
       {/* Content card */}
       <div className={styles.card}>
         <div className={styles.header}>
-          <span className={styles.icon}>⚠️</span>
+          <span className={styles.icon}><AlertTriangle size={48} /></span>
           <h2 className={styles.title}>You May Be Stuck</h2>
         </div>
 

@@ -4,6 +4,7 @@ import FullBleedScreen from '../FullBleedScreen';
 import TabBar from '../TabBar';
 import DataCard from '../DataCard';
 import TertiaryButton from '../TertiaryButton';
+import { Flame, Star, Target, Zap, Gem, Gamepad2 } from '../Icon';
 
 /**
  * StatisticsScreen Component
@@ -111,33 +112,33 @@ const StatisticsScreen = ({
     <div className={styles.tabContent}>
       <div className={styles.recordsGrid}>
         <div className={styles.recordCard}>
-          <div className={styles.recordIcon}>🔥</div>
+          <div className={styles.recordIcon}><Flame size={32} /></div>
           <div className={styles.recordValue}>{stats.currentStreak}</div>
           <div className={styles.recordLabel}>Current Streak</div>
         </div>
         <div className={styles.recordCard}>
-          <div className={styles.recordIcon}>⭐</div>
+          <div className={styles.recordIcon}><Star size={32} /></div>
           <div className={styles.recordValue}>{stats.bestStreak}</div>
           <div className={styles.recordLabel}>Best Streak</div>
         </div>
         <div className={styles.recordCard}>
-          <div className={styles.recordIcon}>🎯</div>
+          <div className={styles.recordIcon}><Target size={32} /></div>
           <div className={styles.recordValue}>{stats.bestWinMoves ?? '--'}</div>
           <div className={styles.recordLabel}>Best Win (Moves)</div>
         </div>
         <div className={styles.recordCard}>
-          <div className={styles.recordIcon}>⚡</div>
+          <div className={styles.recordIcon}><Zap size={32} /></div>
           <div className={styles.recordValue}>{formatTime(stats.bestWinTime)}</div>
           <div className={styles.recordLabel}>Best Win (Time)</div>
         </div>
         <div className={`${styles.recordCard} ${styles.highlight}`}>
-          <div className={styles.recordIcon}>💎</div>
+          <div className={styles.recordIcon}><Gem size={32} /></div>
           <div className={styles.recordValue}>{stats.perfectGames || 0}</div>
           <div className={styles.recordLabel}>Perfect Games</div>
           {stats.wins > 0 && <div className={styles.recordSubtext}>{perfectGameRate}% of wins</div>}
         </div>
         <div className={styles.recordCard}>
-          <div className={styles.recordIcon}>🎮</div>
+          <div className={styles.recordIcon}><Gamepad2 size={32} /></div>
           <div className={styles.recordValue}>{formatNumber(stats.totalCardsMoved || 0)}</div>
           <div className={styles.recordLabel}>Cards Moved</div>
         </div>

@@ -161,7 +161,7 @@ function validateSnapshot(snapshot) {
   if (foundations) {
     const suits = ['h', 'd', 'c', 's'];
     
-    // UP foundations (7Ã¢â€ â€™K)
+    // UP foundations (7→K)
     if (foundations.up) {
       suits.forEach(suit => {
         const upCards = foundations.up[suit] || [];
@@ -181,7 +181,7 @@ function validateSnapshot(snapshot) {
             errors.push(`UP Foundation ${suit}: Card ${upCards[i]} is wrong suit`);
           }
           
-          // Must ascend (7Ã¢â€ â€™8Ã¢â€ â€™9Ã¢â€ â€™10Ã¢â€ â€™JÃ¢â€ â€™QÃ¢â€ â€™K)
+          // Must ascend (7→8→9→10→J→Q→K)
           if (current.numericValue !== previous.numericValue + 1) {
             errors.push(`UP Foundation ${suit}: Sequence broken between ${upCards[i-1]} and ${upCards[i]}`);
           }
@@ -197,7 +197,7 @@ function validateSnapshot(snapshot) {
       });
     }
     
-    // DOWN foundations (6Ã¢â€ â€™A)
+    // DOWN foundations (6→A)
     if (foundations.down) {
       suits.forEach(suit => {
         const downCards = foundations.down[suit] || [];
@@ -217,7 +217,7 @@ function validateSnapshot(snapshot) {
             errors.push(`DOWN Foundation ${suit}: Card ${downCards[i]} is wrong suit`);
           }
           
-          // Must descend (6Ã¢â€ â€™5Ã¢â€ â€™4Ã¢â€ â€™3Ã¢â€ â€™2Ã¢â€ â€™A)
+          // Must descend (6→5→4→3→2→A)
           if (current.numericValue !== previous.numericValue - 1) {
             errors.push(`DOWN Foundation ${suit}: Sequence broken between ${downCards[i-1]} and ${downCards[i]}`);
           }
@@ -302,13 +302,13 @@ async function validateAllSnapshots() {
     const categoryDir = path.join(snapshotsDir, category);
     
     if (!fs.existsSync(categoryDir)) {
-      log(`❌ Category directory not found: ${categoryDir}`);
+      log(`[X] Category directory not found: ${categoryDir}`);
       continue;
     }
     
     const files = fs.readdirSync(categoryDir).filter(f => f.endsWith('.json'));
     
-    log(`\n📁 ${category.toUpperCase()} (${files.length} snapshots):`);
+    log(`\n[DIR] ${category.toUpperCase()} (${files.length} snapshots):`);
     log('='.repeat(50));
     
     for (const file of files) {
@@ -322,14 +322,14 @@ async function validateAllSnapshots() {
         const snapshotId = data.metadata?.id || file.replace('.json', '');
         
         if (result.isValid) {
-          log(`✅ ${snapshotId}: VALID`);
+          log(`[OK] ${snapshotId}: VALID`);
           validSnapshots++;
           
           if (result.warnings.length > 0) {
-            log(`   ⚠️  Warnings: ${result.warnings.join('; ')}`);
+            log(`   [!]  Warnings: ${result.warnings.join('; ')}`);
           }
         } else {
-          log(`❌ ${snapshotId}: INVALID`);
+          log(`[X] ${snapshotId}: INVALID`);
           invalidSnapshots++;
           
           log(`   Errors:`);
@@ -344,24 +344,24 @@ async function validateAllSnapshots() {
         }
         
       } catch (error) {
-        log(`❌ ${file}: ERROR - ${error.message}`);
+        log(`[X] ${file}: ERROR - ${error.message}`);
         invalidSnapshots++;
       }
     }
   }
   
   log('\n' + '='.repeat(50));
-  log('📊 VALIDATION SUMMARY:');
+  log('[SUMMARY] VALIDATION SUMMARY:');
   log(`   Total Snapshots: ${totalSnapshots}`);
-  log(`   Valid: ${validSnapshots} ✅`);
-  log(`   Invalid: ${invalidSnapshots} ❌`);
+  log(`   Valid: ${validSnapshots} [OK]`);
+  log(`   Invalid: ${invalidSnapshots} [X]`);
   log(`   Success Rate: ${((validSnapshots / totalSnapshots) * 100).toFixed(1)}%`);
   
   if (invalidSnapshots > 0) {
-    log('\n⚠️  Some snapshots need fixing!');
+    log('\n[!]  Some snapshots need fixing!');
     process.exit(1);
   } else {
-    log('\n🎉 All snapshots are valid!');
+    log('\n[DONE] All snapshots are valid!');
     process.exit(0);
   }
 }

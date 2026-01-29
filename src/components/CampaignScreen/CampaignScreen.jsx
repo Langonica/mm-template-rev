@@ -3,6 +3,7 @@ import LevelCard from '../LevelCard';
 import FullBleedScreen from '../FullBleedScreen';
 import { CAMPAIGN_LEVELS } from '../../hooks/useCampaignProgress';
 import styles from './CampaignScreen.module.css';
+import { Trophy, Star } from '../Icon';
 
 const CampaignScreen = ({
   progress,
@@ -25,9 +26,9 @@ const CampaignScreen = ({
   };
 
   const tierConfig = [
-    { key: 'easy', name: 'Bronze', icon: '★', color: '#CD7F32' },
-    { key: 'moderate', name: 'Silver', icon: '★', color: '#C0C0C0' },
-    { key: 'hard', name: 'Gold', icon: '★', color: '#FFD700' },
+    { key: 'easy', name: 'Bronze', Icon: Star, color: '#CD7F32' },
+    { key: 'moderate', name: 'Silver', Icon: Star, color: '#C0C0C0' },
+    { key: 'hard', name: 'Gold', Icon: Star, color: '#FFD700' },
   ];
 
   return (
@@ -44,7 +45,7 @@ const CampaignScreen = ({
 
         {progress.campaignComplete && (
           <div className={styles.completeBanner}>
-            <span>🏆</span>
+            <span><Trophy size={24} /></span>
             <span>Campaign Complete!</span>
           </div>
         )}
@@ -63,7 +64,7 @@ const CampaignScreen = ({
                 style={{ '--tier-color': tier.color }}
               >
                 <span className={styles.tierName}>{tier.name}</span>
-                <span className={styles.tierIcon}>{tier.icon}</span>
+                <span className={styles.tierIcon}><tier.Icon size={16} /></span>
                 <span className={styles.tierProgress}>
                   {tierProgress.completed}/{tierProgress.total}
                 </span>

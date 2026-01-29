@@ -4,6 +4,7 @@ import MenuItem from '../MenuItem';
 import Select from '../Select';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useNotificationSettings, NOTIFICATION_LEVELS } from '../../contexts/NotificationSettingsContext';
+import { RotateCcw, Home, BarChart3 } from '../Icon';
 
 /**
  * GameMenu Component
@@ -135,19 +136,19 @@ const GameMenu = ({
             <>
               <MenuItem
                 label={`Restart Level ${campaignLevelNumber}`}
-                icon="@"
+                icon={<RotateCcw size={16} />}
                 onClick={handleRestartLevel}
               />
               <MenuItem
                 label="Back to Campaign"
-                icon="^"
+                icon={<Home size={16} />}
                 onClick={handleGoHome}
               />
             </>
           ) : (
             <MenuItem
               label="Home"
-              icon="^"
+              icon={<Home size={16} />}
               onClick={handleGoHome}
             />
           )}
@@ -157,7 +158,7 @@ const GameMenu = ({
         <div className={styles.section}>
           <MenuItem
             label="Statistics"
-            icon="*"
+            icon={<BarChart3 size={16} />}
             onClick={handleOpenStats}
           />
         </div>

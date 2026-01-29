@@ -891,84 +891,89 @@ export const useCardGame = (callbacks = {}) => {
   // PHASE 6: DEBUG TOOLS (Development Only)
   // ============================================================================
   
-  useEffect(() => {
-    if (!import.meta.env.DEV) return;
-    
-    // Expose debugging functions on window
-    window.__GSN_DEBUG__ = {
-      // Get current tracker state
-      getTrackerState: () => stateTracker ? stateTracker.getStats() : null,
-      
-      // Get current notification state
-      getNotificationState: () => gameStateNotification,
-      
-      // Get current game state
-      getGameState: () => gameState,
-      
-      // Force a specific tier (for UI testing)
-      forceTier: (tier) => {
-        console.log('[GSN] Forcing tier:', tier);
-        setGameStateNotification(prev => ({ ...prev, tier }));
-        if (tier === 'hint' || tier === 'concern') {
-          setGameStateToastOpen(true);
-        } else if (tier === 'warning') {
-          setGameStateOverlayOpen(true);
-          setGameStateToastOpen(false);
-        } else if (tier === 'none') {
-          setGameStateToastOpen(false);
-          setGameStateOverlayOpen(false);
-        }
-      },
-      
-      // Run unwinnable check manually
-      checkUnwinnable: (options = {}) => {
-        if (!gameState) {
-          console.log('[GSN] No game state available');
-          return null;
-        }
-        const startTime = performance.now();
-        const result = detectUnwinnableState(gameState, { 
-          maxNodes: options.maxNodes || 10000, 
-          maxDepth: options.maxDepth || 20,
-          trackPaths: options.trackPaths || true 
-        });
-        const duration = performance.now() - startTime;
-        console.log('[GSN] Manual unwinnable check:', { ...result, duration: `${duration.toFixed(2)}ms` });
-        return result;
-      },
-      
-      // Reset notification state
-      resetNotifications: () => {
-        console.log('[GSN] Resetting notifications');
-        setGameStateNotification({
-          tier: 'none',
-          unproductiveCycles: 0,
-          movesSinceProgress: 0,
-          wasProductive: true,
-          details: null,
-          unwinnableCheck: null
-        });
-        setGameStateToastOpen(false);
-        setGameStateOverlayOpen(false);
-        stateTracker.reset();
-      },
-      
-      // Simulate unproductive cycles
-      simulateCycles: (count = 5) => {
-        console.log(`[GSN] Simulating ${count} unproductive cycles`);
-        for (let i = 0; i < count; i++) {
-          stateTracker.unproductiveCycleCount++;
-        }
-        console.log('[GSN] Current cycles:', stateTracker.unproductiveCycleCount);
-      }
-    };
-    
-    console.log('[GSN] Debug tools available. Try: __GSN_DEBUG__.getTrackerState()');
-    
-    return () => {
-      delete window.__GSN_DEBUG__;
-    };
-  }, [stateTracker, gameState, gameStateNotification]);
+  // NOTE: Debug tools are temporarily disabled because they reference
+  // setGameStateToastOpen and setGameStateOverlayOpen which are defined in
+  // App.jsx and not available in this hook. To re-enable, either pass the
+  // setter functions as parameters or implement the UI state management here.
+  // 
+  // useEffect(() => {
+  //   if (!import.meta.env.DEV) return;
+  //   
+  //   // Expose debugging functions on window
+  //   window.__GSN_DEBUG__ = {
+  //     // Get current tracker state
+  //     getTrackerState: () => stateTracker ? stateTracker.getStats() : null,
+  //     
+  //     // Get current notification state
+  //     getNotificationState: () => gameStateNotification,
+  //     
+  //     // Get current game state
+  //     getGameState: () => gameState,
+  //     
+  //     // Force a specific tier (for UI testing)
+  //     forceTier: (tier) => {
+  //       console.log('[GSN] Forcing tier:', tier);
+  //       setGameStateNotification(prev => ({ ...prev, tier }));
+  //       if (tier === 'hint' || tier === 'concern') {
+  //         setGameStateToastOpen(true);
+  //       } else if (tier === 'warning') {
+  //         setGameStateOverlayOpen(true);
+  //         setGameStateToastOpen(false);
+  //       } else if (tier === 'none') {
+  //         setGameStateToastOpen(false);
+  //         setGameStateOverlayOpen(false);
+  //       }
+  //     },
+  //     
+  //     // Run unwinnable check manually
+  //     checkUnwinnable: (options = {}) => {
+  //       if (!gameState) {
+  //         console.log('[GSN] No game state available');
+  //         return null;
+  //       }
+  //       const startTime = performance.now();
+  //       const result = detectUnwinnableState(gameState, { 
+  //         maxNodes: options.maxNodes || 10000, 
+  //         maxDepth: options.maxDepth || 20,
+  //         trackPaths: options.trackPaths || true 
+  //       });
+  //       const duration = performance.now() - startTime;
+  //       console.log('[GSN] Manual unwinnable check:', { ...result, duration: `${duration.toFixed(2)}ms` });
+  //       return result;
+  //     },
+  //     
+  //     // Reset notification state
+  //     resetNotifications: () => {
+  //       console.log('[GSN] Resetting notifications');
+  //       setGameStateNotification({
+  //         tier: 'none',
+  //         unproductiveCycles: 0,
+  //         movesSinceProgress: 0,
+  //         wasProductive: true,
+  //         details: null,
+  //         unwinnableCheck: null
+  //       });
+  //       setGameStateToastOpen(false);
+  //       setGameStateOverlayOpen(false);
+  //       stateTracker.reset();
+  //     },
+  //     
+  //     // Simulate unproductive cycles
+  //     simulateCycles: (count = 5) => {
+  //       console.log(`[GSN] Simulating ${count} unproductive cycles`);
+  //       for (let i = 0; i < count; i++) {
+  //         stateTracker.unproductiveCycleCount++;
+  //       }
+  //       console.log('[GSN] Current cycles:', stateTracker.unproductiveCycleCount);
+  //     }
+  //   };
+  //   
+  //   console.log('[GSN] Debug tools available. Try: __GSN_DEBUG__.getTrackerState()');
+  //   
+  //   return () => {
+  //     delete window.__GSN_DEBUG__;
+  //   };
+  // }, [stateTracker, gameState, gameStateNotification]);
 
   return {
     config,

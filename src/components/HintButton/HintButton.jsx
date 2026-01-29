@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './HintButton.module.css';
+import { HelpCircle } from '../Icon';
 
 /**
  * HintButton Component
@@ -25,7 +26,7 @@ const HintButton = ({
       disabled={isDisabled}
       title={hintsRemaining > 0 ? `Show hint (${hintsRemaining} remaining) - Press H` : 'No hints remaining'}
     >
-      <span className={styles.icon}>?</span>
+      <span className={styles.icon}><HelpCircle size={20} /></span>
       <span className={styles.text}>Hint</span>
       <span className={styles.badge}>{hintsRemaining}</span>
     </button>

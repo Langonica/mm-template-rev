@@ -4,6 +4,17 @@ import FullBleedScreen from '../FullBleedScreen';
 import TabBar from '../TabBar';
 import InfoCard from '../InfoCard';
 import DataCard from '../DataCard';
+import { 
+  Trophy, 
+  MousePointerClick, 
+  Hand, 
+  Smartphone, 
+  Keyboard,
+  BookOpen,
+  Layers,
+  Sparkles,
+  Square
+} from '../Icon';
 
 /**
  * HowToPlayScreen Component
@@ -24,7 +35,7 @@ const HowToPlayScreen = ({ isOpen, onClose }) => {
   const GoalContent = () => (
     <div className={styles.tabContent}>
       <div className={styles.goalHighlight}>
-        <span className={styles.goalIcon}>🏆</span>
+        <span className={styles.goalIcon}><Trophy size={48} /></span>
         <h3>Fill all 8 foundations to win</h3>
       </div>
       <div className={styles.cardsGrid}>
@@ -43,7 +54,7 @@ const HowToPlayScreen = ({ isOpen, onClose }) => {
         <InfoCard icon={<span className={styles.kingIcon}>K</span>} title="King Columns">
           Build descending K→7 with alternating colors.
         </InfoCard>
-        <InfoCard icon={<span className={styles.emptyIcon}>□</span>} title="Empty Columns">
+        <InfoCard icon={<span className={styles.emptyIcon}><Square size={20} /></span>} title="Empty Columns">
           Only Kings or Aces can start an empty column.
         </InfoCard>
       </div>
@@ -53,16 +64,16 @@ const HowToPlayScreen = ({ isOpen, onClose }) => {
   const ControlsContent = () => (
     <div className={styles.tabContent}>
       <div className={styles.cardsGrid}>
-        <InfoCard icon={<span className={styles.controlIcon}>🖱️</span>} title="Drag & Drop">
+        <InfoCard icon={<span className={styles.controlIcon}><MousePointerClick size={24} /></span>} title="Drag & Drop">
           Click and drag cards to move them.
         </InfoCard>
-        <InfoCard icon={<span className={styles.controlIcon}>👆</span>} title="Double Click">
+        <InfoCard icon={<span className={styles.controlIcon}><Hand size={24} /></span>} title="Double Click">
           Double-click a card to auto-move to foundation.
         </InfoCard>
-        <InfoCard icon={<span className={styles.controlIcon}>📱</span>} title="Touch">
+        <InfoCard icon={<span className={styles.controlIcon}><Smartphone size={24} /></span>} title="Touch">
           Touch to select, touch destination to move.
         </InfoCard>
-        <InfoCard icon={<span className={styles.controlIcon}>⌨️</span>} title="Keyboard">
+        <InfoCard icon={<span className={styles.controlIcon}><Keyboard size={24} /></span>} title="Keyboard">
           Ctrl+Z to undo, Escape to pause.
         </InfoCard>
       </div>
@@ -72,16 +83,16 @@ const HowToPlayScreen = ({ isOpen, onClose }) => {
   const ModesContent = () => (
     <div className={styles.tabContent}>
       <div className={styles.cardsGrid}>
-        <InfoCard icon={<span className={styles.modeIcon}>📘</span>} title="Classic">
+        <InfoCard icon={<span className={styles.modeIcon}><BookOpen size={20} /></span>} title="Classic">
           Standard rules with one pocket. Most balanced.
         </InfoCard>
-        <InfoCard icon={<span className={styles.modeIcon}>📗</span>} title="Classic Double">
+        <InfoCard icon={<span className={styles.modeIcon}><Layers size={20} /></span>} title="Classic Double">
           Two pockets for easier card management.
         </InfoCard>
-        <InfoCard icon={<span className={styles.modeIcon}>🎴</span>} title="Hidden">
+        <InfoCard icon={<span className={styles.modeIcon}><Sparkles size={20} /></span>} title="Hidden">
           Face-down cards in columns. More challenging.
         </InfoCard>
-        <InfoCard icon={<span className={styles.modeIcon}>🃏</span>} title="Hidden Double">
+        <InfoCard icon={<span className={styles.modeIcon}><Sparkles size={20} /></span>} title="Hidden Double">
           Hidden cards with two pockets. Expert mode.
         </InfoCard>
       </div>

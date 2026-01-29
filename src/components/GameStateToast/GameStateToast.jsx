@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styles from './GameStateToast.module.css';
+import { Lightbulb, MessageCircle } from '../Icon';
 
 /**
  * GameStateToast Component (Phase 3)
@@ -47,6 +48,15 @@ const GameStateToast = ({
     }
   }, [isOpen]);
 
+  const handleDismiss = useCallback(() => {
+    setIsExiting(true);
+    // Wait for exit animation before calling onDismiss
+    setTimeout(() => {
+      setIsVisible(false);
+      onDismiss?.();
+    }, 300);
+  }, [onDismiss]);
+
   // Auto-dismiss timer
   useEffect(() => {
     if (!isOpen || !isVisible) return;
@@ -58,16 +68,7 @@ const GameStateToast = ({
       }, duration);
       return () => clearTimeout(timer);
     }
-  }, [isOpen, isVisible, tier, duration]);
-
-  const handleDismiss = () => {
-    setIsExiting(true);
-    // Wait for exit animation before calling onDismiss
-    setTimeout(() => {
-      setIsVisible(false);
-      onDismiss?.();
-    }, 300);
-  };
+  }, [isOpen, isVisible, tier, duration, handleDismiss]);
 
   const handleAction = () => {
     onAction?.();
@@ -79,10 +80,10 @@ const GameStateToast = ({
   const getIcon = () => {
     switch (tier) {
       case 'concern':
-        return '💡';
+        return <Lightbulb size={20} />;
       case 'hint':
       default:
-        return '💭';
+        return <MessageCircle size={20} />;
     }
   };
 

@@ -1317,7 +1317,7 @@ export function canAutoComplete(gameState) {
 /**
  * Check if there are any blocked sequences that prevent auto-complete.
  * A blocked sequence occurs when cards are arranged such that they
- * circularly depend on each other (e.g., 7♠ on 8♥, but 8♥ needed on 7♠ foundation).
+ * circularly depend on each other (e.g., 7 of spades on 8 of hearts, but 8 of hearts needed on 7 of spades foundation).
  * 
  * @param {object} gameState - Current game state
  * @returns {boolean} True if blocked sequences exist

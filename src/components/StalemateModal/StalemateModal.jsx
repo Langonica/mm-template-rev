@@ -6,6 +6,7 @@ import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import TertiaryButton from '../TertiaryButton';
 import ProgressBar from '../ProgressBar';
+import { CircleX } from '../Icon';
 
 /**
  * StalemateModal Component (Redesigned)
@@ -49,7 +50,7 @@ const StalemateModal = ({
       <div className={styles.screen}>
         {/* Stalemate Message */}
         <div className={styles.messageBox}>
-          <span className={styles.icon}>🚫</span>
+          <span className={styles.icon}><CircleX size={48} /></span>
           <h2 className={styles.heading}>No Moves Available</h2>
           <p className={styles.subtext}>
             This game has reached a stalemate. You cannot make any more moves.

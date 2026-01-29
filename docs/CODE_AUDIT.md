@@ -446,6 +446,128 @@ All camelCase ✅
 
 ## Recommended Action Timeline
 
+## Phase 4: Critical Bug Fixes (React Violations & Logic Errors) ✅ COMPLETE
+
+**Date:** 2026-01-29  
+**Trigger:** User-reported loop state where message could not be dismissed  
+**Scope:** 80 ESLint errors across 24 files - focus on critical bugs first  
+**Status:** All critical bugs fixed, build passing ✅
+
+---
+
+### Phase 4 Completion Summary
+
+| Bug | File | Fix Applied |
+|-----|------|-------------|
+| TDZ Bug | GameStateToast.jsx | Moved `handleDismiss` before useEffect, wrapped in `useCallback` |
+| Ref Mutation | App.jsx | Wrapped `statsRef.current = stats` in `useEffect` |
+| Missing Deps | useCardGame.js | Commented out debug tools (undefined setters) |
+
+**Impact:** User-reported dismissal loop should be resolved. Toast dismissal callbacks now properly fire.
+
+---
+
+### 4.1 GameStateToast.jsx - Temporal Dead Zone Bug 🔴 CRITICAL
+
+**Location:** `src/components/GameStateToast/GameStateToast.jsx:58`  
+**Issue:** `handleDismiss()` called in `useEffect` **before** function declaration (line 64)  
+**Impact:** Toast fails to auto-dismiss; possible cause of reported loop  
+**Error:** ESLint `react-hooks/immutability` - variable accessed before declaration
+
+```javascript
+// BEFORE (BROKEN):
+useEffect(() => {
+  if (tier === 'hint') {
+    const timer = setTimeout(() => {
+      handleDismiss(); // ❌ Called before declared
+    }, duration);
+  }
+}, [isOpen, isVisible, tier, duration]);
+
+const handleDismiss = () => { ... }; // Declared AFTER use
+```
+
+**Fix Strategy:** Move `handleDismiss` declaration before the `useEffect` that uses it.
+
+---
+
+### 4.2 useCardGame.js - Missing Dependencies 🔴 CRITICAL
+
+**Location:** `src/hooks/useCardGame.js:913-952` (debug tools useEffect)  
+**Issue:** `setGameStateToastOpen` and `setGameStateOverlayOpen` used but not in dependency array  
+**Impact:** Stale closures could cause state updates to be lost  
+**Error:** ESLint `no-undef` - variables not defined in scope
+
+```javascript
+// BEFORE (BROKEN):
+useEffect(() => {
+  window.__GSN_DEBUG__ = {
+    forceTier: (tier) => {
+      setGameStateToastOpen(true); // ❌ Not in deps, may be undefined
+    }
+  };
+}, [stateTracker, gameState, gameStateNotification]); // Missing setters
+```
+
+**Fix Strategy:** These setters come from App.jsx via props. Need to pass them as parameters or restructure debug tools.
+
+---
+
+### 4.3 App.jsx - Ref Mutation During Render 🔴 CRITICAL
+
+**Location:** `src/App.jsx:144`  
+**Issue:** `statsRef.current = stats` executed during render (side effect)  
+**Impact:** Violates React rules, could cause unpredictable updates  
+**Error:** ESLint `react-hooks/refs` - Cannot update ref during render
+
+```javascript
+// BEFORE (BROKEN):
+const statsRef = useRef(stats);
+statsRef.current = stats; // ❌ Side effect during render
+```
+
+**Fix Strategy:** Move to `useEffect` or use a different pattern.
+
+---
+
+### 4.4 Hook Best Practice Violations 🟡 HIGH
+
+#### GameStateOverlay.jsx - setState in Effect Body
+**Location:** `src/components/GameStateOverlay/GameStateOverlay.jsx:43`  
+**Issue:** `setIsExiting(false)` called directly in useEffect  
+**Fix:** Use initialization pattern or `useLayoutEffect`
+
+#### useResponsiveDimensions.js - setState in Effect
+**Location:** `src/hooks/useResponsiveDimensions.js:167`  
+**Issue:** `recalculate()` called directly in useEffect body  
+**Fix:** Initialize state with calculated values
+
+#### useViewportScale.js - setState in Effect  
+**Location:** `src/hooks/useViewportScale.js:55`  
+**Issue:** `setDimensions(calculateScale())` in useEffect  
+**Fix:** Calculate initial state outside effect
+
+---
+
+### 4.5 Game State Messaging - False Trigger Analysis
+
+**User Report:** Loop state where message could not be dismissed
+
+**Root Cause Hypothesis:**
+1. **TDZ Bug (4.1)** prevents toast dismissal callback from firing
+2. **Missing Deps (4.2)** could cause debug tools to use stale setters
+3. **No Debouncing** in `circularPlayState` useEffect - rapid state changes could re-trigger UI
+
+**Additional Issues Found:**
+- Toast dismiss only sets `gameStateToastOpen = false`, but doesn't track *which* tier was dismissed
+- If `circularPlayState.tier` hasn't changed, toast could reappear on next render
+
+**Recommended Fix:** Add `lastDismissedTier` tracking to prevent re-showing same tier.
+
+---
+
+## Recommended Action Timeline
+
 | Phase | Tasks | Est. Time | Priority | Status |
 |-------|-------|-----------|----------|--------|
 | Phase 1 | Error boundary, fix getComputedStyle, optimize useEffect, deepClone | 2-3 hours | 🔴 Critical | ✅ Complete |
@@ -453,10 +575,11 @@ All camelCase ✅
 | Phase 3 | Dead code removal, folder components, validation | 4-6 hours | 🟢 Medium | ✅ Complete |
 | Phase 3A | Folder 8 loose components | 1-2 hours | 🟢 Medium | ✅ Complete |
 | Phase 3B | localStorage schema validation | 1-2 hours | 🟢 Low | ✅ Complete |
+| Phase 4 | Critical bug fixes (TDZ, missing deps, ref mutation) | 2-3 hours | 🔴 Critical | 🔄 In Progress |
 
 ---
 
-*Document Version: 1.3*  
+*Document Version: 1.4*  
 *Last Updated: 2026-01-28*  
 *Related: PROGRESS.md (v2.1.0 work), BACKLOG.md (cleanup tasks), Z_INDEX_MIGRATION.md*
 

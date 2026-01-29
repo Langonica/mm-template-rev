@@ -13,13 +13,13 @@ import styles from './HintDisplay.module.css';
 const HintDisplay = ({ hint, onDismiss }) => {
   if (!hint) return null;
   
-  // Format card string for display (e.g., "Ah" -> "A♥")
+  // Format card string for display (e.g., "Ah" -> "A of hearts")
   const formatCard = (cardStr) => {
     if (!cardStr) return '';
     const value = cardStr.slice(0, -1);
     const suit = cardStr.slice(-1);
-    const suitSymbols = { h: '♥', d: '♦', c: '♣', s: '♠' };
-    return `${value}${suitSymbols[suit] || suit}`;
+    const suitNames = { h: 'hearts', d: 'diamonds', c: 'clubs', s: 'spades' };
+    return `${value} of ${suitNames[suit] || suit}`;
   };
   
   // Format location for display

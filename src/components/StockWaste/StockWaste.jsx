@@ -2,6 +2,7 @@ import React from 'react';
 import Card from '../Card/Card';
 import CountBadge from '../CountBadge';
 import { parseCard } from '../../utils/cardUtils';
+import { RotateCcw } from 'lucide-react';
 
 const StockWaste = ({
   snapshot,
@@ -99,7 +100,7 @@ const StockWaste = ({
           <div 
             className="stock-empty"
             onClick={canRecycle ? simulateStockDraw : undefined}
-            title={canRecycle ? `♻️ Click to recycle ${currentWasteCards.length} cards` : 'No cards in stock'}
+            title={canRecycle ? `Click to recycle ${currentWasteCards.length} cards` : 'No cards in stock'}
             style={{
               width: '100%',
               height: '100%',
@@ -131,7 +132,7 @@ const StockWaste = ({
                 : 'rgba(255, 255, 255, 0.2)';
             }}
           >
-            {canRecycle ? '♻️' : ''}
+            {canRecycle ? <RotateCcw size={28} /> : null}
           </div>
         ) : (
           /* Stock with cards */

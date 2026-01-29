@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import React from 'react';
+import { Check, X, Info, AlertTriangle } from '../components/Icon';
 
 /**
  * Notification types
@@ -9,6 +10,16 @@ export const NOTIFICATION_TYPES = {
   ERROR: 'error',
   INFO: 'info',
   WARNING: 'warning'
+};
+
+/**
+ * Icon components for each notification type
+ */
+const NotificationIcons = {
+  success: Check,
+  error: X,
+  info: Info,
+  warning: AlertTriangle
 };
 
 /**
@@ -84,30 +95,27 @@ export const Notification = ({ notification, onClose }) => {
     success: {
       background: 'rgba(76, 175, 80, 0.95)',
       color: 'white',
-      icon: '✓',
       border: '1px solid rgba(76, 175, 80, 1)'
     },
     error: {
       background: 'rgba(244, 67, 54, 0.95)',
       color: 'white',
-      icon: '✕',
       border: '1px solid rgba(244, 67, 54, 1)'
     },
     info: {
       background: 'rgba(33, 150, 243, 0.95)',
       color: 'white',
-      icon: 'ℹ',
       border: '1px solid rgba(33, 150, 243, 1)'
     },
     warning: {
       background: 'rgba(255, 152, 0, 0.95)',
       color: 'white',
-      icon: '⚠',
       border: '1px solid rgba(255, 152, 0, 1)'
     }
   };
 
   const style = typeStyles[notification.type] || typeStyles.info;
+  const IconComponent = NotificationIcons[notification.type] || Info;
 
   return (
     <div
@@ -132,11 +140,12 @@ export const Notification = ({ notification, onClose }) => {
       }}
     >
       <span style={{ 
-        fontSize: '20px', 
-        fontWeight: 'bold',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         flexShrink: 0
       }}>
-        {style.icon}
+        <IconComponent size={20} />
       </span>
       
       <span style={{ 
@@ -168,7 +177,7 @@ export const Notification = ({ notification, onClose }) => {
         onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
         onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
       >
-        ×
+        <X size={16} />
       </button>
     </div>
   );

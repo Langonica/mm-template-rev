@@ -3,6 +3,7 @@ import Button from '../Button';
 import GameMenu from '../GameMenu';
 import SnapshotSelector from '../SnapshotSelector/SnapshotSelector';
 import { getGameModes } from '../../utils/dealGenerator';
+import { Undo2, Redo2, Pause } from '../Icon';
 
 const GAME_MODES = getGameModes();
 
@@ -72,7 +73,7 @@ const Header = ({
           variant="secondary"
           onClick={onUndo}
           disabled={!canUndo}
-          icon={<span>↶</span>}
+          icon={<Undo2 size={16} />}
           title={`Undo last move${canUndo ? '' : ' (no moves to undo)'}`}
         >
           Undo
@@ -83,7 +84,7 @@ const Header = ({
           variant="accent"
           onClick={onRedo}
           disabled={!canRedo}
-          icon={<span>↷</span>}
+          icon={<Redo2 size={16} />}
           title={`Redo next move${canRedo ? '' : ' (no moves to redo)'}`}
         >
           Redo
@@ -94,7 +95,7 @@ const Header = ({
           <Button
             variant="ghost"
             onClick={onPause}
-            icon={<span style={{ fontSize: '14px' }}>⏸</span>}
+            icon={<Pause size={16} />}
             title="Pause game"
           >
             Pause

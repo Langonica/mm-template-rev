@@ -1,0 +1,12 @@
+/* Icon Component Styles */
+
+.iconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.iconWrapper svg {
+  flex-shrink: 0;
+}
