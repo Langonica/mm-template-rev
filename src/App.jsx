@@ -33,7 +33,6 @@ function App() {
     autoMoveAnimation,
     setMode,
     setVariant,
-    toggleStyle,
     simulateStockDraw,
     loadSnapshot,
     loadGameState,
@@ -824,8 +823,6 @@ function App() {
               onModeChange={handleModeChange}
               modeOptions={modeOptions}
               onOpenStats={() => setStatsModalOpen(true)}
-              isFunStyle={config.isFun}
-              onToggleStyle={toggleStyle}
               onGoHome={handleGoHome}
               hideToggle={true}
             />

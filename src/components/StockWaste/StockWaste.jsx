@@ -1,7 +1,7 @@
 import React from 'react';
 import Card from '../Card/Card';
 import CountBadge from '../CountBadge';
-import { parseCard, getCardRotation } from '../../utils/cardUtils';
+import { parseCard } from '../../utils/cardUtils';
 
 const StockWaste = ({
   snapshot,
@@ -37,12 +37,6 @@ const StockWaste = ({
   const topWasteCard = currentWasteCards.length > 0 
     ? currentWasteCards[currentWasteCards.length - 1]
     : null;
-
-  // Generate deterministic rotations for depth layers based on index
-  const getDepthLayerRotation = (index, isStock = true) => {
-    if (!config.isFun) return 0;
-    return (isStock ? index * 0.3 - 0.6 : index * 0.2 - 0.3);
-  };
 
   // Check if stock is empty
   const isStockEmpty = currentStockCards.length === 0;
@@ -142,10 +136,6 @@ const StockWaste = ({
                   height: '100%',
                   zIndex: `calc(var(--z-stock-waste) - 200 - ${i})`,
                   opacity: `${0.8 - (i * 0.15)}`,
-                  transform: config.isFun 
-                    ? `rotate(${getDepthLayerRotation(i, true)}deg)`
-                    : '',
-                  transition: 'transform 0.3s ease',
                   borderRadius: '6px',
                   background: 'rgba(255, 255, 255, 0.02)',
                   border: '1px dashed rgba(255, 255, 255, 0.3)',
@@ -172,24 +162,14 @@ const StockWaste = ({
                 backgroundSize: '1040px 560px',
                 backgroundPosition: '-480px -448px',
                 borderRadius: '6px',
-                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.5)',
-                transform: config.isFun 
-                  ? `rotate(${getCardRotation("stock-back", config.rotationSeed)}deg)`
-                  : '',
-                transformOrigin: 'center',
-                transition: 'transform 0.3s ease'
+                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.5)'
               }}
               onMouseEnter={(e) => {
-                const currentRotation = config.isFun 
-                  ? `rotate(${getCardRotation("stock-back", config.rotationSeed)}deg) `
-                  : '';
-                e.currentTarget.style.transform = `${currentRotation}translateY(-5px) scale(1.05)`;
+                e.currentTarget.style.transform = 'translateY(-5px) scale(1.05)';
                 e.currentTarget.style.zIndex = 'var(--z-card-hover)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = config.isFun 
-                  ? `rotate(${getCardRotation("stock-back", config.rotationSeed)}deg)`
-                  : '';
+                e.currentTarget.style.transform = '';
                 e.currentTarget.style.zIndex = 'calc(var(--z-stock-waste) - 190)';
               }}
             />
@@ -234,10 +214,6 @@ const StockWaste = ({
                     // Waste pile z-index above stock pile (200 range vs 100 range)
                     zIndex: `calc(var(--z-stock-waste) - 100 - ${i})`,
                     opacity: `${0.7 - (i * 0.15)}`,
-                    transform: config.isFun 
-                      ? `rotate(${getDepthLayerRotation(i, false)}deg)`
-                      : '',
-                    transition: 'transform 0.3s ease',
                     borderRadius: '6px',
                     background: 'rgba(255, 255, 255, 0.02)',
                     border: '1px solid rgba(255, 255, 255, 0.1)',

@@ -18,9 +18,7 @@ import { useTheme, THEMES } from '../../contexts/ThemeContext';
  * @param {function} onModeChange - Mode change handler
  * @param {Array} modeOptions - Available game modes [{value, label}]
  * @param {function} onOpenStats - Open statistics modal
- * @param {boolean} isFunStyle - Current style setting
- * @param {function} onToggleStyle - Toggle fun/classic style
- * @param {string} selectedSnapshotId - Current snapshot
+ * @param {function} onGoHome - Return to home screen
  * @param {function} onSnapshotChange - Snapshot change handler
  * @param {React.ReactNode} snapshotSelector - Snapshot selector component (for dev tools)
  * @param {boolean} hideToggle - Hide the internal hamburger button (default: false)
@@ -37,8 +35,6 @@ const GameMenu = ({
   onModeChange,
   modeOptions = [],
   onOpenStats,
-  isFunStyle,
-  onToggleStyle,
   onGoHome,
   snapshotSelector,
   hideToggle = false,
@@ -89,11 +85,6 @@ const GameMenu = ({
 
   const handleOpenStats = () => {
     onOpenStats();
-    onClose();
-  };
-
-  const handleToggleStyle = () => {
-    onToggleStyle();
     onClose();
   };
 
@@ -202,12 +193,6 @@ const GameMenu = ({
               className={styles.themeSelect}
             />
           </div>
-          
-          <MenuItem
-            label={isFunStyle ? 'Switch to Classic Style' : 'Switch to Fun Style'}
-            icon={isFunStyle ? '~' : '~'}
-            onClick={handleToggleStyle}
-          />
         </div>
 
         {/* Dev Tools - Only show if snapshotSelector is provided */}

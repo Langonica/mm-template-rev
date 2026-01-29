@@ -1,5 +1,4 @@
 import React from 'react';
-import { getCardRotation } from '../../utils/cardUtils';
 import styles from './Card.module.css';
 
 const Card = ({
@@ -24,12 +23,6 @@ const Card = ({
   location = null
 }) => {
   if (!cardData) return null;
-
-  // Calculate rotation for this specific card
-  let rotation = 0;
-  if (config.isFun && cardStr && config.rotationSeed !== undefined) {
-    rotation = getCardRotation(cardStr, config.rotationSeed);
-  }
 
   const cardStyle = {
     backgroundPosition: isBack 
@@ -57,12 +50,7 @@ const Card = ({
   const handleMouseLeave = (e) => {
     if (isDragging) return;
 
-    // Reset to original rotation
-    if (config.isFun && rotation !== 0) {
-      e.currentTarget.style.transform = `rotate(${rotation}deg)`;
-    } else {
-      e.currentTarget.style.transform = '';
-    }
+    e.currentTarget.style.transform = '';
     e.currentTarget.style.zIndex = style.zIndex || 'calc(var(--z-cards) + 10)';
   };
 

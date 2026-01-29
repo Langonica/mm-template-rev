@@ -21,9 +21,7 @@ export const useCardGame = () => {
   const [config, setConfig] = useState({
     mode: 'classic',
     variant: 'normal',
-    isFun: false,
-    isTouchDevice: isTouchDevice(),
-    rotationSeed: Math.floor(Math.random() * 1000)
+    isTouchDevice: isTouchDevice()
   });
   
   const [currentStockCards, setCurrentStockCards] = useState([]);
@@ -370,10 +368,6 @@ export const useCardGame = () => {
       setConfig(prev => ({ ...prev, variant }));
     }
   }, [config.mode, loadSnapshot]);
-  
-  const toggleStyle = useCallback(() => {
-    setConfig(prev => ({ ...prev, isFun: !prev.isFun }));
-  }, []);
   
   const simulateStockDraw = useCallback(() => {
     if (!gameState) return;
@@ -752,7 +746,6 @@ export const useCardGame = () => {
     autoMoveAnimation,
     setMode,
     setVariant,
-    toggleStyle,
     simulateStockDraw,
     loadSnapshot,
     loadGameState,
