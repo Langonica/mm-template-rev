@@ -35,6 +35,7 @@ const Column = ({
   const [poppingCard, setPoppingCard] = useState(null);
   const [slurpingCard, setSlurpingCard] = useState(null); // Card being slurped into portal
   const prevWasEmptyRef = useRef(cards.length === 0);
+  const prevCardsLengthRef = useRef(cards.length);
 
   // Pre-calculate positioning values based on column type
   // This avoids calling getComputedStyle in the render loop (Performance fix - Phase 1)
