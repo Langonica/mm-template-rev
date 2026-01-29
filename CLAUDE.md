@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Related Documents:**
+- `PROCESS.md` - Development workflows, patterns, and skills
+- `README.md` - User-facing project overview
+- `CHANGELOG.md` - Release history
+
 ## Build & Development Commands
 
 ```bash
@@ -171,6 +176,14 @@ Columns become typed when an Ace or King is placed:
 ### CSS Architecture
 
 Currently fixed game board (1280×720), scaled via `useViewportScale` hook. **Responsive redesign in progress** - see `docs/LAYOUT_AUDIT.md` for the ratio-based model and implementation phases.
+
+### UI/UX Redesign (In Progress)
+
+Major UI unification underway:
+- `docs/UI_REDUX_MASTER_PLAN.md` - Comprehensive redesign specification
+- `docs/UI_REDUX_PROGRESS.md` - Implementation tracking
+- Phase 0 complete: Removed `isFun` feature
+- Phase 1 in progress: Component library foundation
 
 Design tokens in `src/styles/tokens.css`. CSS Modules used for newer components. Asset specifications in `docs/DESIGN_ASSETS.md`.
 

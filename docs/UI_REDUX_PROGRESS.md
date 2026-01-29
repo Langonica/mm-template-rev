@@ -37,7 +37,7 @@ Completely remove the `isFun` / `toggleStyle` feature and all related code.
 
 | Commit | Description | Date |
 |--------|-------------|------|
-| TBD | Phase 0: Remove isFun/toggleStyle feature | 2026-01-28 |
+| 2f8831b | Phase 0: Remove isFun/toggleStyle feature | 2026-01-28 |
 
 ---
 
