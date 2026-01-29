@@ -6,31 +6,6 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ## In Progress
 
-### Extended Autoplay System
-**Priority:** 🟢 Medium | **Complexity:** Low | **Added:** 2026-01-28 | **Started:** 2026-01-28
-
-**Goal:** Extend double-click autoplay from foundation-only to include tableau moves.
-
-**Current Behavior:** Double-click only tries foundation moves.
-
-**New Behavior:** Double-click tries foundation → tableau build → empty column (in priority order).
-
-**Algorithm:**
-1. Check foundation (existing logic)
-2. If no foundation, find all legal tableau destinations
-3. If multiple, pick optimal (longer sequence > shorter, typed > traditional)
-4. If ambiguous, pick one (user drags manually if they disagree)
-
-**Implementation:**
-- Rename `tryAutoMoveToFoundation()` → `tryAutoMove()`
-- Add tableau destination checking
-- Add optimal destination selection logic
-- Update `useCardGame.js` hook
-
-**Files:** `src/utils/gameLogic.js`, `src/hooks/useCardGame.js`
-
----
-
 ### Code Audit - Phase 2: Debug Cleanup & Component Refactoring
 **Priority:** 🟡 High | **Complexity:** Low-Medium | **Added:** 2026-01-28 | **Started:** 2026-01-28
 
@@ -114,6 +89,9 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 ## Completed Items
 
 *Move items here when resolved, with date and brief note:*
+
+### ~~Extended Autoplay System~~
+**Resolved:** 2026-01-28 | Extended double-click autoplay from foundation-only to include tableau moves. Renamed `tryAutoMoveToFoundation()` → `tryAutoMove()` in gameLogic.js. Added `findOptimalTableauMove()` with scoring system that prefers longer sequences and Ace/King columns. Priority order: Foundation → Tableau build → Empty column. Updated useCardGame.js to handle tableau move animations and record move destination type for undo history.
 
 ### ~~Critical Bug Fix: Column Typing in Hidden Modes~~
 **Resolved:** 2026-01-28 | Fixed column type calculation bug in `hidden` and `hidden_double` modes. `updateColumnType()` was using `column[0]` (physical bottom card) instead of `column[faceDownCount]` (first face-up card). In hidden modes, the bottom card is often face-down, causing incorrect type assignment. Fix: Calculate `firstFaceUpIndex = faceDownCount`, determine type from that card. Type is 'ace'/'king' only when exactly 1 face-up card AND it's A/K. Also fixed `flipRevealedCard()` logic and reordered operations in `executeMove()` to ensure flip happens before type update.

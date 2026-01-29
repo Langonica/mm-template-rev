@@ -8,37 +8,18 @@ Meridian Solitaire is a unique card game implementation with dual foundation sys
 
 ## Current Work
 
-### v2.2.2 - Extended Autoplay System - IN PROGRESS 🎮
+### v2.2.2 - Extended Autoplay System - COMPLETE ✅
 
 **Objective:** Extend the existing double-click autoplay from foundation-only to include tableau moves.
 
-**Current State:**
-- Double-click on any card attempts auto-move to foundation only
-- Cards that could legally move to tableau require manual drag
-- This creates friction for obvious/standard moves
+**Status:** ✅ Implemented and tested
 
-**New Behavior:**
-Double-click will attempt moves in priority order:
-1. **Foundation** (UP or DOWN by suit) - highest priority
-2. **Tableau build** (extend valid sequence on another column)
-3. **Empty column** (Ace or King only)
-
-**Algorithm:**
-```javascript
-onDoubleClick(card):
-  // Try foundation first (existing behavior)
-  if canMoveToFoundation(card):
-    return moveToFoundation(card)
-  
-  // Try tableau builds
-  legalMoves = findAllLegalTableauDestinations(card)
-  if legalMoves.length > 0:
-    bestMove = pickOptimal(legalMoves)  // by sequence length, column type
-    return moveToTableau(card, bestMove)
-  
-  // No autoplay move available
-  return null
-```
+**Changes Applied (2026-01-28):**
+- `gameLogic.js`: `tryAutoMoveToFoundation()` → `tryAutoMove()`
+- `gameLogic.js`: Added `findOptimalTableauMove()` with scoring system
+- `gameLogic.js`: Priority - Foundation → Tableau build → Empty column
+- `useCardGame.js`: Updated to handle tableau move animations
+- `useCardGame.js`: Records move destination type for undo
 
 **Priority/Tie-breaker Logic:**
 | Factor | Priority |
@@ -49,16 +30,9 @@ onDoubleClick(card):
 
 **Scope:**
 - ✅ Waste → Tableau/Foundation
-- ✅ Pocket → Tableau/Foundation
+- ✅ Pocket → Tableau/Foundation  
 - ✅ Tableau → Tableau/Foundation
 - ❌ Foundation → Tableau (excluded - reverse play is user choice)
-
-**Files to Modify:**
-- `src/utils/gameLogic.js` - Extend `tryAutoMoveToFoundation()` → `tryAutoMove()`
-- `src/hooks/useCardGame.js` - Update hook to use new function
-
-**Ambiguity Handling:**
-If multiple equal-priority destinations exist, algorithm picks one. Player can manually drag if they prefer a different destination. This follows standard solitaire UX expectations.
 
 ---
 
