@@ -87,6 +87,7 @@ function App() {
     isAutoCompleting,
     executeAutoComplete,
     cancelAutoComplete,
+    autoCompleteAnimation,
     currentHint,
     hintsRemaining,
     showHint,
