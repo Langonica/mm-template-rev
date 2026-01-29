@@ -15,6 +15,7 @@ Fixed critical bug where the GameStateToast notification could not be dismissed 
 
 #### Fixed
 
+- **Asset paths for production builds** - Added `import.meta.env.BASE_URL` prefix to asset URLs in `useHighDPIAssets.js` and updated CSS fallback paths to include full base URL
 - **Toast dismiss loop** - Added `dismissedNotificationTier` state to track when user dismisses a notification. Suppresses re-triggering until tier escalates (hint→concern→warning) or resets to 'none'
 - **Wrong handler on action button** - Removed redundant action button that had incorrect `handleOverlayDismiss` handler
 - **False positive triggers** - Raised hint tier threshold from 2 to 3 unproductive cycles

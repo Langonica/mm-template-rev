@@ -85,6 +85,9 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 
 *Move items here when resolved, with date and brief note:*
 
+### ~~Asset Path Fix for Production Builds~~
+**Resolved:** 2026-01-29 | Fixed image assets not loading in production builds. Asset paths were relative but needed the Vite base URL (`/meridian-master/`). Updated `useHighDPIAssets.js` to use `import.meta.env.BASE_URL` and updated CSS fallback paths in `App.css`.
+
 ### ~~Game State Notification Bug Fix (v2.3.1)~~
 **Resolved:** 2026-01-29 | Fixed toast dismiss loop where notification would immediately reopen after user dismissed it. Root cause: useEffect re-triggered when `gameStateToastOpen` changed but tier was still elevated. Fix: Added `dismissedNotificationTier` suppression state that prevents re-triggering until tier escalates or resets. Also removed redundant action button from toast and raised hint threshold from 2 to 3 cycles.
 

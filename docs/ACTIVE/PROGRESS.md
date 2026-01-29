@@ -8,6 +8,22 @@ Meridian Solitaire is a unique card game implementation with dual foundation sys
 
 ## Current Work
 
+### Asset Path Fix for Production Builds - COMPLETE ✅
+
+**Objective:** Fix image assets not loading in production/distribution builds.
+
+**Problem:** Asset paths were relative (`assets/cardspritesheet.png`) but needed to include the Vite base URL (`/meridian-master/`) for production builds.
+
+**Solution Applied (2026-01-29):**
+- `useHighDPIAssets.js`: Added `import.meta.env.BASE_URL` prefix to all asset paths
+- `App.css`: Updated fallback paths to include full base URL
+
+**Files Modified:**
+- `src/hooks/useHighDPIAssets.js`
+- `src/styles/App.css`
+
+---
+
 ### v2.3.1 - Game State Notification Bug Fix - COMPLETE ✅
 
 **Objective:** Fix critical bug where toast notification cannot be dismissed and loops indefinitely.

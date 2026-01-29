@@ -13,29 +13,30 @@ import { useEffect, useCallback } from 'react';
 export const useHighDPIAssets = (scale, devicePixelRatio) => {
   const updateAssetUrls = useCallback(() => {
     const root = document.documentElement;
-    
+    const BASE = import.meta.env.BASE_URL;
+
     // Determine if we should use @2x assets
     // Primary: Use @2x when scale >= 1.25 (viewport is scaled up)
     // Secondary: Use @2x on high-DPI displays (DPR >= 2) even at smaller scales
     const shouldUse2x = scale >= 1.25 || devicePixelRatio >= 2;
-    
+
     // Card sprite: Use @2x when shouldUse2x is true, OR on high-DPI displays
     // Cards are the most critical visual element
     const cardSpriteUrl = (shouldUse2x || devicePixelRatio >= 1.5)
-      ? 'assets/cardspritesheet@2x.png'
-      : 'assets/cardspritesheet.png';
-    
+      ? `${BASE}assets/cardspritesheet@2x.png`
+      : `${BASE}assets/cardspritesheet.png`;
+
     // Game board - use @2x when viewport is large enough to benefit
     const gameBoardUrl = shouldUse2x
-      ? 'assets/mm-gameboard@2x.png'
-      : 'assets/mm-gameboard.png';
-    
+      ? `${BASE}assets/mm-gameboard@2x.png`
+      : `${BASE}assets/mm-gameboard.png`;
+
     // Optional track sprites - only set if using custom sprites
     // These fall back to CSS gradients if files don't exist
-    const trackAceUrl = shouldUse2x ? 'assets/aces-up@2x.png' : 'assets/aces-up.png';
-    const trackKingUrl = shouldUse2x ? 'assets/kings-down@2x.png' : 'assets/kings-down.png';
-    const trackDefaultUrl = shouldUse2x ? 'assets/default-down@2x.png' : 'assets/default-down.png';
-    const trackEmptyUrl = shouldUse2x ? 'assets/empty@2x.png' : 'assets/empty.png';
+    const trackAceUrl = shouldUse2x ? `${BASE}assets/aces-up@2x.png` : `${BASE}assets/aces-up.png`;
+    const trackKingUrl = shouldUse2x ? `${BASE}assets/kings-down@2x.png` : `${BASE}assets/kings-down.png`;
+    const trackDefaultUrl = shouldUse2x ? `${BASE}assets/default-down@2x.png` : `${BASE}assets/default-down.png`;
+    const trackEmptyUrl = shouldUse2x ? `${BASE}assets/empty@2x.png` : `${BASE}assets/empty.png`;
     
     // Apply to CSS custom properties
     root.style.setProperty('--sprite-url', `url('${cardSpriteUrl}')`);
