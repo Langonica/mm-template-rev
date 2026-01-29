@@ -9,6 +9,7 @@ import CampaignScreen from './components/CampaignScreen'
 import PauseOverlay from './components/PauseOverlay'
 import OrientationBlocker from './components/OrientationBlocker'
 import GearButton from './components/GearButton'
+import StalemateModal from './components/StalemateModal'
 import { useCardGame } from './hooks/useCardGame'
 import { useGameStats } from './hooks/useGameStats'
 import { useCampaignProgress } from './hooks/useCampaignProgress'
@@ -103,6 +104,7 @@ function App() {
   const [showHomeScreen, setShowHomeScreen] = useState(true)
   const [showCampaignScreen, setShowCampaignScreen] = useState(false)
   const [rulesModalOpen, setRulesModalOpen] = useState(false)
+  const [stalemateModalOpen, setStalemateModalOpen] = useState(false)
   const [lastGameResult, setLastGameResult] = useState(null) // Stores result for game-over display
   const [currentCampaignLevel, setCurrentCampaignLevel] = useState(null) // Track active campaign level
   const gameEndedRef = useRef(false) // Prevent double-recording
@@ -428,6 +430,53 @@ function App() {
     }
   }, [gameStatus, moveCount, selectedMode, recordGameEnd, currentCampaignLevel, recordCampaignCompletion])
 
+  // Show stalemate modal when game is in stalemate
+  useEffect(() => {
+    if (gameStatus?.status === 'stalemate' && !stalemateModalOpen) {
+      setStalemateModalOpen(true)
+    }
+  }, [gameStatus, stalemateModalOpen])
+
+  // Calculate foundation cards for stalemate modal stats
+  const getFoundationCardCount = useCallback(() => {
+    if (!currentSnapshot?.foundations) return 0
+    let count = 0
+    const zones = ['up', 'down']
+    const suits = ['h', 'd', 'c', 's']
+    for (const zone of zones) {
+      for (const suit of suits) {
+        count += currentSnapshot.foundations[zone]?.[suit]?.length || 0
+      }
+    }
+    return count
+  }, [currentSnapshot])
+
+  // Handle new deal from stalemate modal
+  const handleStalemateNewDeal = useCallback(() => {
+    setStalemateModalOpen(false)
+    handleNewGame()
+  }, [handleNewGame])
+
+  // Handle restart from stalemate modal
+  const handleStalemateRestart = useCallback(() => {
+    setStalemateModalOpen(false)
+    if (currentCampaignLevel) {
+      handlePlayCampaignLevel(currentCampaignLevel)
+    } else {
+      loadSnapshot(selectedSnapshotId)
+    }
+  }, [currentCampaignLevel, handlePlayCampaignLevel, loadSnapshot, selectedSnapshotId])
+
+  // Handle undo from stalemate modal
+  const handleStalemateUndo = useCallback(() => {
+    setStalemateModalOpen(false)
+    // Undo up to 5 moves or as many as available
+    const movesToUndo = Math.min(5, undoSystem.getMoveCount())
+    for (let i = 0; i < movesToUndo; i++) {
+      handleUndo()
+    }
+  }, [handleUndo, undoSystem])
+
   return (
     <div
       className="game-wrapper"
@@ -477,7 +526,23 @@ function App() {
         onClose={() => setRulesModalOpen(false)}
       />
 
-      {/* Home Screen */}
+      {/* Stalemate Modal */}
+      <StalemateModal
+        isOpen={stalemateModalOpen}
+        onClose={() => setStalemateModalOpen(false)}
+        stats={{
+          moveCount,
+          currentTime: currentGameTime,
+          foundationCards: getFoundationCardCount(),
+          totalCards: 52
+        }}
+        onNewDeal={handleStalemateNewDeal}
+        onRestart={handleStalemateRestart}
+        onUndo={handleStalemateUndo}
+        undoMoves={5}
+      />
+
+      {/* Home Screen }
       {showHomeScreen && !showCampaignScreen && (
         <HomeScreen
           selectedMode={selectedMode}

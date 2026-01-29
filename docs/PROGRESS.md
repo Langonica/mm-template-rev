@@ -169,7 +169,45 @@ circularPlayState: {
 
 ---
 
-**Phase 3: Stalemate UX Modal**
+**Phase 3: Stalemate UX Modal 🛑 IN PROGRESS**
+
+| Task | Description | Files |
+|------|-------------|-------|
+| Create `StalemateModal` component | Modal for unwinnable games | `components/StalemateModal/` |
+| Stats display | Moves, time, foundation progress | `StalemateModal.jsx` |
+| Action buttons | [New Deal] [Restart] [Undo] | `StalemateModal.jsx` |
+| Integration | Wire to game status detection | `App.jsx`, `useCardGame.js` |
+| Trigger logic | Show when stalemate detected | `getGameStatus()` enhancement |
+
+**Modal Content:**
+```
+┌─────────────────────────────────┐
+│  🏁 Game Stalled                │
+│                                 │
+│  No further moves available.    │
+│                                 │
+│  Stats:                         │
+│  • Moves: 47                    │
+│  • Time: 5:32                   │
+│  • Foundation: 12/52 cards      │
+│                                 │
+│  [New Deal] [Restart] [Undo 5]  │
+└─────────────────────────────────┘
+```
+
+**Actions:**
+- **New Deal**: Generate new random deal (same mode)
+- **Restart**: Reset to original snapshot/level
+- **Undo**: Go back N moves (configurable, default 5)
+
+**Stalemate Detection Triggers:**
+1. Immediate: No moves + empty stock
+2. Circular: 3+ cycles detected
+3. No Progress: 20+ moves, no foundation cards added
+
+---
+
+**Phase 3: Stalemate UX Modal
 | Component | Purpose |
 |-----------|---------|
 | `StalemateModal` | Display when game unwinnable |
