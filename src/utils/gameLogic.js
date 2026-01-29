@@ -348,33 +348,137 @@ function flipRevealedCard(columnIndex, state) {
 // ============================================================================
 
 /**
- * Try to auto-move card to foundation (for double-click)
+ * Try to auto-move card to any legal destination (for double-click)
+ * 
+ * Priority order:
+ * 1. Foundation (UP or DOWN by suit)
+ * 2. Tableau build (extend sequence on another column)
+ * 3. Empty column (Ace or King only)
+ * 
+ * @param {string} cardStr - Card to move (e.g., "Ah")
+ * @param {object} gameState - Current game state
+ * @param {object} source - Source location {type, column?, pocketNum?}
+ * @returns {object|null} - New game state or null if no move available
  */
-export function tryAutoMoveToFoundation(cardStr, gameState) {
+export function tryAutoMove(cardStr, gameState, source) {
   const card = parseCard(cardStr);
   if (!card) return null;
   
+  // Priority 1: Try foundation moves
+  const foundationMove = tryFoundationMove(cardStr, card, gameState);
+  if (foundationMove) {
+    return executeMove(cardStr, foundationMove, gameState);
+  }
+  
+  // Priority 2: Try tableau moves
+  const tableauMove = findOptimalTableauMove(cardStr, card, gameState, source);
+  if (tableauMove) {
+    return executeMove(cardStr, tableauMove, gameState);
+  }
+  
+  return null;
+}
+
+/**
+ * Try to move card to foundation
+ * @returns {object|null} - Target location or null
+ */
+function tryFoundationMove(cardStr, card, gameState) {
   // Try UP foundations first (7→K)
   const upFoundation = gameState.foundations.up?.[card.suit] || [];
   if (canPlaceOnFoundation(cardStr, upFoundation, false)) {
-    return executeMove(cardStr, {
+    return {
       type: 'foundation',
       zone: 'up',
       suit: card.suit
-    }, gameState);
+    };
   }
   
   // Try DOWN foundations (6→A)
   const downFoundation = gameState.foundations.down?.[card.suit] || [];
   if (canPlaceOnFoundation(cardStr, downFoundation, true)) {
-    return executeMove(cardStr, {
+    return {
       type: 'foundation',
       zone: 'down',
       suit: card.suit
-    }, gameState);
+    };
   }
   
   return null;
+}
+
+/**
+ * Find optimal tableau move for a card
+ * Considers: empty columns (A/K only), building on existing sequences
+ * 
+ * @returns {object|null} - Target location or null
+ */
+function findOptimalTableauMove(cardStr, card, gameState, source) {
+  const columnTypes = gameState.columnState?.types || [];
+  const legalMoves = [];
+  
+  // Check all 7 tableau columns
+  for (let col = 0; col < 7; col++) {
+    // Skip if this is the source column
+    if (source?.type === 'tableau' && source.column === col) {
+      continue;
+    }
+    
+    const column = gameState.tableau[col.toString()] || [];
+    const columnType = columnTypes[col] || 'traditional';
+    
+    // Empty column: only Ace or King can start it
+    if (column.length === 0) {
+      if (card.value === 'A' || card.value === 'K') {
+        legalMoves.push({
+          target: { type: 'tableau', column: col },
+          score: calculateTableauMoveScore(column, columnType, card, 0)
+        });
+      }
+      continue;
+    }
+    
+    // Non-empty column: check if we can stack on top
+    const topCard = column[column.length - 1];
+    if (canStackCards(topCard, cardStr, columnType)) {
+      legalMoves.push({
+        target: { type: 'tableau', column: col },
+        score: calculateTableauMoveScore(column, columnType, card, column.length)
+      });
+    }
+  }
+  
+  // Return the highest-scoring move
+  if (legalMoves.length > 0) {
+    legalMoves.sort((a, b) => b.score - a.score);
+    return legalMoves[0].target;
+  }
+  
+  return null;
+}
+
+/**
+ * Calculate a score for a tableau move to enable optimal selection
+ * Higher score = better move
+ */
+function calculateTableauMoveScore(column, columnType, movingCard, newColumnLength) {
+  let score = 0;
+  
+  // Prefer building on longer sequences (extending existing work)
+  score += column.length * 10;
+  
+  // Prefer Ace/King columns over Traditional (strategic value)
+  if (columnType === 'ace' || columnType === 'king') {
+    score += 5;
+  }
+  
+  // Slight preference for keeping cards on tableau vs moving to empty
+  // (empty columns are valuable, don't fill them lightly)
+  if (column.length === 0) {
+    score -= 2;
+  }
+  
+  return score;
 }
 
 // ============================================================================

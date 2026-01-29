@@ -5,7 +5,7 @@ import { useUndo } from './useUndo';
 import { useTouchDrag, isTouchDevice } from './useTouchDrag';
 import {
   executeMove,
-  tryAutoMoveToFoundation,
+  tryAutoMove,
   getGameStatus,
   getAvailableMoves
 } from '../utils/gameLogic';
@@ -278,7 +278,8 @@ export const useCardGame = () => {
     return false;
   }, [gameState, undoSystem]);
   
-  // Handle double-click auto-move to foundation with slurp/pop animation
+  // Handle double-click auto-move with slurp/pop animation
+  // Tries foundation first, then tableau builds, then empty columns
   const handleAutoMove = useCallback((cardStr) => {
     if (!gameState) return false;
 
@@ -286,78 +287,110 @@ export const useCardGame = () => {
     const sourceLocation = findCardLocation(cardStr, gameState);
     if (!sourceLocation) return false;
 
-    // Determine which foundation the card will go to
+    // Determine what type of move is possible
     const card = parseCard(cardStr);
     if (!card) return false;
 
+    // Check if foundation move is possible
+    let isFoundationMove = false;
     let targetZone = null;
     let targetSuit = card.suit;
 
-    // Check UP foundations first (7→K)
     const upFoundation = gameState.foundations.up?.[card.suit] || [];
     if (canPlaceOnFoundation(cardStr, upFoundation, false)) {
       targetZone = 'up';
+      isFoundationMove = true;
     } else {
-      // Check DOWN foundations (6→A)
       const downFoundation = gameState.foundations.down?.[card.suit] || [];
       if (canPlaceOnFoundation(cardStr, downFoundation, true)) {
         targetZone = 'down';
+        isFoundationMove = true;
       }
     }
 
-    if (!targetZone) return false;
-
+    // If no foundation move, tryAutoMove will find tableau move
+    // We need to execute the move to know the actual target
     const previousState = JSON.parse(JSON.stringify(gameState));
+
+    // Try the auto-move first to see what target we get
+    const testState = tryAutoMove(cardStr, gameState, sourceLocation);
+    if (!testState) {
+      return false; // No legal move available
+    }
+
+    // Determine actual target from the executed move
+    let actualTarget;
+    let moveDestination;
+    
+    if (isFoundationMove) {
+      actualTarget = { zone: targetZone, suit: targetSuit };
+      moveDestination = 'foundation';
+    } else {
+      // Tableau move - find which column the card went to
+      for (let col = 0; col < 7; col++) {
+        const prevColumn = gameState.tableau[col.toString()] || [];
+        const newColumn = testState.tableau[col.toString()] || [];
+        
+        // If column gained cards and the moved card is now in it
+        if (newColumn.length > prevColumn.length) {
+          const topCard = newColumn[newColumn.length - 1];
+          if (topCard === cardStr || newColumn.includes(cardStr)) {
+            actualTarget = { type: 'tableau', column: col };
+            moveDestination = 'tableau';
+            break;
+          }
+        }
+      }
+      
+      if (!actualTarget) {
+        // Fallback - shouldn't happen if move was successful
+        actualTarget = { type: 'tableau', column: 0 };
+        moveDestination = 'tableau';
+      }
+    }
 
     // Start slurp animation at source
     setAutoMoveAnimation({
       cardStr,
       cardData: card,
       source: sourceLocation,
-      target: { zone: targetZone, suit: targetSuit },
+      target: actualTarget,
       phase: 'slurp'
     });
 
-    // After slurp completes (300ms), execute move and show pop
+    // After slurp completes (300ms), apply the state and show pop
     setTimeout(() => {
-      const newState = tryAutoMoveToFoundation(cardStr, gameState);
+      setGameState(testState);
+      setCurrentStockCards(testState.stock || []);
+      setCurrentWasteCards(testState.waste || []);
 
-      if (newState) {
-        setGameState(newState);
-        setCurrentStockCards(newState.stock || []);
-        setCurrentWasteCards(newState.waste || []);
+      setCurrentSnapshot(prev => ({
+        ...prev,
+        stock: testState.stock,
+        waste: testState.waste,
+        pocket1: testState.pocket1,
+        pocket2: testState.pocket2,
+        tableau: testState.tableau,
+        foundations: testState.foundations,
+        columnState: testState.columnState
+      }));
 
-        setCurrentSnapshot(prev => ({
-          ...prev,
-          stock: newState.stock,
-          waste: newState.waste,
-          pocket1: newState.pocket1,
-          pocket2: newState.pocket2,
-          tableau: newState.tableau,
-          foundations: newState.foundations,
-          columnState: newState.columnState
-        }));
+      // Record move for undo
+      undoSystem.recordMove({
+        type: 'auto-move',
+        card: cardStr,
+        to: moveDestination
+      }, previousState);
 
-        // Record move for undo
-        undoSystem.recordMove({
-          type: 'auto-move',
-          card: cardStr,
-          to: 'foundation'
-        }, previousState);
+      setMoveCount(prev => prev + 1);
 
-        setMoveCount(prev => prev + 1);
+      // Switch to pop animation
+      setAutoMoveAnimation(prev => prev ? { ...prev, phase: 'pop' } : null);
 
-        // Switch to pop animation
-        setAutoMoveAnimation(prev => prev ? { ...prev, phase: 'pop' } : null);
-
-        // Clear animation after pop completes (400ms)
-        setTimeout(() => {
-          setAutoMoveAnimation(null);
-        }, 400);
-      } else {
-        // Move failed, clear animation
+      // Clear animation after pop completes (400ms)
+      setTimeout(() => {
         setAutoMoveAnimation(null);
-      }
+      }, 400);
     }, 300);
 
     return true;
