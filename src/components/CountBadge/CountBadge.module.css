@@ -14,37 +14,42 @@
   font-size: 11px;
   font-weight: bold;
   z-index: var(--z-count-badges);
-  border: 2px solid #1a1a1a;
+  border: 2px solid var(--bg-deepest);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   font-family: var(--font-family, 'Segoe UI', sans-serif);
 }
 
-/* Variant: Stock (Blue) */
+/* Variant: Stock (Cyan) */
 .stock {
-  background: rgba(33, 150, 243, 0.9);
+  background: var(--accent-primary);
+  color: var(--bg-deepest);
 }
 
-/* Variant: Waste (Purple) */
+/* Variant: Waste (Blue) */
 .waste {
-  background: rgba(156, 39, 176, 0.9);
+  background: var(--bg-elevated);
+  border-color: var(--border-accent);
+  color: var(--text-primary);
 }
 
-/* Variant: Foundation UP (Gold) */
+/* Variant: Foundation UP (Cyan) */
 .foundationUp {
   width: 16px;
   height: 16px;
   font-size: 9px;
   bottom: -6px;
   right: -6px;
-  background: rgba(255, 193, 7, 0.9);
+  background: var(--accent-primary);
+  color: var(--bg-deepest);
 }
 
-/* Variant: Foundation DOWN (Silver) */
+/* Variant: Foundation DOWN (White) */
 .foundationDown {
   width: 16px;
   height: 16px;
   font-size: 9px;
   bottom: -6px;
   right: -6px;
-  background: rgba(158, 158, 158, 0.9);
+  background: var(--text-secondary);
+  color: var(--bg-deepest);
 }

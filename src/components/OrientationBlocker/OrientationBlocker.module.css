@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #1a1a1a;
+  background-color: var(--bg-deepest);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,12 +18,12 @@
   justify-content: center;
   text-align: center;
   padding: 2rem;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .icon {
   margin-bottom: 1.5rem;
-  color: #4a9eff;
+  color: var(--accent-primary);
   animation: rotate 2s ease-in-out infinite;
 }
 
@@ -43,13 +43,13 @@
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .subtext {
   font-size: 1rem;
   margin: 0;
-  color: #b0b0b0;
+  color: var(--text-secondary);
   opacity: 0.8;
 }
 

@@ -7,8 +7,8 @@
   height: 36px;
   border-radius: 50%;
   border: none;
-  background-color: rgba(0, 0, 0, 0.4);
-  color: rgba(255, 255, 255, 0.85);
+  background-color: var(--bg-surface);
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -18,8 +18,8 @@
 }
 
 .gearButton:hover {
-  background-color: rgba(0, 0, 0, 0.6);
-  color: rgba(255, 255, 255, 1);
+  background-color: var(--accent-primary);
+  color: var(--bg-deepest);
   transform: scale(1.05);
 }
 

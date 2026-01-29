@@ -23,10 +23,10 @@
   justify-content: center;
 
   /* Styling */
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
   border-radius: var(--border-radius-sm);
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-secondary);
 
   /* Typography */
   font-size: 20px;
@@ -42,28 +42,28 @@
 
 /* Hover state */
 .button:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.6);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #ffffff;
+  background: var(--bg-elevated);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
   transform: var(--hover-lift);
 }
 
 /* Active state */
 .button:active:not(:disabled) {
   transform: translateY(0);
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--active-bg);
 }
 
 /* Focus state for accessibility */
 .button:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-secondary);
+  box-shadow: var(--focus-ring);
 }
 
 /* Disabled state */
 .button:disabled {
   opacity: 0.3;
   cursor: not-allowed;
-  background: rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.4);
+  background: var(--bg-elevated);
+  border-color: var(--border-subtle);
+  color: var(--text-disabled);
 }

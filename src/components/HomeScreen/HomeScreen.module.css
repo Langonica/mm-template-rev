@@ -12,7 +12,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #0a1a0a 0%, #001a00 50%, #000 100%);
+  background: linear-gradient(180deg, var(--bg-deepest) 0%, var(--bg-deep) 50%, #000 100%);
   z-index: var(--z-modal);
   padding: var(--spacing-xl);
   overflow-y: auto;
@@ -34,7 +34,7 @@
   left: 50%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(76, 175, 80, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
   transform: translate(-50%, -50%);
 }
 

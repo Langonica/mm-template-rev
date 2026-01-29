@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, var(--bg-deep) 0%, var(--bg-felt) 50%, var(--bg-felt-light) 100%);
+  background: linear-gradient(135deg, var(--bg-deepest) 0%, var(--bg-deep) 50%, var(--bg-surface) 100%);
   z-index: var(--z-cards);
   display: flex;
   flex-direction: column;

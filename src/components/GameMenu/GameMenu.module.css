@@ -13,24 +13,25 @@
   width: 40px;
   height: 40px;
   padding: 0;
-  background: var(--color-neutral-light);
-  border: 1px solid var(--color-neutral-border);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
   border-radius: var(--border-radius-sm);
-  color: var(--color-text-primary);
+  color: var(--text-primary);
   font-size: 20px;
   cursor: pointer;
   transition: all var(--transition-normal);
 }
 
 .menuButton:hover {
-  background: var(--color-neutral-medium);
+  background: var(--bg-elevated);
+  border-color: var(--accent-primary);
   transform: var(--hover-lift);
 }
 
 .menuButton.open {
-  background: var(--color-primary-light);
-  border-color: var(--color-primary-border);
-  color: var(--color-primary);
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--bg-deepest);
 }
 
 /* Hamburger icon lines */
@@ -73,8 +74,8 @@
   top: calc(100% + 8px);
   right: 0;
   min-width: 200px;
-  background: rgba(20, 20, 20, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-lg);
   padding: var(--spacing-xs) 0;
@@ -101,7 +102,7 @@
 
 .modeLabel {
   display: block;
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   font-size: var(--font-size-xs);
   margin-bottom: var(--spacing-xs);
   text-transform: uppercase;
@@ -118,5 +119,5 @@
 }
 
 .section + .section {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--border-subtle);
 }

@@ -10,7 +10,7 @@
   align-items: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-sm) var(--spacing-md);
-  color: var(--color-text-primary);
+  color: var(--text-primary);
   font-size: var(--font-size-md);
   cursor: pointer;
   transition: background var(--transition-fast);
@@ -22,11 +22,11 @@
 }
 
 .item:hover:not(.disabled) {
-  background: var(--color-bg-overlay);
+  background: var(--hover-bg);
 }
 
 .item:active:not(.disabled) {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--active-bg);
 }
 
 /* Icon container */
@@ -50,7 +50,7 @@
 
 /* Keyboard shortcut hint */
 .shortcut {
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   font-size: var(--font-size-xs);
   opacity: 0.6;
 }
@@ -64,14 +64,14 @@
 /* Divider between menu sections */
 .divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border-subtle);
   margin: var(--spacing-xs) 0;
 }
 
 /* Section header */
 .sectionHeader {
   padding: var(--spacing-xs) var(--spacing-md);
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -84,8 +84,8 @@
   left: 100%;
   top: 0;
   min-width: 160px;
-  background: rgba(20, 20, 20, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-lg);
   padding: var(--spacing-xs) 0;
@@ -107,10 +107,10 @@
 
 /* Active/selected state */
 .active {
-  color: var(--color-primary);
+  color: var(--accent-primary);
 }
 
 .active .icon {
-  color: var(--color-primary);
+  color: var(--accent-primary);
   opacity: 1;
 }
