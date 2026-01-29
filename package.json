@@ -9,7 +9,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "validate": "node scripts/validateSnapshots.js"
+    "validate": "node src/utils/validateSnapshots.js"
   },
   "dependencies": {
     "lucide-react": "^0.563.0",
