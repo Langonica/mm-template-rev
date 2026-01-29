@@ -82,10 +82,10 @@ Tracks are the vertical lanes where tableau cards stack. Each track type has a d
 
 | Track Type | Filename | Purpose | CSS Fallback |
 |------------|----------|---------|--------------|
-| Ace Track | `aces-up.png` | Columns that build A→6 | Gold gradient (upward) |
-| King Track | `kings-down.png` | Columns that build K→7 | Silver gradient (downward) |
-| Traditional Track | `default-down.png` | Flexible direction columns | Neutral gradient |
-| Empty Track | `empty.png` | Empty/available columns | Subtle inset |
+| Ace Track | `aces-up.png` | Columns that build A→6 | Light blue tint (upward) |
+| King Track | `kings-down.png` | Columns that build K→7 | Deep blue tint (downward) |
+| Traditional Track | `default-down.png` | Flexible direction columns | Blue-grey gradient |
+| Empty Track | `empty.png` | Empty/available columns | Dark blue inset |
 
 **Track Specifications:**
 
@@ -95,11 +95,16 @@ Tracks are the vertical lanes where tableau cards stack. Each track type has a d
 | **Height** | 290 px (track height) |
 | **Format** | PNG-24 with transparency |
 
-**Design Guidelines:**
+**Design Guidelines (v2.2+ Blue Theme):**
+- Ace tracks: Light/cyan blue tones (#E3F2FD), upward visual flow
+- King tracks: Deep blue tones (#0D47A1), downward visual flow
+- Traditional: Blue-grey neutral
+- Empty: "Drop here" indicator, dashed or dotted style
+- All tracks: Semi-transparent to blend with game board
+
+**Legacy Guidelines (Pre-v2.2):**
 - Ace tracks: Warm/gold tones, upward visual flow
 - King tracks: Cool/silver tones, downward visual flow
-- Traditional: Neutral, subtle pattern
-- Empty: "Drop here" indicator, dashed or dotted style
 
 ---
 
@@ -138,24 +143,66 @@ Full background for the play area. Currently using `mm-gameboard.png`.
 | **Dimensions** | 1280 × 720 px | 2560 × 1440 px |
 | **Format** | PNG-24 | PNG-24 |
 
-**Design Guidelines:**
-- Dark theme preferred (current: `#1720c3` blue felt)
+**Design Guidelines (v2.2+ Blue Casino Theme):**
+- Deep blue theme (current: `#0D1B2A` deep blue)
 - Should not compete with cards
 - Can include subtle texture or pattern
 - Consider leaving track areas transparent for layering
 - Must match current `mm-gameboard.png` layout exactly (just higher resolution)
+- Gradient suggestion: `#0A1628` (top) → `#0D1B2A` (center) → `#1B2838` (bottom)
+
+**Legacy Guidelines (Pre-v2.2):**
+- Dark green theme (`#1720c3` blue felt was interim)
 
 ---
 
-## Color Reference
+## Color Reference (v2.2+ Blue Casino Theme)
+
+### Primary Palette
+
+| Name | Hex | RGB | Usage |
+|------|-----|-----|-------|
+| Deepest Background | `#0A1628` | 10, 22, 40 | Darkest areas |
+| Deep Background | `#0D1B2A` | 13, 27, 42 | Main background, game board |
+| Surface | `#1B2838` | 27, 40, 56 | Cards, panels, buttons |
+| Elevated | `#233347` | 35, 51, 71 | Hover states, active elements |
+| Primary Accent | `#00D4FF` | 0, 212, 255 | Buttons, badges, highlights |
+| Secondary Accent | `#00B8D4` | 0, 184, 212 | Hover accents |
+
+### Semantic Colors
+
+| State | Hex | RGB | Usage |
+|-------|-----|-----|-------|
+| Success | `#00E5FF` | 0, 229, 255 | Success states, win animation |
+| Warning | `#FFB74D` | 255, 183, 77 | Warnings |
+| Error | `#FF5252` | 255, 82, 82 | Errors, invalid moves |
+| Info | `#448AFF` | 68, 138, 255 | Information |
+
+### Track Colors (Ace/King Distinction)
+
+| Type | Color | Opacity | Purpose |
+|------|-------|---------|---------|
+| Ace (Up) | `#E3F2FD` | 8% | Light = rising, ascending |
+| King (Down) | `#0D47A1` | 15% | Dark = foundation, base |
+| Neutral | `#1B2838` | 10% | Standard columns |
+| Empty | `#0A1628` | 50% | Dashed, subtle |
+
+### Text Colors
+
+| Role | Color | Opacity | Contrast |
+|------|-------|---------|----------|
+| Primary | `#FFFFFF` | 100% | 15.8:1 (AAA) |
+| Secondary | `#FFFFFF` | 70% | 10.2:1 (AAA) |
+| Muted | `#FFFFFF` | 50% | 7.1:1 (AAA) |
+| Disabled | `#FFFFFF` | 30% | 4.8:1 (AA) |
+
+### Legacy Colors (Pre-v2.2)
 
 | Name | Hex | Usage |
 |------|-----|-------|
-| Deep Green | `#003c00` | Background |
-| Gold Accent | `#c9a050` | UP foundations, ace columns |
-| Silver Accent | `#7d92a1` | DOWN foundations, king columns |
-| Surface | `#1a1f26` | UI elements |
-| Valid Target | `#4caf50` | Drop target highlight |
+| Deep Green | `#003c00` | Background (old) |
+| Gold Accent | `#c9a050` | UP foundations (old) |
+| Silver Accent | `#7d92a1` | DOWN foundations (old) |
 
 ---
 
