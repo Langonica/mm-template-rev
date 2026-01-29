@@ -53,16 +53,8 @@ export const useHighDPIAssets = (scale, devicePixelRatio) => {
       const computedSprite = getComputedStyle(root).getPropertyValue('--sprite-url').trim();
       const computedBoard = getComputedStyle(root).getPropertyValue('--gamestage-url').trim();
       
-      console.log('[useHighDPIAssets] DPR:', devicePixelRatio, 'Scale:', scale?.toFixed(2), 'Using @2x:', shouldUse2x);
-      console.log('[useHighDPIAssets] Card sprite set:', cardSpriteUrl, '| Computed:', computedSprite);
-      console.log('[useHighDPIAssets] Game board set:', gameBoardUrl, '| Computed:', computedBoard);
-      
-      // Verify file exists by attempting to load it
-      if (shouldUse2x) {
-        fetch(cardSpriteUrl, { method: 'HEAD' })
-          .then(r => console.log('[useHighDPIAssets] Card sprite fetch:', r.status, r.ok ? '✅ EXISTS' : '❌ NOT FOUND'))
-          .catch(e => console.log('[useHighDPIAssets] Card sprite fetch error:', e.message));
-      }
+      // Debug logging removed for production
+      // Enable by setting localStorage.setItem('debug-hidpi', '1') and reloading
     }
   }, [scale, devicePixelRatio]);
 

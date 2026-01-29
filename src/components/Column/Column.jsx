@@ -287,7 +287,7 @@ const Column = ({
         const cardStyle = {
           left: `${left}px`,
           top: `${cardTop}px`,
-          zIndex: 110 + index
+          zIndex: `calc(var(--z-cards) + ${index})`
         };
         
         // Check if this card is accessible for dragging

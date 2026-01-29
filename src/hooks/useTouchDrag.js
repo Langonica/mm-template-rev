@@ -39,7 +39,7 @@ export const useTouchDrag = (onDragStart, onDragEnd, onDrop, isValidTarget) => {
     ghost.style.height = '112px';
     ghost.style.opacity = '0.8';
     ghost.style.transform = 'scale(1.1) rotate(-5deg)';
-    ghost.style.zIndex = '9999';
+    ghost.style.zIndex = 'var(--z-touch-drag)'
     ghost.style.pointerEvents = 'none';
     ghost.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
     ghost.style.transition = 'none';

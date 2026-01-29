@@ -453,7 +453,7 @@ footer {
   text-transform: uppercase;
   color: var(--bg-overlay-medium);
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  z-index: 1; /* Below cards */
+  z-index: var(--z-plinths); /* Below cards */
   background: var(--plinth-grad-neutral);
   top: calc(var(--track-h) - var(--card-h));
   background-size: 100% 100%;
@@ -637,7 +637,7 @@ footer {
   /* Match .card background-size for consistent @2x rendering */
   background-size: 1040px 560px;
   background-position: -480px -448px;
-  z-index: 110;
+  z-index: calc(var(--z-stock-waste) - 190);
   cursor: pointer;
   box-shadow: var(--shadow-lg);
   transition: var(--transition-normal);
@@ -673,7 +673,7 @@ footer {
   width: 100%;
   height: 100%;
   border-radius: var(--radius-md);
-  z-index: 110;
+  z-index: calc(var(--z-stock-waste) - 190);
   box-shadow: var(--shadow-lg);
 }
 
@@ -710,7 +710,7 @@ footer {
   position: absolute;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
-  z-index: 110;
+  z-index: calc(var(--z-stock-waste) - 190);
 }
 
 /* ===== TRANSITIONS ===== */
@@ -1015,7 +1015,7 @@ header select {
 
 /* Hover effects for draggable cards */
 .card[draggable="true"]:hover {
-  z-index: 600 !important;
+  z-index: var(--z-drag-ghost) !important;
 }
 
 /* Multi-card sequence dragging visual */
@@ -1289,7 +1289,7 @@ header select {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: var(--z-overlay);
   animation: fadeIn var(--duration-normal) ease-out;
 }
 
@@ -1396,7 +1396,7 @@ header select {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10000;
+  z-index: var(--z-overlay);
   animation: fadeIn 0.5s ease-out;
 }
 
@@ -1844,7 +1844,7 @@ header select {
 /* When Ace is revealed and needs to move to bottom */
 .card.ace-relocating {
   animation: ace-relocate-slurp 200ms ease-in forwards;
-  z-index: 1000 !important;
+  z-index: calc(var(--z-portal) + 300) !important;
 }
 
 @keyframes ace-relocate-slurp {
@@ -1890,7 +1890,7 @@ header select {
 /* Slurp animation for cards being auto-moved to foundation */
 .card.auto-move-slurping {
   animation: auto-move-slurp 300ms ease-in forwards;
-  z-index: 1000 !important;
+  z-index: calc(var(--z-portal) + 300) !important;
   pointer-events: none;
 }
 

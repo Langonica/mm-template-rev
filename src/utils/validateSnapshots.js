@@ -7,6 +7,10 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Debug logging - set DEBUG=1 to enable verbose output
+const DEBUG = process.env.DEBUG === '1';
+const log = DEBUG ? console.log : () => {};
+
 // Card utilities
 const CARD_MAP = {
   'A': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6,
@@ -287,8 +291,6 @@ function validateSnapshot(snapshot) {
 
 // ===== MAIN VALIDATION LOOP =====
 async function validateAllSnapshots() {
-  console.log('Ã°Å¸â€Â VALIDATING ALL SNAPSHOTS\n');
-  
   const snapshotsDir = path.join(__dirname, '../src/data/snapshots');
   const categories = ['original', 'midgame'];
   
@@ -300,14 +302,14 @@ async function validateAllSnapshots() {
     const categoryDir = path.join(snapshotsDir, category);
     
     if (!fs.existsSync(categoryDir)) {
-      console.log(`Ã¢ÂÅ’ Category directory not found: ${categoryDir}`);
+      log(`❌ Category directory not found: ${categoryDir}`);
       continue;
     }
     
     const files = fs.readdirSync(categoryDir).filter(f => f.endsWith('.json'));
     
-    console.log(`\nÃ°Å¸â€œÂ ${category.toUpperCase()} (${files.length} snapshots):`);
-    console.log('='.repeat(50));
+    log(`\n📁 ${category.toUpperCase()} (${files.length} snapshots):`);
+    log('='.repeat(50));
     
     for (const file of files) {
       totalSnapshots++;
@@ -320,46 +322,46 @@ async function validateAllSnapshots() {
         const snapshotId = data.metadata?.id || file.replace('.json', '');
         
         if (result.isValid) {
-          console.log(`Ã¢Å“â€¦ ${snapshotId}: VALID`);
+          log(`✅ ${snapshotId}: VALID`);
           validSnapshots++;
           
           if (result.warnings.length > 0) {
-            console.log(`   Ã¢Å¡Â Ã¯Â¸Â  Warnings: ${result.warnings.join('; ')}`);
+            log(`   ⚠️  Warnings: ${result.warnings.join('; ')}`);
           }
         } else {
-          console.log(`Ã¢ÂÅ’ ${snapshotId}: INVALID`);
+          log(`❌ ${snapshotId}: INVALID`);
           invalidSnapshots++;
           
-          console.log(`   Errors:`);
+          log(`   Errors:`);
           result.errors.forEach(error => console.log(`     - ${error}`));
           
           if (result.warnings.length > 0) {
-            console.log(`   Warnings:`);
+            log(`   Warnings:`);
             result.warnings.forEach(warning => console.log(`     - ${warning}`));
           }
           
-          console.log(`   Stats: ${JSON.stringify(result.stats)}`);
+          log(`   Stats: ${JSON.stringify(result.stats)}`);
         }
         
       } catch (error) {
-        console.log(`Ã¢ÂÅ’ ${file}: ERROR - ${error.message}`);
+        log(`❌ ${file}: ERROR - ${error.message}`);
         invalidSnapshots++;
       }
     }
   }
   
-  console.log('\n' + '='.repeat(50));
-  console.log('Ã°Å¸â€œÅ  VALIDATION SUMMARY:');
-  console.log(`   Total Snapshots: ${totalSnapshots}`);
-  console.log(`   Valid: ${validSnapshots} Ã¢Å“â€¦`);
-  console.log(`   Invalid: ${invalidSnapshots} Ã¢ÂÅ’`);
-  console.log(`   Success Rate: ${((validSnapshots / totalSnapshots) * 100).toFixed(1)}%`);
+  log('\n' + '='.repeat(50));
+  log('📊 VALIDATION SUMMARY:');
+  log(`   Total Snapshots: ${totalSnapshots}`);
+  log(`   Valid: ${validSnapshots} ✅`);
+  log(`   Invalid: ${invalidSnapshots} ❌`);
+  log(`   Success Rate: ${((validSnapshots / totalSnapshots) * 100).toFixed(1)}%`);
   
   if (invalidSnapshots > 0) {
-    console.log('\nÃ¢Å¡Â Ã¯Â¸Â  Some snapshots need fixing!');
+    log('\n⚠️  Some snapshots need fixing!');
     process.exit(1);
   } else {
-    console.log('\nÃ°Å¸Å½â€° All snapshots are valid!');
+    log('\n🎉 All snapshots are valid!');
     process.exit(0);
   }
 }
