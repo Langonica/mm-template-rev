@@ -113,6 +113,25 @@
   width: 100%;
 }
 
+/* Theme selector within menu */
+.themeGroup {
+  padding: var(--spacing-xs) var(--spacing-md);
+  margin-bottom: var(--spacing-xs);
+}
+
+.themeLabel {
+  display: block;
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  margin-bottom: var(--spacing-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.themeSelect {
+  width: 100%;
+}
+
 /* Section within menu */
 .section {
   padding: var(--spacing-xs) 0;

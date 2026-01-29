@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import styles from './GameMenu.module.css';
 import MenuItem from '../MenuItem';
 import Select from '../Select';
+import { useTheme, THEMES } from '../../contexts/ThemeContext';
 
 /**
  * GameMenu Component
@@ -101,6 +102,19 @@ const GameMenu = ({
     onClose();
   };
 
+  // Theme selector
+  const { theme, setTheme, availableThemes, themeInfo } = useTheme();
+  
+  const themeOptions = availableThemes.map(t => ({
+    value: t,
+    label: t === THEMES.BLUE_CASINO ? 'Deep Blue Casino' : t
+  }));
+  
+  const handleThemeChange = (e) => {
+    setTheme(e.target.value);
+    onClose();
+  };
+
   return (
     <div className={styles.menuContainer} ref={menuRef}>
       {/* Hamburger Button */}
@@ -176,6 +190,19 @@ const GameMenu = ({
 
         {/* Settings */}
         <div className={styles.section}>
+          {/* Theme Selector */}
+          <div className={styles.themeGroup}>
+            <span className={styles.themeLabel}>Theme</span>
+            <Select
+              variant="primary"
+              size="sm"
+              options={themeOptions}
+              value={theme}
+              onChange={handleThemeChange}
+              className={styles.themeSelect}
+            />
+          </div>
+          
           <MenuItem
             label={isFunStyle ? 'Switch to Classic Style' : 'Switch to Fun Style'}
             icon={isFunStyle ? '~' : '~'}
