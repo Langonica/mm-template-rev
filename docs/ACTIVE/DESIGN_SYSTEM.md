@@ -1,7 +1,21 @@
-# Meridian Solitaire - Design Principles & Taxonomy
+# Design System - Principles, Taxonomy & Patterns
 
 **Version:** 2.3.0  
 **Last Updated:** January 2026
+
+---
+
+## Related Documents
+
+- [Design Tokens](./DESIGN_TOKENS.md) - Concrete implementation (colors, spacing, CSS variables)
+- [Design Assets](../guides/DESIGN_ASSETS.md) - Asset specifications
+- [CODE_QUALITY.md](./CODE_QUALITY.md) - CSS architecture and patterns
+
+---
+
+## Purpose
+
+This document defines the design philosophy, taxonomy, and high-level patterns. For specific token values (hex codes, spacing scales), see [Design Tokens](./DESIGN_TOKENS.md).
 
 ---
 

@@ -28,16 +28,39 @@
 | `CHANGELOG.md` | Release history | Per release |
 | `PROCESS.md` | This file - our workflows | When patterns change |
 | `SETUP.md` | Developer onboarding | When setup changes |
+| `VERSION` | Current version identifier | Per release |
 
-### Planning Documents (`/docs`)
+### Active Documentation (`/docs/ACTIVE/`)
 
-| File Pattern | Purpose | When Created |
-|--------------|---------|--------------|
-| `*_PLAN.md` | Comprehensive feature plans | Before major work |
-| `*_PROGRESS.md` | Implementation tracking | At phase start |
-| `CODE_AUDIT.md` | Technical debt tracking | Quarterly |
-| `BACKLOG.md` | Future ideas | Continuously |
-| `THEME_SPEC_*.md` | Design system specs | When theming changes |
+Living documents synchronized with code changes:
+
+| File | Purpose | Sync Trigger |
+|------|---------|--------------|
+| `DESIGN_SYSTEM.md` | Design principles, taxonomy, patterns | UI/UX changes |
+| `DESIGN_TOKENS.md` | CSS tokens, colors, spacing | Visual style changes |
+| `NOTIFICATION_SYSTEM.md` | Game state messaging spec | Notification behavior changes |
+| `CODE_QUALITY.md` | Current standards, lint status | Code quality changes |
+| `PROGRESS.md` | Current work tracking | Daily/weekly |
+| `BACKLOG.md` | Deferred work, tech debt | Continuously |
+
+### Guides (`/docs/guides/`)
+
+Reference documentation for specific tasks:
+
+| File | Purpose |
+|------|---------|
+| `DEPLOYMENT.md` | Build and deploy instructions |
+| `DESIGN_ASSETS.md` | Asset specifications for designers |
+| `MODEL_SELECTION.md` | AI model selection guidance |
+
+### Archive (`/docs/archive/`)
+
+Historical record - completed work and reference material:
+
+| Directory | Contents |
+|-----------|----------|
+| `completed/` | Finished implementation plans, phase READMEs |
+| `reference/` | Historical context, original specs |
 
 ### Supporting Directories
 
@@ -71,8 +94,8 @@
 
 1. **Review Context**
    - Read `CLAUDE.md` for architecture
-   - Read relevant `*_PLAN.md` for specifications
-   - Check `*_PROGRESS.md` for current status
+   - Read relevant docs in `ACTIVE/` for current specifications
+   - Check `ACTIVE/PROGRESS.md` for current status
 
 2. **Implement Changes**
    - Make minimal, focused changes
@@ -86,15 +109,57 @@
    - Must complete without errors
    - Check for new warnings
 
-4. **Update Progress**
-   - Edit `*_PROGRESS.md` file
+4. **Synchronize Documentation**
+   - Update relevant `ACTIVE/*.md` files to reflect changes
+   - Update `CLAUDE.md` if architecture changes
+   - See [Documentation Synchronization](#documentation-synchronization) below
+
+5. **Update Progress**
+   - Edit `ACTIVE/PROGRESS.md` file
    - Mark tasks complete
    - Add commit hash
 
-5. **Commit**
+6. **Commit**
    - Use conventional commit format
    - Reference phase/context
+   - Include documentation updates
    - Include scope description
+
+---
+
+## Documentation Synchronization
+
+When making changes, synchronize these living documents:
+
+### Architecture Changes
+| Change Type | Document to Update |
+|-------------|-------------------|
+| New component pattern | `CLAUDE.md` + `ACTIVE/DESIGN_SYSTEM.md` |
+| New hook pattern | `CLAUDE.md` + `ACTIVE/CODE_QUALITY.md` |
+| State management changes | `CLAUDE.md` Architecture section |
+| New feature major | `CLAUDE.md` + `ACTIVE/PROGRESS.md` |
+
+### UI/UX Changes
+| Change Type | Document to Update |
+|-------------|-------------------|
+| Visual style changes | `ACTIVE/DESIGN_TOKENS.md` |
+| New component design | `ACTIVE/DESIGN_SYSTEM.md` |
+| Color/spacing changes | `ACTIVE/DESIGN_TOKENS.md` |
+| Asset changes | `guides/DESIGN_ASSETS.md` |
+
+### Code Quality Changes
+| Change Type | Document to Update |
+|-------------|-------------------|
+| New lint rules | `ACTIVE/CODE_QUALITY.md` |
+| Refactoring patterns | `ACTIVE/CODE_QUALITY.md` |
+| Bug fix with pattern | `ACTIVE/CODE_QUALITY.md` + `ACTIVE/BACKLOG.md` |
+
+### Synchronization Checklist
+- [ ] Code changes implemented
+- [ ] Relevant ACTIVE/ docs updated
+- [ ] CLAUDE.md updated (if architecture)
+- [ ] Build passes
+- [ ] Commit includes both code and doc changes
 
 ---
 

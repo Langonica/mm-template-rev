@@ -1,9 +1,22 @@
-# Theme Specification v2.2 - Deep Blue Casino
+# Design Tokens - Deep Blue Casino
 
-**Version:** 2.2.0  
-**Status:** Specification (Pre-Implementation)  
-**Target Release:** v2.2.0  
-**Last Updated:** 2026-01-28
+**Version:** 2.3.0  
+**Status:** IMPLEMENTED ✅  
+**Last Updated:** 2026-01-29
+
+---
+
+## Related Documents
+
+- [Design System](./DESIGN_SYSTEM.md) - Design principles and taxonomy
+- [Design Assets](../guides/DESIGN_ASSETS.md) - Asset specifications
+- See [archive/reference/LAYOUT_AUDIT.md](../archive/reference/LAYOUT_AUDIT.md) for historical layout research
+
+---
+
+## Overview
+
+This document specifies the concrete design tokens (colors, spacing, typography) for the Deep Blue Casino theme. For design philosophy and principles, see the [Design System](./DESIGN_SYSTEM.md).
 
 ---
 

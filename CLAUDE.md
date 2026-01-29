@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `PROCESS.md` - Development workflows, patterns, and skills
 - `README.md` - User-facing project overview
 - `CHANGELOG.md` - Release history
+- `docs/ACTIVE/` - Living documentation (Design System, Progress, Backlog)
+- `docs/guides/` - Reference guides (Deployment, Assets)
 
 ## Build & Development Commands
 
@@ -175,17 +177,19 @@ Columns become typed when an Ace or King is placed:
 
 ### CSS Architecture
 
-Currently fixed game board (1280×720), scaled via `useViewportScale` hook. **Responsive redesign in progress** - see `docs/LAYOUT_AUDIT.md` for the ratio-based model and implementation phases.
+Currently fixed game board (1280×720), scaled via `useViewportScale` hook. Design tokens in `src/styles/tokens.css`. See `docs/ACTIVE/DESIGN_TOKENS.md` for token reference.
 
-### UI/UX Redesign (In Progress)
+**Historical:** Layout audit research archived in `docs/archive/reference/LAYOUT_AUDIT.md`.
 
-Major UI unification underway:
-- `docs/UI_REDUX_MASTER_PLAN.md` - Comprehensive redesign specification
-- `docs/UI_REDUX_PROGRESS.md` - Implementation tracking
-- Phase 0 complete: Removed `isFun` feature
-- Phase 1 in progress: Component library foundation
+### UI/UX System
 
-Design tokens in `src/styles/tokens.css`. CSS Modules used for newer components. Asset specifications in `docs/DESIGN_ASSETS.md`.
+- **Design System:** `docs/ACTIVE/DESIGN_SYSTEM.md` - Principles, taxonomy, patterns
+- **Design Tokens:** `docs/ACTIVE/DESIGN_TOKENS.md` - Colors, spacing, CSS variables
+- **Asset Specs:** `docs/guides/DESIGN_ASSETS.md` - Visual asset requirements
+
+**Historical:** UI Redux plans archived in `docs/archive/completed/UI_REDUX_2026/`.
+
+**Icon System:** Centralized `Icon` component at `src/components/Icon/` exports all Lucide icons with consistent sizing. No emojis in UI.
 
 ### Drag & Drop
 
@@ -193,12 +197,14 @@ HTML5 Drag API for desktop, custom touch handling for mobile (100ms long-press, 
 
 ## Technical Debt & Code Quality
 
-**See `docs/CODE_AUDIT.md` for comprehensive audit findings.**
+**See `docs/ACTIVE/CODE_QUALITY.md` for current standards.**
+
+**Historical audit:** `docs/archive/completed/CODE_AUDIT_HISTORY.md`
 
 **Current Status:**
-- ✅ **Phase 1 Complete (2026-01-28):** Performance fixes, Error Boundary, localStorage notifications
-- ✅ **Phase 2 Complete (2026-01-28):** Debug cleanup, z-index consolidation
-- ⏳ **Phase 3 Queued:** Style migration, file organization
+- ✅ **Phase 1-3 Complete:** Performance, cleanup, organization
+- ✅ **Phase 4 Complete (2026-01-29):** Critical bug fixes (TDZ, ref mutation, missing deps)
+- ✅ **Phase 5 Complete (2026-01-29):** Hook violations, unused variables (80→20 errors)
 
 **v2.3.0 Game State Analyzer Status:**
 - ✅ **Phase 1 Complete:** State fingerprinting, `GameStateTracker` class
@@ -208,18 +214,20 @@ HTML5 Drag API for desktop, custom touch handling for mobile (100ms long-press, 
 - ✅ **Phase 5 Complete:** Auto-complete execution UI (`AutoCompleteButton`, sequential animations)
 - ✅ **Phase 6 Complete:** Hint system (`HintButton`, `HintDisplay`, keyboard shortcut)
 
-**Recently Fixed:**
-- ✅ `Column.jsx` - Replaced `getComputedStyle` with module constants + useMemo
-- ✅ `useCardGame.js` / `useUndo.js` - Optimized deep cloning with `structuredClone()`
-- ✅ `App.jsx` - Reduced useEffect dependencies (10 → 6)
-- ✅ `useGameStats.js` / `useCampaignProgress.js` - Added error notifications
-- ✅ `main.jsx` - Added Error Boundary wrapper
+**Recently Fixed (v2.3.0):**
+- ✅ `GameStateToast.jsx` - Fixed TDZ bug (handleDismiss declaration order)
+- ✅ `App.jsx` - Fixed ref mutation during render
+- ✅ `useCardGame.js` - Fixed debug tools missing dependencies
+- ✅ `Icon` component - Centralized icon exports from lucide-react
+- ✅ Context files - Extracted constants for Fast Refresh compatibility
+- ✅ ESLint errors - Reduced from 80 to 20 (75% reduction)
 
 **When modifying code:**
-- Check CODE_AUDIT.md for context on existing issues
+- Check CODE_QUALITY.md for current standards
 - Avoid adding new console.logs (use proper error handling)
 - Prefer CSS modules over inline styles
 - Follow z-index token scale (`--z-*` variables)
+- Use `Icon` component for all icons (no emojis)
 
 ## Model Selection
 
@@ -231,7 +239,7 @@ HTML5 Drag API for desktop, custom touch handling for mobile (100ms long-press, 
 | Feature implementation, refactoring | Sonnet | Component updates, hook creation, standard fixes |
 | Simple edits, searches, docs | Haiku | CSS variable swaps, find/replace, PROGRESS.md updates |
 
-See `docs/MODEL_SELECTION.md` for detailed guidance.
+See `docs/guides/MODEL_SELECTION.md` for detailed guidance.
 
 ## Commit & Release Practices
 

@@ -425,3 +425,80 @@ function isGameUnwinnable(gameState, searchDepth = 5) {
 - `DESIGN_PRINCIPLES.md` - Taxonomy and philosophy
 - `GAME_STATE_NOTIFICATION_PLAN.md` - Original research
 - `NOTIFICATION_SYSTEM_REVIEW.md` - Current system analysis
+
+
+---
+
+## Appendix A: Historical Review & Analysis
+
+**Original Review Date:** January 2026  
+**Source:** Consolidated from `NOTIFICATION_SYSTEM_REVIEW.md`
+
+### Problems Identified in Original System
+
+#### Detection Logic Issues
+
+1. **"Progress" only counted foundation cards**
+   - Did NOT consider: tableau builds, face-down reveals, sequence creation
+   - Result: User could be actively playing well but get "stalled" warning
+
+2. **"Cycles" counted every state repeat**
+   - Returns to same tableau arrangement = cycle
+   - But stock/waste might have changed, creating new opportunities
+   - Result: False circular play detection during normal cycling
+
+3. **Thresholds were too aggressive**
+   - 15 moves without foundation placement = caution
+   - 20 moves = stalled
+   - In a complex game, 20 moves without foundation is NORMAL
+
+#### UI Presentation Issues
+
+1. **Small text in stats bar**
+   - Easy to miss during active play
+
+2. **No visual hierarchy**
+   - Same presentation for caution/critical/stalled
+   - No progressive escalation
+
+3. **No action suggestions**
+   - Just tells user there's a problem
+   - Doesn't suggest: undo, hint, forfeit options
+
+### Test Scenarios Analysis
+
+| Scenario | User Action | Current Detection | Problem |
+|----------|-------------|-------------------|---------|
+| Active Play (False Positive) | Cycling stock to find playable card | Warning after 15-20 moves | User IS making progress (revealing cards) |
+| Unwinnable Game (False Negative) | Cycling stock repeatedly | No warning | Game is unwinnable but no clear indication |
+| Circular Play (True Positive) | Recycling stock 3+ times with no changes | "Circular play" warning | Working correctly, but UX could be better |
+
+### Solutions Implemented
+
+| Issue | Solution | Status |
+|-------|----------|--------|
+| False positives | Enhanced "progress" definition (6 types of productive moves) | ✅ Implemented |
+| False negatives | Unwinnable detection with BFS solver | ✅ Implemented |
+| Poor visibility | Progressive toast → overlay → modal system | ✅ Implemented |
+| No guidance | Clear action buttons in each tier | ✅ Implemented |
+
+### Threshold Evolution
+
+| Tier | Original | Current | Rationale |
+|------|----------|---------|-----------|
+| Hint | 15 moves | 2 cycles | Earlier subtle indicator |
+| Concern | 20 moves | 4 cycles | Reduced false positives |
+| Warning | 3 cycles | 6 cycles | More tolerance for cycling |
+| Confirmed | N/A | Solver-based | Mathematical certainty |
+
+---
+
+## Appendix B: Related Documents
+
+- [Design System](./DESIGN_SYSTEM.md) - Taxonomy and philosophy
+- [Historical: Game State Notification Plan](../archive/reference/GAME_STATE_NOTIFICATION_PLAN.md) - Original research
+- [Historical: Notification System Review](../archive/reference/NOTIFICATION_SYSTEM_REVIEW.md) - Archived review (content merged above)
+
+---
+
+*This document is a living specification. Update when notification behavior changes.*
