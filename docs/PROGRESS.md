@@ -67,27 +67,32 @@ Actual (bug): Column reads column[0] (face-down card) and sets wrong type
 
 ---
 
-### v2.2.3 - Code Audit Phase 2 Completion - IN PROGRESS 🔧
+### v2.2.3 - Code Audit Phase 2 Completion - COMPLETE ✅
 
 **Objective:** Complete remaining Code Audit Phase 2 items: console.log cleanup and z-index consolidation.
 
-**Task 1: Console.log Cleanup**
-| File | Action | Reason |
-|------|--------|--------|
-| `validateSnapshots.js` | Remove ~15 console.log | Dev utility only, not production |
-| `useHighDPIAssets.js` | Remove debug log | Development artifact |
-| `useDragDrop.js` | Keep warn logs | Useful for debugging drag issues |
-| Error handlers | Keep all | Required for debugging |
+**Status:** ✅ Completed 2026-01-28
 
-**Task 2: Z-Index Consolidation**
-| Current | Target | Token |
-|---------|--------|-------|
-| `z-index: 110` | `var(--z-cards)` | Use token |
-| `z-index: 2000` | `var(--z-header)` or similar | Create if needed |
-| `z-index: 9999` | `var(--z-overlay)` | Map to existing |
-| `z-index: 10000` | `var(--z-notification)` | Map to existing |
+**Changes Applied:**
 
-**Goal:** All z-index values use CSS custom properties from tokens.css
+| Task | Files | Changes |
+|------|-------|---------|
+| Console cleanup | `validateSnapshots.js` | Wrapped 15 logs in DEBUG flag |
+| Console cleanup | `useHighDPIAssets.js` | Removed 5 debug logs |
+| Z-index consolidation | `App.css` | 9 hardcoded values → tokens |
+| Z-index consolidation | `Column.jsx` | 110 + index → calc() |
+| Z-index consolidation | `useTouchDrag.js` | 9999 → --z-touch-drag |
+
+**Z-Index Mappings:**
+| Before | After |
+|--------|-------|
+| `z-index: 1` | `var(--z-plinths)` |
+| `z-index: 110` | `calc(var(--z-stock-waste) - 190)` |
+| `z-index: 600` | `var(--z-drag-ghost)` |
+| `z-index: 9999/10000` | `var(--z-overlay)` |
+| `z-index: 1000` | `calc(var(--z-portal) + 300)` |
+
+**Result:** All z-index values now use CSS custom properties from `tokens.css` as single source of truth.
 
 ---
 

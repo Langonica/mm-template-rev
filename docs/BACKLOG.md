@@ -6,27 +6,7 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ## In Progress
 
-### Code Audit - Phase 2: Debug Cleanup & Component Refactoring - IN PROGRESS
-**Priority:** 🟡 High | **Complexity:** Low-Medium | **Added:** 2026-01-28 | **Started:** 2026-01-28
-
-**Status Update:** Partially completed organically. Remaining tasks:
-
-**Task 1: Console.log Cleanup - IN PROGRESS**
-- ✅ Error handling logs kept (cardUtils, useCampaignProgress, useGameStats, etc.)
-- ✅ useNotification duplicate removed
-- ✅ CountBadge component created
-- 🔄 Remove debug logs from:
-  - `validateSnapshots.js` (dev utility - 15+ console.log calls)
-  - `useHighDPIAssets.js` (1 debug log)
-  - `useDragDrop.js` (warn logs for missing state - may keep)
-
-**Task 2: Z-Index Scale Consolidation - PENDING**
-Current chaos:
-- Hardcoded: `z-index: 110, 2000, 9999, 10000`
-- CSS vars: `var(--z-cards), var(--z-overlay)`
-- Calculated: `calc(var(--z-cards) + 10)`
-
-Goal: Standardize all z-index usage to token system in tokens.css
+### (No active tasks - see Completed Items below)
 
 ---
 
@@ -100,6 +80,9 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 ## Completed Items
 
 *Move items here when resolved, with date and brief note:*
+
+### ~~Code Audit - Phase 2: Debug Cleanup & Component Refactoring~~
+**Resolved:** 2026-01-28 | Completed console.log cleanup and z-index consolidation. Removed ~20 debug console.log statements from validateSnapshots.js (wrapped in DEBUG flag) and useHighDPIAssets.js. Consolidated 11 hardcoded z-index values to use CSS custom properties from tokens.css. Mappings: 110 → calc(), 600 → --z-drag-ghost, 9999/10000 → --z-overlay, 1000 → calc(var(--z-portal) + 300). All z-index values now use design tokens as single source of truth.
 
 ### ~~Extended Autoplay System~~
 **Resolved:** 2026-01-28 | Extended double-click autoplay from foundation-only to include tableau moves. Renamed `tryAutoMoveToFoundation()` → `tryAutoMove()` in gameLogic.js. Added `findOptimalTableauMove()` with scoring system that prefers longer sequences and Ace/King columns. Priority order: Foundation → Tableau build → Empty column. Updated useCardGame.js to handle tableau move animations and record move destination type for undo history.
