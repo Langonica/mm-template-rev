@@ -1,0 +1,223 @@
+/**
+ * StatisticsScreen Component Styles
+ *
+ * Full-bleed screen for game statistics.
+ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tabBar {
+  flex-shrink: 0;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-6);
+}
+
+.tabContent {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reset Confirm in Header */
+.resetConfirm {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.resetWarning {
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+  margin-right: var(--spacing-2);
+}
+
+/* Overview Tab */
+.overviewGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+}
+
+.summaryCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-5);
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summaryLabel {
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
+}
+
+.summaryValue {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--accent-primary);
+  font-family: var(--font-family-mono);
+}
+
+/* Records Tab */
+.recordsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-6);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.recordCard {
+  background: linear-gradient(135deg, var(--bg-surface), var(--bg-elevated));
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-8);
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.recordCard:hover {
+  border-color: var(--accent-primary);
+  transform: var(--hover-lift);
+  box-shadow: var(--shadow-glow);
+}
+
+.recordIcon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-4);
+  filter: grayscale(0.3);
+}
+
+.recordValue {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-black);
+  color: var(--accent-primary);
+  margin-bottom: var(--spacing-3);
+  font-family: var(--font-family-mono);
+  text-shadow: 0 0 20px var(--accent-glow);
+}
+
+.recordLabel {
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-normal);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* By Mode Tab */
+.modeTable {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.modeHeader,
+.modeRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-5);
+  font-size: var(--font-size-sm);
+}
+
+.modeHeader {
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-tight);
+  border-bottom: 2px solid var(--border-subtle);
+}
+
+.modeRow {
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background var(--transition-fast);
+}
+
+.modeRow:hover {
+  background: var(--hover-bg);
+}
+
+.modeRow:last-child {
+  border-bottom: none;
+}
+
+.modeName {
+  color: var(--accent-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .content {
+    padding: var(--spacing-4);
+  }
+
+  .overviewGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .recordsGrid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+
+  .recordCard {
+    padding: var(--spacing-6);
+  }
+
+  .recordValue {
+    font-size: var(--font-size-3xl);
+  }
+
+  .modeHeader,
+  .modeRow {
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .overviewGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .resetConfirm {
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .resetWarning {
+    font-size: var(--font-size-xs);
+    margin-right: 0;
+  }
+}

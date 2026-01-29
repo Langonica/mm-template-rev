@@ -11,7 +11,7 @@
 |-------|-------------|--------|---------|-----------|
 | 0 | Cleanup (isFun Removal) | ✅ COMPLETE | 2026-01-28 | 2026-01-28 |
 | 1 | Foundation (Component Library) | ✅ COMPLETE | 2026-01-28 | 2026-01-28 |
-| 2 | Screen Redesigns | ⏳ PENDING | - | - |
+| 2 | Screen Redesigns | 🔄 IN PROGRESS | 2026-01-28 | - |
 | 3 | UI Unification | ⏳ PENDING | - | - |
 | 4 | Enhanced Metrics | ⏳ PENDING | - | - |
 
@@ -74,6 +74,59 @@ Create the unified component library that will power all redesigned screens.
 ## Notes
 
 *Last updated: 2026-01-28*
+
+## Phase 2: Screen Redesigns
+
+### Objective
+Implement redesigned screens using the new component library.
+
+### Screens to Redesign
+
+| Screen | Status | Components Used |
+|--------|--------|-----------------|
+| HomeScreen | ✅ DONE | FullBleedScreen, ActionCard, PrimaryButton, SecondaryButton, ProgressBar, TextLinkGroup |
+| HowToPlay (RulesModal) | ✅ DONE | FullBleedScreen, TabBar, InfoCard, DataCard |
+| Statistics (StatsModal) | ✅ DONE | FullBleedScreen, TabBar, DataCard |
+
+### Commits
+
+| Commit | Description | Date |
+|--------|-------------|------|
+| TBD | Phase 2: Screen Redesigns | 2026-01-28 |
+
+---
+
+### Phase 2 Implementation Complete ✅
+
+All screens redesigned using the component library:
+
+**HomeScreen:**
+- Single-column layout with ActionCards
+- Header with title (no back button on home)
+- Continue Game as full-width PrimaryButton
+- Quick Play ActionCard with inline mode select
+- Campaign ActionCard with ProgressBar
+- TextLinkGroup for secondary navigation
+- Footer with version
+
+**HowToPlayScreen:**
+- FullBleedScreen container with back button
+- TabBar with 5 tabs: Goal, Columns, Controls, Modes, Tips
+- Goal tab: Highlight + 2 DataCards
+- Columns tab: 3 InfoCards with custom icons
+- Controls tab: 4 InfoCards with emoji icons
+- Modes tab: 4 InfoCards with mode descriptions
+- Tips tab: 5 InfoCards with numbered badges
+
+**StatisticsScreen:**
+- FullBleedScreen with reset button in header
+- TabBar with 3 tabs: Overview, Records, By Mode
+- Overview: 6 DataCards + summary row
+- Records: 4 custom styled record cards
+- By Mode: Table with mode statistics
+- Reset confirmation in header
+
+---
 
 ### Phase 1 Implementation Complete ✅
 

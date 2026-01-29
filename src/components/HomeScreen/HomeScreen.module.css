@@ -1,8 +1,8 @@
 /**
- * HomeScreen Component Styles
+ * HomeScreen Component Styles (Redesigned)
  *
- * Landing page displayed on initial load.
- * Features: Title, Quick Play / Campaign options, secondary actions.
+ * Full-bleed home screen with single-column layout.
+ * Uses unified component library.
  */
 
 .homeScreen {
@@ -10,194 +10,131 @@
   inset: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   background: linear-gradient(180deg, var(--bg-deepest) 0%, var(--bg-deep) 50%, #000 100%);
-  z-index: var(--z-modal);
-  padding: var(--spacing-xl);
-  overflow-y: auto;
-}
-
-/* Decorative card fan background */
-.backgroundDecor {
-  position: absolute;
-  inset: 0;
+  z-index: var(--z-home);
   overflow: hidden;
-  opacity: 0.15;
-  pointer-events: none;
 }
 
-.backgroundDecor::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-  transform: translate(-50%, -50%);
+/* Header */
+.header {
+  height: var(--screen-header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-6);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
 }
 
-/* Main content container */
+.headerLeft,
+.headerRight {
+  min-width: var(--btn-icon-size);
+  display: flex;
+  align-items: center;
+}
+
+.headerRight {
+  justify-content: flex-end;
+}
+
+.headerTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+/* Content */
 .content {
-  position: relative;
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--screen-padding);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-lg);
-  max-width: 500px;
-  width: 100%;
+  gap: var(--spacing-6);
 }
 
-/* Title area */
+/* Title Area */
 .titleArea {
   text-align: center;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-2);
 }
 
 .title {
-  font-size: 48px;
+  font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-black);
   color: var(--temp-gold, #c9a050);
-  letter-spacing: 4px;
+  letter-spacing: var(--letter-spacing-wider);
   margin: 0;
   text-shadow: 0 2px 20px rgba(201, 160, 80, 0.3);
 }
 
 .subtitle {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-normal);
-  color: var(--color-text-secondary);
-  margin: var(--spacing-sm) 0 0 0;
-  letter-spacing: 2px;
-}
-
-/* Play button (continue game) */
-.playButton {
-  padding: var(--spacing-lg) var(--spacing-xl);
-  font-size: var(--font-size-xl);
-  min-width: 200px;
-}
-
-/* Play options container - Quick Play & Campaign side by side */
-.playOptions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-lg);
-  width: 100%;
-}
-
-/* Individual play option card */
-.playOption {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-lg);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--border-radius-lg, 12px);
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-
-.playOption:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.15);
-}
-
-.optionHeader {
-  text-align: center;
-}
-
-.optionTitle {
-  display: block;
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: #ffffff;
-  margin-bottom: var(--spacing-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-secondary);
+  margin: var(--spacing-2) 0 0 0;
+  letter-spacing: var(--letter-spacing-wide);
 }
 
-.optionDescription {
-  display: block;
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+/* Continue Section */
+.continueSection {
+  width: 100%;
+  max-width: var(--screen-max-width);
+  display: flex;
+  justify-content: center;
+}
+
+/* Action Cards */
+.actionCard {
+  width: 100%;
+  max-width: var(--screen-max-width);
+}
+
+/* Quick Play Actions */
+.quickPlayActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  align-items: center;
 }
 
 .modeSelect {
+  flex: 1;
+  min-width: 150px;
+}
+
+/* Campaign Progress */
+.campaignProgress {
   width: 100%;
+  margin-bottom: var(--spacing-3);
 }
 
-.optionButton {
-  width: 100%;
+/* Secondary Navigation */
+.secondaryNav {
+  margin-top: var(--spacing-4);
 }
 
-/* Campaign info stats */
-.campaignInfo {
-  display: flex;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: var(--border-radius-sm);
-}
-
-.campaignStat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.statLabel {
-  font-size: 10px;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.statValue {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary, #4CAF50);
-}
-
-/* Secondary actions */
-.secondaryActions {
-  display: flex;
-  gap: var(--spacing-lg);
-  margin-top: var(--spacing-sm);
-}
-
-.secondaryButton {
-  padding: var(--spacing-sm) var(--spacing-lg);
-}
-
-/* Version info */
-.versionInfo {
-  position: absolute;
-  bottom: var(--spacing-xl);
+/* Footer */
+.footer {
+  padding: var(--spacing-4);
+  text-align: center;
+  color: var(--text-muted);
   font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  opacity: 0.5;
+  flex-shrink: 0;
 }
 
-/* Fade-out animation when starting game */
-.fadeOut {
-  animation: fadeOut 0.3s ease-out forwards;
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
-/* Fade-in animation on load */
+/* Animations */
 .fadeIn {
   animation: fadeIn 0.4s ease-out;
+}
+
+.fadeOut {
+  animation: fadeOut 0.3s ease-out forwards;
 }
 
 @keyframes fadeIn {
@@ -211,67 +148,46 @@
   }
 }
 
-/* Card decorations */
-.cardDecor {
-  position: absolute;
-  width: var(--card-w);
-  height: var(--card-h);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--border-radius-md);
-  pointer-events: none;
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
-.cardDecor:nth-child(1) {
-  top: 10%;
-  left: 10%;
-  transform: rotate(-15deg);
-}
+/* Responsive */
+@media (max-width: 640px) {
+  .header {
+    padding: 0 var(--spacing-4);
+  }
 
-.cardDecor:nth-child(2) {
-  top: 15%;
-  right: 10%;
-  transform: rotate(20deg);
-}
+  .headerTitle {
+    font-size: var(--font-size-md);
+  }
 
-.cardDecor:nth-child(3) {
-  bottom: 15%;
-  left: 15%;
-  transform: rotate(-25deg);
-}
-
-.cardDecor:nth-child(4) {
-  bottom: 10%;
-  right: 15%;
-  transform: rotate(10deg);
-}
-
-/* Responsive: Stack play options vertically on small screens */
-@media (max-width: 500px) {
-  .playOptions {
-    grid-template-columns: 1fr;
+  .content {
+    padding: var(--spacing-4);
+    gap: var(--spacing-4);
   }
 
   .title {
-    font-size: 36px;
-    letter-spacing: 2px;
+    font-size: var(--font-size-3xl);
+    letter-spacing: var(--letter-spacing-wide);
   }
 
   .subtitle {
     font-size: var(--font-size-md);
   }
 
-  .content {
-    gap: var(--spacing-md);
-  }
-
-  .playOption {
-    padding: var(--spacing-md);
-  }
-
-  .secondaryActions {
+  .quickPlayActions {
     flex-direction: column;
-    gap: var(--spacing-sm);
-    align-items: center;
+    align-items: stretch;
+  }
+
+  .modeSelect {
+    width: 100%;
   }
 }
