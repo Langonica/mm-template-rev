@@ -762,6 +762,7 @@ export const useCardGame = () => {
     handleRedo,
     canUndo: undoSystem.canUndo,
     canRedo: undoSystem.canRedo,
+    undoMoveCount: undoSystem.getMoveCount,
     gameStatus,
     availableMoves,
     // State tracker for circular play detection

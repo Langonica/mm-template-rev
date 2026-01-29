@@ -481,11 +481,11 @@ function App() {
   const handleStalemateUndo = useCallback(() => {
     setStalemateModalOpen(false)
     // Undo up to 5 moves or as many as available
-    const movesToUndo = Math.min(5, undoSystem.getMoveCount())
-    for (let i = 0; i < movesToUndo; i++) {
+    // Undo up to 5 moves
+    for (let i = 0; i < 5; i++) {
       handleUndo()
     }
-  }, [handleUndo, undoSystem])
+  }, [handleUndo])
 
   return (
     <div
