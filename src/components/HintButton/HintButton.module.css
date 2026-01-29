@@ -1,0 +1,96 @@
+/**
+ * HintButton Component Styles
+ * 
+ * Shows hint availability with remaining count badge.
+ * Uses accent/cyan theme to match game controls.
+ */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  outline: none;
+  user-select: none;
+  white-space: nowrap;
+  
+  /* Accent/cyan theme */
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+}
+
+.button:hover:not(:disabled) {
+  background: var(--accent-subtle);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  transform: var(--hover-lift);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.button:disabled,
+.button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--bg-elevated);
+  border-color: var(--border-subtle);
+  color: var(--text-disabled);
+}
+
+/* Icon styling */
+.icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: var(--bg-deepest);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.button:hover:not(:disabled) .icon {
+  background: var(--accent-secondary);
+}
+
+/* Badge for remaining count */
+.badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.button:hover:not(:disabled) .badge {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--bg-deepest);
+}
+
+/* Disabled state badge */
+.button:disabled .badge,
+.button.disabled .badge {
+  background: var(--bg-surface);
+  border-color: var(--border-subtle);
+  color: var(--text-disabled);
+}

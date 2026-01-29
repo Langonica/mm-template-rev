@@ -10,6 +10,8 @@ import PauseOverlay from './components/PauseOverlay'
 import OrientationBlocker from './components/OrientationBlocker'
 import GearButton from './components/GearButton'
 import StalemateModal from './components/StalemateModal'
+import AutoCompleteButton from './components/AutoCompleteButton'
+import HintDisplay from './components/HintDisplay'
 import { useCardGame } from './hooks/useCardGame'
 import { useGameStats } from './hooks/useGameStats'
 import { useCampaignProgress } from './hooks/useCampaignProgress'
@@ -51,7 +53,15 @@ function App() {
     handleTouchCancel,
     gameStatus,
     availableMoves,
-    circularPlayState
+    circularPlayState,
+    canAutoComplete,
+    isAutoCompleting,
+    executeAutoComplete,
+    cancelAutoComplete,
+    currentHint,
+    hintsRemaining,
+    showHint,
+    clearHint
   } = useCardGame()
 
   const {
@@ -753,6 +763,12 @@ function App() {
             </div>
           )}
 
+          {/* Hint Display - floating notification */}
+          <HintDisplay
+            hint={currentHint}
+            onDismiss={clearHint}
+          />
+
           <GameStage
             snapshot={currentSnapshot}
             config={config}
@@ -780,6 +796,12 @@ function App() {
             currentTime={currentGameTime}
             formatTime={formatTime}
             circularPlayState={circularPlayState}
+            canAutoComplete={canAutoComplete}
+            isAutoCompleting={isAutoCompleting}
+            onAutoComplete={executeAutoComplete}
+            onCancelAutoComplete={cancelAutoComplete}
+            hintsRemaining={hintsRemaining}
+            onShowHint={showHint}
           />
 
           {/* Gear Button - fixed top-right, triggers settings menu */}

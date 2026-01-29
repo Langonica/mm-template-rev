@@ -82,10 +82,72 @@ Locations are objects:
 |------|---------|
 | `src/hooks/useCardGame.js` | Core game state, move execution, undo/redo integration |
 | `src/hooks/useDragDrop.js` | Drag state, pre-calculates valid targets at drag start |
-| `src/utils/gameLogic.js` | Move validation, execution, game status detection |
+| `src/utils/gameLogic.js` | Move validation, execution, game status detection, **GameStateTracker** |
 | `src/utils/cardUtils.js` | Card parsing, location finding, stacking rules |
 | `src/utils/dealGenerator.js` | Random deal generation for game modes |
 | `src/App.jsx` | Main orchestrator, connects all hooks and components |
+| `src/components/StalemateModal/` | Stalemate detection UX with stats and actions |
+| `src/components/AutoCompleteButton/` | Auto-complete button with executing state |
+| `src/components/HintButton/` | Hint button with remaining count badge |
+| `src/components/HintDisplay/` | Floating hint notification |
+
+### Game State Analyzer (v2.3.0)
+
+New system for detecting stalemates, circular play, and auto-complete opportunities.
+
+**State Fingerprinting:**
+```javascript
+// Each move generates a compact state fingerprint
+getStateFingerprint(gameState) → { tableauHash, stockTop, wasteTop, ... }
+fingerprintToKey(fingerprint) → "Ah,2d;E;Kd,Qh...;|9s|null|..."  // String key for Map
+```
+
+**Circular Play Detection:**
+- `GameStateTracker` class tracks state history in a Map
+- Detects when player returns to same state 3+ times (circular play)
+- Tracks moves without foundation progress (20+ = stalled)
+- Four warning levels: `none` → `caution` → `critical` → `stalled`
+
+**Auto-Complete Detection & Execution:**
+```javascript
+// Returns true when game is trivially winnable
+canAutoComplete(gameState) {
+  // 1. Stock, waste, pockets empty
+  // 2. All tableau cards face-up
+  // 3. No blocked sequences (7♠ on 8♥ blocks both)
+}
+
+// Find all available foundation moves
+getAllFoundationMoves(gameState) → [{ card, from, to }, ...]
+
+// Execute single foundation move
+executeFoundationMove(gameState, move) → newState
+
+// In useCardGame hook:
+executeAutoComplete()  // Async, animates moves sequentially
+cancelAutoComplete()   // Abort execution
+isAutoCompleting       // Boolean state
+```
+
+**Hook Integration:**
+```javascript
+// useCardGame.js exposes:
+circularPlayState: { warningLevel, cycleCount, movesSinceProgress, isCircular, isNoProgress }
+stateTrackerStats: { maxFoundationCount, totalMovesTracked, uniqueStates }
+
+// Auto-complete (Phase 5)
+canAutoComplete: boolean       // true when auto-complete available
+isAutoCompleting: boolean      // true while executing
+executeAutoComplete()          // Start auto-complete (async)
+cancelAutoComplete()           // Abort execution
+
+// Hint system (Phase 6)
+currentHint: { card, from, to, priority, reason }  // Current hint or null
+hintsRemaining: number         // 0-3 hints left
+showHint()                     // Show best available hint
+clearHint()                    // Dismiss current hint
+// Keyboard: Press 'H' to show hint
+```
 
 ### Game Modes
 
@@ -122,8 +184,16 @@ HTML5 Drag API for desktop, custom touch handling for mobile (100ms long-press, 
 
 **Current Status:**
 - ✅ **Phase 1 Complete (2026-01-28):** Performance fixes, Error Boundary, localStorage notifications
-- 🔄 **Phase 2 In Progress:** Debug cleanup, component refactoring  
+- ✅ **Phase 2 Complete (2026-01-28):** Debug cleanup, z-index consolidation
 - ⏳ **Phase 3 Queued:** Style migration, file organization
+
+**v2.3.0 Game State Analyzer Status:**
+- ✅ **Phase 1 Complete:** State fingerprinting, `GameStateTracker` class
+- ✅ **Phase 2 Complete:** Circular play detection with 4 warning levels
+- ✅ **Phase 3 Complete:** StalemateModal with stats and actions
+- ✅ **Phase 4 Complete:** Auto-complete detection (`canAutoComplete`, `hasBlockedSequences`)
+- ✅ **Phase 5 Complete:** Auto-complete execution UI (`AutoCompleteButton`, sequential animations)
+- ✅ **Phase 6 Complete:** Hint system (`HintButton`, `HintDisplay`, keyboard shortcut)
 
 **Recently Fixed:**
 - ✅ `Column.jsx` - Replaced `getComputedStyle` with module constants + useMemo

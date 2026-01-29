@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { ALL_SNAPSHOTS } from '../data/snapshots/allSnapshots';
 import { useDragDrop } from './useDragDrop';
 import { useUndo } from './useUndo';
@@ -8,7 +8,12 @@ import {
   tryAutoMove,
   getGameStatus,
   getAvailableMoves,
-  GameStateTracker
+  GameStateTracker,
+  canAutoComplete,
+  getAllFoundationMoves,
+  executeFoundationMove,
+  getHints,
+  getBestHint
 } from '../utils/gameLogic';
 import { findCardLocation, parseCard, canPlaceOnFoundation, deepClone } from '../utils/cardUtils';
 
@@ -37,6 +42,9 @@ export const useCardGame = () => {
     movesSinceProgress: 0,
     warningLevel: 'none' // 'none' | 'caution' | 'critical' | 'stalled'
   });
+
+  // Auto-complete detection state (Phase 4)
+  const [, setAutoCompleteAvailable] = useState(false);
 
   // Initialize undo system
   const undoSystem = useUndo();
@@ -81,6 +89,171 @@ export const useCardGame = () => {
     return warningLevel;
   }, [calculateWarningLevel]);
 
+  // Helper: Check if auto-complete is available (Phase 4)
+  const checkAutoComplete = useCallback((currentState) => {
+    if (!currentState) {
+      setAutoCompleteAvailable(false);
+      return false;
+    }
+    
+    const available = canAutoComplete(currentState);
+    setAutoCompleteAvailable(available);
+    return available;
+  }, []);
+  
+  // State for auto-complete execution (Phase 5)
+  const [isAutoCompleting, setIsAutoCompleting] = useState(false);
+  const autoCompleteAbortRef = useRef(false);
+  
+  // Execute auto-complete: Play all available cards to foundations
+  const executeAutoComplete = useCallback(async () => {
+    if (!gameState || isAutoCompleting) return;
+    
+    // Verify auto-complete is still available
+    if (!canAutoComplete(gameState)) return;
+    
+    setIsAutoCompleting(true);
+    autoCompleteAbortRef.current = false;
+    
+    // Record initial state for undo
+    const initialState = deepClone(gameState);
+    
+    let currentState = gameState;
+    let movesMade = 0;
+    const maxMoves = 52; // Safety limit
+    
+    // Find and execute foundation moves until no more available
+    while (movesMade < maxMoves && !autoCompleteAbortRef.current) {
+      const moves = getAllFoundationMoves(currentState);
+      
+      if (moves.length === 0) break;
+      
+      // Execute the first available move
+      const move = moves[0];
+      const newState = executeFoundationMove(currentState, move);
+      
+      if (!newState) break;
+      
+      // Animate the move
+      setAnimatingCard({
+        card: move.card,
+        from: move.from,
+        to: move.to,
+        isAutoMove: true
+      });
+      
+      // Wait for animation
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Update state
+      currentState = newState;
+      setGameState(newState);
+      movesMade++;
+      
+      // Clear animation
+      setAnimatingCard(null);
+      
+      // Small delay between moves
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    // Record as single undo entry if moves were made
+    if (movesMade > 0) {
+      undoSystem.recordMove({
+        type: 'auto-complete',
+        movesCount: movesMade
+      }, initialState);
+      
+      setMoveCount(prev => prev + 1);
+      
+      // Update tracking
+      const trackingResult = stateTracker.recordMove(currentState);
+      updateCircularPlayState(trackingResult);
+      
+      // Check win condition
+      const status = getGameStatus(currentState);
+      if (status.status === 'won') {
+        // Game won - let the win handler take over
+      }
+    }
+    
+    setIsAutoCompleting(false);
+    setAutoCompleteAvailable(false);
+    clearHint(); // Clear any hints
+  }, [gameState, isAutoCompleting, undoSystem, stateTracker, updateCircularPlayState, clearHint]);
+  
+  // Cancel auto-complete execution
+  const cancelAutoComplete = useCallback(() => {
+    autoCompleteAbortRef.current = true;
+  }, []);
+  
+  // ============================================================================
+  // HINT SYSTEM (Phase 6)
+  // ============================================================================
+  
+  const [currentHint, setCurrentHint] = useState(null);
+  const [hintsRemaining, setHintsRemaining] = useState(3);
+  const [hintCards, setHintCards] = useState([]); // Cards to highlight
+  
+  // Show a hint
+  const showHint = useCallback(() => {
+    if (!gameState || hintsRemaining <= 0) return;
+    
+    const hint = getBestHint(gameState);
+    if (!hint) {
+      // No hints available
+      setCurrentHint({ type: 'none', message: 'No moves available' });
+      setTimeout(() => setCurrentHint(null), 2000);
+      return;
+    }
+    
+    // Set the hint
+    setCurrentHint(hint);
+    
+    // Highlight the card(s) that can move
+    if (hint.card) {
+      setHintCards([hint.card]);
+    }
+    
+    // Decrement hints
+    setHintsRemaining(prev => prev - 1);
+    
+    // Auto-clear hint after 5 seconds
+    setTimeout(() => {
+      setCurrentHint(null);
+      setHintCards([]);
+    }, 5000);
+  }, [gameState, hintsRemaining]);
+  
+  // Clear current hint
+  const clearHint = useCallback(() => {
+    setCurrentHint(null);
+    setHintCards([]);
+  }, []);
+  
+  // Reset hints (for new game)
+  const resetHints = useCallback(() => {
+    setHintsRemaining(3);
+    setCurrentHint(null);
+    setHintCards([]);
+  }, []);
+  
+  // Keyboard shortcut for hints (H key)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'h' || e.key === 'H') {
+        // Don't trigger if typing in an input
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+          return;
+        }
+        showHint();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showHint]);
+
   // Note: No auto-load on mount. Game loads when user clicks "Play Game" from HomeScreen.
   // This prevents the flash of a dealt game before HomeScreen renders.
 
@@ -119,13 +292,16 @@ export const useCardGame = () => {
     // Reset state tracker for new game
     stateTracker.reset();
     
+    // Reset hints for new game
+    resetHints();
+    
     // Update config based on snapshot metadata
     setConfig(prev => ({
       ...prev,
       mode: snapshot.metadata.mode,
       variant: snapshot.metadata.variant,
     }));
-  }, [undoSystem, stateTracker]);
+  }, [undoSystem, stateTracker, resetHints]);
 
   // Load a game state directly (for random deals)
   const loadGameState = useCallback((gameStateData) => {
@@ -160,6 +336,9 @@ export const useCardGame = () => {
 
     // Reset state tracker for new game
     stateTracker.reset();
+    
+    // Reset hints for new game
+    resetHints();
 
     // Update config based on metadata
     setConfig(prev => ({
@@ -167,7 +346,7 @@ export const useCardGame = () => {
       mode: gameStateData.metadata?.mode || prev.mode,
       variant: gameStateData.metadata?.variant || prev.variant,
     }));
-  }, [undoSystem, stateTracker]);
+  }, [undoSystem, stateTracker, resetHints]);
   
   const setMode = useCallback((mode) => {
     const modeSnapshotId = `${mode}_normal`;
@@ -230,6 +409,8 @@ export const useCardGame = () => {
       // Track state for circular play detection (recycle is a significant state change)
       const trackingResult = stateTracker.recordMove(newState);
       updateCircularPlayState(trackingResult);
+      checkAutoComplete(newState);
+      clearHint(); // Clear hints after move
       
     } else {
       // Draw a card
@@ -259,10 +440,12 @@ export const useCardGame = () => {
       // Track state for circular play detection
       const trackingResult = stateTracker.recordMove(newState);
       updateCircularPlayState(trackingResult);
+      checkAutoComplete(newState);
+      clearHint(); // Clear hints after move
     }
     
     setMoveCount(prev => prev + 1);
-  }, [currentStockCards, currentWasteCards, gameState, undoSystem, stateTracker, updateCircularPlayState]);
+  }, [currentStockCards, currentWasteCards, gameState, undoSystem, stateTracker, updateCircularPlayState, checkAutoComplete, clearHint]);
   
   // Handle card move with undo tracking
   const handleMove = useCallback((cardStr, target) => {
@@ -336,7 +519,11 @@ export const useCardGame = () => {
 
       // Track state for circular play detection
       const trackingResult = stateTracker.recordMove(newState);
-      const warningLevel = updateCircularPlayState(trackingResult);
+      updateCircularPlayState(trackingResult);
+      
+      // Check auto-complete availability (Phase 4)
+      checkAutoComplete(newState);
+      clearHint(); // Clear hints after move
       
       // Log warnings for development (can be removed in production)
       if (trackingResult.circular) {
@@ -349,7 +536,7 @@ export const useCardGame = () => {
     }
 
     return false;
-  }, [gameState, undoSystem, stateTracker, updateCircularPlayState]);
+  }, [gameState, undoSystem, stateTracker, updateCircularPlayState, checkAutoComplete, clearHint]);
   
   // Handle double-click auto-move with slurp/pop animation
   // Tries foundation first, then tableau builds, then empty columns
@@ -458,6 +645,10 @@ export const useCardGame = () => {
       // Track state for circular play detection
       const trackingResult = stateTracker.recordMove(testState);
       updateCircularPlayState(trackingResult);
+      
+      // Check auto-complete availability (Phase 4)
+      checkAutoComplete(testState);
+      clearHint(); // Clear hints after move
 
       setMoveCount(prev => prev + 1);
 
@@ -471,7 +662,7 @@ export const useCardGame = () => {
     }, 300);
 
     return true;
-  }, [gameState, undoSystem, stateTracker, updateCircularPlayState]);
+  }, [gameState, undoSystem, stateTracker, updateCircularPlayState, checkAutoComplete, clearHint]);
   
   // Undo last move
   const handleUndo = useCallback(() => {
@@ -577,6 +768,18 @@ export const useCardGame = () => {
     stateTrackerStats: stateTracker ? stateTracker.getStats() : null,
     // Circular play warning state (Phase 2)
     circularPlayState,
+    // Auto-complete (Phase 5)
+    canAutoComplete: autoCompleteAvailable,
+    isAutoCompleting,
+    executeAutoComplete,
+    cancelAutoComplete,
+    // Hint system (Phase 6)
+    currentHint,
+    hintsRemaining,
+    hintCards,
+    showHint,
+    clearHint,
+    resetHints,
     ...dragDrop,
     ...touchDrag
   };

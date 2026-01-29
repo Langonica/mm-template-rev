@@ -218,14 +218,22 @@ useEffect(() => {
 
 ---
 
-**Phase 4: Auto-Complete Detection**
-| Condition | Required State |
-|-----------|----------------|
-| Stock empty | `stock.length === 0` |
-| Waste empty | `waste.length === 0` |
-| Pockets empty | `pocket1 === null && pocket2 === null` |
-| All tableau face-up | No face-down cards in any column |
-| No blocked sequences | No circular dependencies (7♠ on 8♥ blocking both) |
+**Phase 4: Auto-Complete Detection** ✨ IN PROGRESS
+
+| Condition | Required State | Status |
+|-----------|----------------|--------|
+| Stock empty | `stock.length === 0` | 🔄 Implementing |
+| Waste empty | `waste.length === 0` | 🔄 Implementing |
+| Pockets empty | `pocket1 === null && pocket2 === null` | 🔄 Implementing |
+| All tableau face-up | No face-down cards in any column | 🔄 Implementing |
+| No blocked sequences | No circular dependencies | 🔄 Implementing |
+
+**Implementation Tasks:**
+1. Create `canAutoComplete(gameState)` function in `gameLogic.js`
+2. Create `hasBlockedSequences(gameState)` helper
+3. Check conditions after every move in `useCardGame.js`
+4. Expose `canAutoComplete` boolean from hook
+5. Add "Auto-Complete" button to GameControls (Phase 5)
 
 **Auto-Complete Algorithm:**
 ```javascript

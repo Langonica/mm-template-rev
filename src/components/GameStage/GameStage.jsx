@@ -4,6 +4,8 @@ import StockWaste from '../StockWaste/StockWaste';
 import Foundation from '../Foundation/Foundation';
 import GameControls from '../GameControls';
 import GameStats from '../GameStats';
+import AutoCompleteButton from '../AutoCompleteButton';
+import HintButton from '../HintButton';
 
 const GameStage = ({
   snapshot,
@@ -31,7 +33,13 @@ const GameStage = ({
   moveCount,
   currentTime,
   formatTime,
-  circularPlayState
+  circularPlayState,
+  canAutoComplete,
+  isAutoCompleting,
+  onAutoComplete,
+  onCancelAutoComplete,
+  hintsRemaining,
+  onShowHint
 }) => {
   if (!snapshot) {
     return (
@@ -163,6 +171,16 @@ const GameStage = ({
           currentTime={currentTime}
           formatTime={formatTime}
           circularPlayState={circularPlayState}
+        />
+        <HintButton
+          hintsRemaining={hintsRemaining}
+          onShowHint={onShowHint}
+        />
+        <AutoCompleteButton
+          visible={canAutoComplete}
+          isExecuting={isAutoCompleting}
+          onExecute={onAutoComplete}
+          onCancel={onCancelAutoComplete}
         />
       </div>
     </main>

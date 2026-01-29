@@ -7,7 +7,8 @@ import {
   getMovingCards,
   isValidSequence,
   getStateFingerprint,
-  fingerprintToKey
+  fingerprintToKey,
+  deepClone
 } from './cardUtils';
 
 // ============================================================================
@@ -919,4 +920,484 @@ export class GameStateTracker {
     const key = fingerprintToKey(this.currentFingerprint);
     return this.stateHistory.get(key) || 0;
   }
+}
+
+// ============================================================================
+// AUTO-COMPLETE DETECTION (Phase 4)
+// ============================================================================
+
+/**
+ * Check if the game is in a state where all remaining cards can be
+ * automatically moved to foundations (trivially winnable).
+ * 
+ * Conditions:
+ * 1. Stock is empty
+ * 2. Waste is empty
+ * 3. Pockets are empty
+ * 4. All tableau cards are face-up
+ * 5. No blocked sequences (cards blocking each other)
+ * 
+ * @param {object} gameState - Current game state
+ * @returns {boolean} True if game can be auto-completed
+ */
+export function canAutoComplete(gameState) {
+  if (!gameState) return false;
+
+  // Condition 1: Stock must be empty
+  if (gameState.stock && gameState.stock.length > 0) {
+    return false;
+  }
+
+  // Condition 2: Waste must be empty
+  if (gameState.waste && gameState.waste.length > 0) {
+    return false;
+  }
+
+  // Condition 3: Pockets must be empty
+  if (gameState.pocket1 || gameState.pocket2) {
+    return false;
+  }
+
+  // Condition 4: All tableau cards must be face-up
+  for (let col = 0; col < 7; col++) {
+    const faceDownCount = gameState.columnState?.faceDownCounts?.[col] || 0;
+    if (faceDownCount > 0) {
+      return false;
+    }
+  }
+
+  // Condition 5: No blocked sequences
+  if (hasBlockedSequences(gameState)) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Check if there are any blocked sequences that prevent auto-complete.
+ * A blocked sequence occurs when cards are arranged such that they
+ * circularly depend on each other (e.g., 7♠ on 8♥, but 8♥ needed on 7♠ foundation).
+ * 
+ * @param {object} gameState - Current game state
+ * @returns {boolean} True if blocked sequences exist
+ */
+function hasBlockedSequences(gameState) {
+  // For each tableau column, check if the bottom card (or sequence)
+  // can eventually reach foundation given current foundation state
+  
+  for (let col = 0; col < 7; col++) {
+    const column = gameState.tableau[col.toString()] || [];
+    if (column.length === 0) continue;
+
+    // Get the bottom card (first in array)
+    const bottomCard = parseCard(column[0]);
+    if (!bottomCard) continue;
+
+    // Check if this card can reach foundation
+    // A card can reach foundation if:
+    // 1. It's the next card for UP foundation (previous value), OR
+    // 2. It's the next card for DOWN foundation (next value), OR
+    // 3. It's blocked by a card above it that can move
+
+    const canReachFoundation = checkCardCanReachFoundation(
+      bottomCard,
+      gameState.foundations,
+      column.slice(1) // Cards above
+    );
+
+    if (!canReachFoundation) {
+      // This card is blocked - check if it's a circular dependency
+      if (isCircularlyBlocked(bottomCard, column.slice(1), gameState)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Check if a specific card can eventually reach foundation
+ * @param {object} card - Parsed card object
+ * @param {object} foundations - Current foundations state
+ * @param {string[]} cardsAbove - Cards above this one in the column
+ * @returns {boolean}
+ */
+function checkCardCanReachFoundation(card, foundations, cardsAbove) {
+  // Check UP foundation (builds 7→K)
+  const upFoundation = foundations.up?.[card.suit] || [];
+  const upTopCard = upFoundation.length > 0 ? upFoundation[upFoundation.length - 1] : null;
+  const upTopValue = upTopCard ? parseCard(upTopCard)?.v : 5; // 5 = value of 6 (start of UP)
+  
+  // For UP: we need card.value === upTopValue + 1
+  // (e.g., if 7 is on foundation, we need 8)
+  if (card.v === upTopValue + 1) {
+    return true;
+  }
+
+  // Check DOWN foundation (builds 6→A)
+  const downFoundation = foundations.down?.[card.suit] || [];
+  const downTopCard = downFoundation.length > 0 ? downFoundation[downFoundation.length - 1] : null;
+  const downTopValue = downTopCard ? parseCard(downTopCard)?.v : 6; // 6 = value of 7 (start of DOWN)
+  
+  // For DOWN: we need card.value === downTopValue - 1
+  // (e.g., if 7 is on foundation, we need 6)
+  if (card.v === downTopValue - 1) {
+    return true;
+  }
+
+  // If cards above can move away, this card might become free
+  // This is a simplified check - in reality we'd need full dependency analysis
+  return cardsAbove.length === 0;
+}
+
+/**
+ * Check if a card is circularly blocked by cards above it
+ * @param {object} card - Parsed card object
+ * @param {string[]} cardsAbove - Cards above this one
+ * @param {object} gameState - Full game state
+ * @returns {boolean}
+ */
+function isCircularlyBlocked(card, cardsAbove, gameState) {
+  // Simplified check: if there are cards above that can't move to foundation
+  // and the current card also can't move, we might have a circular dependency
+  
+  if (cardsAbove.length === 0) {
+    // No cards above, so not blocked by anything
+    return false;
+  }
+
+  // Check if any card above can move to foundation
+  for (const aboveCardStr of cardsAbove) {
+    const aboveCard = parseCard(aboveCardStr);
+    if (!aboveCard) continue;
+
+    if (checkCardCanReachFoundation(aboveCard, gameState.foundations, [])) {
+      // This card can move, so the bottom card might become free
+      return false;
+    }
+  }
+
+  // All cards above are also blocked - potential circular dependency
+  // In a full implementation, we'd trace the full dependency chain
+  return true;
+}
+
+
+// ============================================================================
+// AUTO-COMPLETE EXECUTION (Phase 5)
+// ============================================================================
+
+/**
+ * Find all available foundation moves for auto-complete
+ * Returns array of move objects: { card, from, to }
+ * 
+ * @param {Object} gameState - Current game state
+ * @returns {Array} - Array of available foundation moves
+ */
+export function getAllFoundationMoves(gameState) {
+  const moves = [];
+  const { tableau, foundations, waste, pocket1, pocket2 } = gameState;
+  
+  // Helper to check and add foundation move
+  const checkFoundationMove = (cardStr, source) => {
+    if (!cardStr) return;
+    
+    const card = parseCard(cardStr);
+    if (!card) return;
+    
+    // Try UP foundation
+    const upFoundation = foundations?.up?.[card.suit] || [];
+    if (canPlaceOnFoundation(cardStr, upFoundation, false)) {
+      moves.push({
+        card: cardStr,
+        from: source,
+        to: { type: 'foundation', zone: 'up', suit: card.suit }
+      });
+      return;
+    }
+    
+    // Try DOWN foundation
+    const downFoundation = foundations?.down?.[card.suit] || [];
+    if (canPlaceOnFoundation(cardStr, downFoundation, true)) {
+      moves.push({
+        card: cardStr,
+        from: source,
+        to: { type: 'foundation', zone: 'down', suit: card.suit }
+      });
+    }
+  };
+  
+  // Check waste top card
+  const wasteTop = waste?.[waste.length - 1];
+  checkFoundationMove(wasteTop, { type: 'waste' });
+  
+  // Check pocket cards
+  checkFoundationMove(pocket1, { type: 'pocket', pocketNum: 1 });
+  checkFoundationMove(pocket2, { type: 'pocket', pocketNum: 2 });
+  
+  // Check tableau column bottom cards (exposed cards)
+  for (let col = 0; col < 7; col++) {
+    const column = tableau?.[col.toString()] || [];
+    if (column.length > 0) {
+      const bottomCard = column[column.length - 1];
+      checkFoundationMove(bottomCard, { type: 'tableau', column });
+    }
+  }
+  
+  return moves;
+}
+
+/**
+ * Execute a single foundation move for auto-complete
+ * Returns new game state or null if move failed
+ * 
+ * @param {Object} gameState - Current game state
+ * @param {Object} move - Move object from getAllFoundationMoves
+ * @returns {Object|null} - New game state or null
+ */
+export function executeFoundationMove(gameState, move) {
+  const { card, from, to } = move;
+  
+  // Create deep clone
+  const newState = deepClone(gameState);
+  
+  // Remove card from source
+  switch (from.type) {
+    case 'waste':
+      newState.waste = newState.waste.filter(c => c !== card);
+      break;
+    case 'pocket':
+      if (from.pocketNum === 1) newState.pocket1 = null;
+      if (from.pocketNum === 2) newState.pocket2 = null;
+      break;
+    case 'tableau':
+      const col = from.column;
+      newState.tableau[col] = newState.tableau[col].filter(c => c !== card);
+      break;
+    default:
+      return null;
+  }
+  
+  // Add card to foundation
+  if (to.type === 'foundation') {
+    const foundation = newState.foundations[to.zone][to.suit];
+    foundation.push(card);
+  }
+  
+  return newState;
+}
+
+
+// ============================================================================
+// HINT SYSTEM (Phase 6)
+// ============================================================================
+
+/**
+ * Hint priority levels
+ * Higher number = higher priority
+ */
+export const HINT_PRIORITY = {
+  FOUNDATION: 3,      // Can move to foundation (always good)
+  TABLEAU_BUILD: 2,   // Can build on tableau (usually good)
+  EXPOSE_CARD: 1,     // Moving frees a face-down card
+  POCKET: 0,          // Can use pocket (situational)
+  LOW: -1             // Low priority / risky move
+};
+
+/**
+ * Get hints for current game state
+ * Returns prioritized list of suggested moves
+ * 
+ * @param {Object} gameState - Current game state
+ * @param {number} limit - Maximum number of hints to return
+ * @returns {Array} - Array of hint objects: { card, from, to, priority, reason }
+ */
+export function getHints(gameState, limit = 5) {
+  const hints = [];
+  const { tableau, foundations, waste, pocket1, pocket2, stock } = gameState;
+  
+  // Helper to add hint if not duplicate
+  const addHint = (hint) => {
+    // Check if we already have this card with same or better priority
+    const existing = hints.find(h => h.card === hint.card && h.priority >= hint.priority);
+    if (!existing) {
+      hints.push(hint);
+    }
+  };
+  
+  // 1. Check waste top card for foundation/tableau moves
+  const wasteTop = waste?.[waste.length - 1];
+  if (wasteTop) {
+    const wasteHints = getHintsForCard(wasteTop, { type: 'waste' }, gameState);
+    wasteHints.forEach(addHint);
+  }
+  
+  // 2. Check pocket cards
+  if (pocket1) {
+    const pocket1Hints = getHintsForCard(pocket1, { type: 'pocket', pocketNum: 1 }, gameState);
+    pocket1Hints.forEach(addHint);
+  }
+  if (pocket2) {
+    const pocket2Hints = getHintsForCard(pocket2, { type: 'pocket', pocketNum: 2 }, gameState);
+    pocket2Hints.forEach(addHint);
+  }
+  
+  // 3. Check tableau exposed cards
+  for (let col = 0; col < 7; col++) {
+    const column = tableau?.[col.toString()] || [];
+    if (column.length > 0) {
+      const bottomCard = column[column.length - 1];
+      const cardHints = getHintsForCard(bottomCard, { type: 'tableau', column: col }, gameState);
+      cardHints.forEach(addHint);
+      
+      // Check if moving this card would free a face-down card
+      const faceDownCount = gameState.columnState?.faceDownCounts?.[col] || 0;
+      if (faceDownCount > 0 && column.length === 1) {
+        // This is the last face-up card, moving it exposes face-down
+        const exposeHint = cardHints.find(h => h.priority >= HINT_PRIORITY.TABLEAU_BUILD);
+        if (exposeHint) {
+          exposeHint.reason += ' (exposes face-down card)';
+          exposeHint.priority = HINT_PRIORITY.EXPOSE_CARD;
+        }
+      }
+    }
+  }
+  
+  // 4. Check if stock draw would help (if no other good moves)
+  if (hints.length === 0 && stock?.length > 0) {
+    // Check if any stock card could be played
+    const stockHints = [];
+    for (const cardStr of stock) {
+      const tempHints = getHintsForCard(cardStr, { type: 'stock' }, gameState);
+      if (tempHints.length > 0) {
+        stockHints.push({
+          card: cardStr,
+          from: { type: 'stock' },
+          to: tempHints[0].to,
+          priority: HINT_PRIORITY.LOW,
+          reason: 'Draw from stock to access playable card'
+        });
+      }
+    }
+    
+    if (stockHints.length > 0) {
+      // Just suggest drawing from stock
+      addHint({
+        card: null,
+        from: { type: 'stock' },
+        to: { type: 'waste' },
+        priority: HINT_PRIORITY.LOW,
+        reason: 'Draw from stock'
+      });
+    }
+  }
+  
+  // Sort by priority (highest first) and limit
+  hints.sort((a, b) => b.priority - a.priority);
+  return hints.slice(0, limit);
+}
+
+/**
+ * Get hints for a specific card
+ * 
+ * @param {string} cardStr - Card to check
+ * @param {Object} source - Source location
+ * @param {Object} gameState - Current game state
+ * @returns {Array} - Array of hint objects
+ */
+function getHintsForCard(cardStr, source, gameState) {
+  const hints = [];
+  const card = parseCard(cardStr);
+  if (!card) return hints;
+  
+  // Check foundation moves (highest priority)
+  const upFoundation = gameState.foundations?.up?.[card.suit] || [];
+  if (canPlaceOnFoundation(cardStr, upFoundation, false)) {
+    hints.push({
+      card: cardStr,
+      from: source,
+      to: { type: 'foundation', zone: 'up', suit: card.suit },
+      priority: HINT_PRIORITY.FOUNDATION,
+      reason: 'Play to foundation'
+    });
+  }
+  
+  const downFoundation = gameState.foundations?.down?.[card.suit] || [];
+  if (canPlaceOnFoundation(cardStr, downFoundation, true)) {
+    hints.push({
+      card: cardStr,
+      from: source,
+      to: { type: 'foundation', zone: 'down', suit: card.suit },
+      priority: HINT_PRIORITY.FOUNDATION,
+      reason: 'Play to foundation'
+    });
+  }
+  
+  // Check tableau builds
+  const columnTypes = gameState.columnState?.types || [];
+  for (let col = 0; col < 7; col++) {
+    // Skip source column
+    if (source?.type === 'tableau' && source.column === col) continue;
+    
+    const column = gameState.tableau?.[col.toString()] || [];
+    const columnType = columnTypes[col];
+    
+    // Check if card can be placed on this column
+    if (canPlaceOnColumn(cardStr, column, columnType)) {
+      hints.push({
+        card: cardStr,
+        from: source,
+        to: { type: 'tableau', column: col },
+        priority: HINT_PRIORITY.TABLEAU_BUILD,
+        reason: 'Build on tableau'
+      });
+    }
+  }
+  
+  return hints;
+}
+
+/**
+ * Check if a card can be placed on a specific column
+ */
+function canPlaceOnColumn(cardStr, column, columnType) {
+  const card = parseCard(cardStr);
+  if (!card) return false;
+  
+  // Empty column - only Aces or Kings
+  if (column.length === 0) {
+    return card.numericValue === 1 || card.numericValue === 13;
+  }
+  
+  const topCardStr = column[column.length - 1];
+  const topCard = parseCard(topCardStr);
+  if (!topCard) return false;
+  
+  // Check based on column type
+  if (columnType === 'ace') {
+    // Ace column: ascending, same suit
+    return card.numericValue === topCard.numericValue + 1 && 
+           card.suit === topCard.suit &&
+           card.numericValue <= 6;
+  } else if (columnType === 'king') {
+    // King column: descending, same suit
+    return card.numericValue === topCard.numericValue - 1 && 
+           card.suit === topCard.suit &&
+           card.numericValue >= 7;
+  } else {
+    // Traditional: descending, alternating colors
+    return card.numericValue === topCard.numericValue - 1 && 
+           card.color !== topCard.color;
+  }
+}
+
+/**
+ * Get the best hint for current state
+ * @returns {Object|null} - Best hint or null if no hints
+ */
+export function getBestHint(gameState) {
+  const hints = getHints(gameState, 1);
+  return hints.length > 0 ? hints[0] : null;
 }
