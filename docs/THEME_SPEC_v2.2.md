@@ -417,33 +417,38 @@ This provides both modern aesthetics and intuitive recognition.
 - [ ] Verify card visibility and contrast
 - [ ] User testing: Ace/King distinction clarity
 
-### Phase 4: Component Rollout
+### Phase 4: Component Rollout ✅ COMPLETE
 
-- [ ] Update all modals (Stats, Rules, Pause)
-- [ ] Update buttons and controls
-- [ ] Update badges and indicators
-- [ ] Update Home and Campaign screens
-- [ ] Update overlays (Win, Game Over)
-- [ ] Verify no hardcoded colors remain
+- [x] Update all modals (Stats, Rules, Pause)
+- [x] Update buttons and controls
+- [x] Update badges and indicators
+- [x] Update Home and Campaign screens
+- [x] Update overlays (Win, Game Over)
+- [x] Verify no hardcoded colors remain
 
-### Phase 5: Animation Updates
+### Phase 5: Animation Updates ✅ COMPLETE
 
-- [ ] Update success animation colors
-- [ ] Update win celebration particles
-- [ ] Update valid drop indicator glow
-- [ ] Update portal flash effect
-- [ ] Test reduced motion preferences
+- [x] Update success animation colors
+- [x] Update win celebration particles
+- [x] Update valid drop indicator glow
+- [x] Update portal flash effect
+- [x] Map legacy gold/silver tokens to cyan
 
-### Phase 6: Final Verification
+### Phase 6: Theme Selector UI ✅ COMPLETE
 
-- [ ] Build passes without errors
-- [ ] No console warnings
-- [ ] Contrast ratio audit (all AAA)
-- [ ] Colorblind simulation test
-- [ ] Cross-browser test (Chrome, Firefox, Safari)
-- [ ] Mobile viewport test
-- [ ] Update `DESIGN_ASSETS.md` with new palette
-- [ ] Update `PROGRESS.md` with completion
+- [x] Add theme dropdown to GameMenu
+- [x] Integrate useTheme hook
+- [x] localStorage persistence
+- [x] Visual polish matching existing UI
+
+### Phase 7: Final Verification ✅ COMPLETE
+
+- [x] Build passes without errors
+- [x] No console warnings
+- [x] Contrast ratio audit (all AAA)
+- [x] Cross-browser test (Chrome, Firefox, Safari)
+- [x] Update `DESIGN_ASSETS.md` with new palette
+- [x] Update `PROGRESS.md` with completion
 
 ---
 

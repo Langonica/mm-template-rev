@@ -54,13 +54,29 @@ Meridian Solitaire is a unique card game implementation with dual foundation sys
 | Foundation slots | ✅ Done | Gold/silver → Cyan tints |
 | Card count badges | ✅ Done | Blue → Cyan |
 
+**Phase 5: Theme Selector UI ✅**
+| Feature | Status | Details |
+|---------|--------|---------|
+| GameMenu integration | ✅ Done | Theme dropdown in Settings |
+| useTheme hook | ✅ Done | Clean API for theme switching |
+| localStorage persistence | ✅ Done | Theme saved automatically |
+| Visual polish | ✅ Done | Matches existing mode selector |
+
 **Documentation:**
 - 📄 `docs/THEME_SPEC_v2.2.md` - Complete theme specification
 - 🎨 `docs/DESIGN_ASSETS.md` - Updated color palette
 
+**Available Themes:**
+| Theme | ID | Status |
+|-------|-----|--------|
+| Deep Blue Casino | `blue-casino` | ✅ Default |
+| Green Classic | `green-classic` | 📝 Planned |
+| Crimson Night | `crimson-night` | 📝 Planned |
+
 **Next Steps:**
-- Additional themes (Green Classic, Crimson Night)
-- Theme selector UI (settings menu)
+- Implement Green Classic theme (CSS file only)
+- Implement Crimson Night theme (CSS file only)
+- Theme preview thumbnails
 
 ---
 
