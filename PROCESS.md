@@ -349,6 +349,28 @@ When starting fresh session:
 3. Review recent commits: `git log --oneline -10`
 4. Verify build: `npm run build`
 
+## Start of Session Patterns
+
+### User Says
+| Pattern | My Response |
+|---------|-------------|
+| "Continue [feature]" | Read relevant PROGRESS.md, check git status, continue |
+| "Start [new feature]" | Read relevant PLAN.md, confirm scope, begin |
+| "Review and plan" | Assess current state, identify next steps |
+| Just "Hi" or general | Ask: "What would you like to work on?" |
+
+### What I'll Always Check
+Even without explicit instruction, I'll:
+1. List working directory (if changed)
+2. Check git status for uncommitted work
+3. Read any `*_PROGRESS.md` files if present
+
+### What You Should Explicitly Tell Me
+- If you want me to re-read a specific document
+- If we're changing direction from previous session
+- If you have new requirements or constraints
+- If you want me to ignore previous context
+
 ---
 
 *Last Updated: 2026-01-28*
