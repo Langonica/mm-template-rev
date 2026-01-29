@@ -1,7 +1,7 @@
 /**
  * FullBleedScreen Component Styles
  * 
- * Simple full-screen container.
+ * Simple full-screen container with smooth open/close transitions.
  * NO header, NO footer - screens add their own.
  */
 
@@ -16,6 +16,24 @@
   background: var(--bg-deep);
   z-index: var(--z-overlay);
   overflow: hidden;
+  
+  /* Smooth transition for opacity and visibility */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
+  pointer-events: none;
+}
+
+.screen.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.screen.closed {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .screen[data-variant="home"] {

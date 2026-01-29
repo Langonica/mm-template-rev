@@ -13,12 +13,13 @@ const FullBleedScreen = ({
   children,
   variant = 'default'
 }) => {
-  if (!isOpen) return null;
-
+  // Use CSS to control visibility instead of conditional rendering
+  // This prevents flash from DOM mount/unmount
   return (
     <div 
-      className={styles.screen}
+      className={`${styles.screen} ${isOpen ? styles.open : styles.closed}`}
       data-variant={variant}
+      aria-hidden={!isOpen}
     >
       {children}
     </div>
