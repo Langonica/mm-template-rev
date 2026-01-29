@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.2] - 2026-01-28
+
+### Extended Autoplay System
+
+Extended double-click autoplay from foundation-only to include tableau moves. Players can now double-click cards to automatically play them to either foundation or tableau, following standard solitaire UX patterns.
+
+#### Added
+
+- **Tableau Autoplay**
+  - Double-click now attempts tableau moves when foundation is not available
+  - Tries to build on existing sequences on other columns
+  - Can play Ace/King to empty columns
+  - Priority: Foundation → Tableau Build → Empty Column
+
+- **Optimal Destination Selection**
+  - When multiple tableau destinations are legal, picks the "best" one:
+    - Prefers extending longer sequences
+    - Prefers Ace/King columns over Traditional
+  - If multiple equal options exist, picks one arbitrarily
+  - Player can always drag manually if they prefer a different destination
+
+#### Changed
+
+- **Autoplay Function** (`gameLogic.js`)
+  - Renamed `tryAutoMoveToFoundation()` → `tryAutoMove()`
+  - Now checks both foundation and tableau destinations
+  - Returns first legal move in priority order
+
+#### Technical
+
+- Updated `useCardGame.js` to use new `tryAutoMove()` function
+- No breaking changes to existing double-click behavior
+- Foundation moves still prioritized (unchanged)
+
+---
+
 ## [2.2.1] - 2026-01-28
 
 ### Critical Bug Fix: Column Typing in Hidden Modes

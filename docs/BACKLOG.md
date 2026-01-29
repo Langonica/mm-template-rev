@@ -6,6 +6,31 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ## In Progress
 
+### Extended Autoplay System
+**Priority:** 🟢 Medium | **Complexity:** Low | **Added:** 2026-01-28 | **Started:** 2026-01-28
+
+**Goal:** Extend double-click autoplay from foundation-only to include tableau moves.
+
+**Current Behavior:** Double-click only tries foundation moves.
+
+**New Behavior:** Double-click tries foundation → tableau build → empty column (in priority order).
+
+**Algorithm:**
+1. Check foundation (existing logic)
+2. If no foundation, find all legal tableau destinations
+3. If multiple, pick optimal (longer sequence > shorter, typed > traditional)
+4. If ambiguous, pick one (user drags manually if they disagree)
+
+**Implementation:**
+- Rename `tryAutoMoveToFoundation()` → `tryAutoMove()`
+- Add tableau destination checking
+- Add optimal destination selection logic
+- Update `useCardGame.js` hook
+
+**Files:** `src/utils/gameLogic.js`, `src/hooks/useCardGame.js`
+
+---
+
 ### Code Audit - Phase 2: Debug Cleanup & Component Refactoring
 **Priority:** 🟡 High | **Complexity:** Low-Medium | **Added:** 2026-01-28 | **Started:** 2026-01-28
 
