@@ -14,13 +14,10 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { NOTIFICATION_LEVELS } from './NotificationSettingsContext.constants.js';
 
-// Notification level options
-export const NOTIFICATION_LEVELS = {
-  ON: 'on',         // All tiers active
-  MINIMAL: 'minimal', // Only 'confirmed' tier (unwinnable games)
-  OFF: 'off'        // No notifications
-};
+// Re-export for backward compatibility
+export { NOTIFICATION_LEVELS };
 
 // Default settings
 const DEFAULT_SETTINGS = {

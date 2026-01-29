@@ -5,7 +5,6 @@ const Card = ({
   cardData,
   cardStr,
   isBack,
-  config,
   style = {},
   className = '',
   onDragStart,

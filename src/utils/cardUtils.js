@@ -266,22 +266,24 @@ export function isCardAccessible(cardStr, location, gameState) {
   if (!location || !gameState) return false;
   
   switch (location.type) {
-    case 'waste':
+    case 'waste': {
       // Only top card is accessible
       const wasteLength = gameState.waste?.length || 0;
       return location.index === wasteLength - 1;
+    }
       
     case 'pocket':
       // Card in pocket is always accessible
       return true;
       
-    case 'foundation':
+    case 'foundation': {
       // Cards CAN be dragged from foundations (spec correction)
       // Only top card is accessible
       const foundation = gameState.foundations[location.zone]?.[location.suit] || [];
       return location.index === foundation.length - 1;
+    }
       
-    case 'tableau':
+    case 'tableau': {
       const column = gameState.tableau[location.column.toString()] || [];
       
       // Get face-down count for this column
@@ -297,6 +299,7 @@ export function isCardAccessible(cardStr, location, gameState) {
       const columnType = gameState.columnState?.types?.[location.column] || 'traditional';
       
       return isValidSequence(cardsAbove, columnType);
+    }
       
     default:
       return false;
@@ -497,7 +500,7 @@ export function deepClone(obj) {
   if (typeof structuredClone === 'function') {
     try {
       return structuredClone(obj);
-    } catch (e) {
+    } catch {
       // structuredClone throws on circular references or functions
       // Fall through to JSON method
     }

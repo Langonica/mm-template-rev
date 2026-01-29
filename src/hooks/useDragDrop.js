@@ -73,7 +73,7 @@ export const useDragDrop = (gameState, onMove) => {
 
     if (validation.valid) {
       // Execute move through callback
-      const success = onMove(dragState.draggedCard, target);
+      onMove(dragState.draggedCard, target);
       endDrag();
       return true;
     } else {

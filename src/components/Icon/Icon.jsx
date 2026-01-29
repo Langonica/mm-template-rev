@@ -73,6 +73,7 @@ export {
  * @param {object} props - Additional props passed to icon
  */
 export const Icon = ({ 
+  // eslint-disable-next-line no-unused-vars
   icon: LucideIcon, 
   size = 'md', 
   className = '',

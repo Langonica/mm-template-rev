@@ -20,21 +20,20 @@ import { useCampaignProgress } from './hooks/useCampaignProgress'
 import { useViewportScale } from './hooks/useViewportScale'
 import { useHighDPIAssets } from './hooks/useHighDPIAssets'
 import { useNotification, Notification, NOTIFICATION_MESSAGES } from './hooks/useNotification.jsx'
-import { useNotificationSettings, shouldShowNotification } from './contexts/NotificationSettingsContext'
+import { useNotificationSettings } from './contexts/NotificationSettingsContext'
 import { generateRandomDeal, getGameModes } from './utils/dealGenerator'
 import './styles/App.css'
 
 function App() {
   const {
     notification,
-    showSuccess,
     showError,
     showInfo,
     clearNotification
   } = useNotification()
 
   // Notification settings
-  const { settings: notificationSettings, isTierEnabled } = useNotificationSettings()
+  const { isTierEnabled } = useNotificationSettings()
 
   // Stats hook must come before useCardGame (needed for tracking callbacks)
   const {
@@ -63,12 +62,9 @@ function App() {
     currentSnapshot,
     currentStockCards,
     currentWasteCards,
-    gameState,
     moveCount,
     animatingCard,
     autoMoveAnimation,
-    setMode,
-    setVariant,
     simulateStockDraw,
     loadSnapshot,
     loadGameState,
@@ -87,7 +83,6 @@ function App() {
     handleTouchEnd,
     handleTouchCancel,
     gameStatus,
-    availableMoves,
     circularPlayState,
     canAutoComplete,
     isAutoCompleting,
@@ -108,13 +103,11 @@ function App() {
     isLevelUnlocked,
     isLevelCompleted,
     getLevelStats,
-    getLevelBySnapshotId,
     getLevelByNumber,
     recordAttempt: recordCampaignAttempt,
     recordCompletion: recordCampaignCompletion,
     getTierProgress,
     getCampaignProgress,
-    resetProgress: resetCampaignProgress,
   } = useCampaignProgress(showError)
 
   // Dynamic viewport scaling - ensures game fits without cropping
@@ -256,42 +249,6 @@ function App() {
       action()
     }
   }, [moveCount, closeConfirmDialog])
-
-  // Handle snapshot change (with confirmation if mid-game)
-  const handleSnapshotChange = useCallback((snapshotId) => {
-    const action = () => {
-      setSelectedSnapshotId(snapshotId)
-      loadSnapshot(snapshotId)
-      showInfo(NOTIFICATION_MESSAGES.GAME_LOADED)
-    }
-
-    showConfirmationIfNeeded(
-      action,
-      'Load Snapshot?',
-      'You have a game in progress. Loading a new snapshot will discard your current game. Continue?'
-    )
-  }, [loadSnapshot, showInfo, showConfirmationIfNeeded])
-
-  // Handle mode change (with confirmation if mid-game)
-  const handleModeChange = useCallback((mode) => {
-    const action = () => {
-      setSelectedMode(mode)
-      // Generate a new random deal in the new mode
-      const newDeal = generateRandomDeal(mode)
-      if (newDeal) {
-        loadGameState(newDeal)
-        showInfo(`Started new ${mode.replace('_', ' ')} game`)
-      }
-    }
-
-    if (mode !== selectedMode) {
-      showConfirmationIfNeeded(
-        action,
-        'Change Game Mode?',
-        `You have a game in progress. Switching to ${mode.replace('_', ' ').toUpperCase()} mode will start a new game. Continue?`
-      )
-    }
-  }, [selectedMode, loadGameState, showInfo, showConfirmationIfNeeded])
 
   // Handle new game (with confirmation if mid-game, but not if game is over)
   const handleNewGame = useCallback(() => {
@@ -469,7 +426,7 @@ function App() {
   useEffect(() => {
     if (!circularPlayState || showHomeScreen || gameStatus?.isGameOver) return
     
-    const { tier, unproductiveCycles, movesSinceProgress } = circularPlayState
+    const { tier } = circularPlayState
     
     // Don't show notifications if game is over or paused
     if (isPaused) return

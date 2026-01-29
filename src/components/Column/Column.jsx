@@ -32,7 +32,7 @@ const Column = ({
   autoCompleteAnimation = null
 }) => {
   // Track animation states
-  const [portalFlash, setPortalFlash] = useState(false);
+  const [, setPortalFlash] = useState(false);
   const [poppingCard, setPoppingCard] = useState(null);
   const [slurpingCard, setSlurpingCard] = useState(null); // Card being slurped into portal
   const prevWasEmptyRef = useRef(cards.length === 0);
@@ -331,7 +331,7 @@ const Column = ({
         const isCardValidTarget = isTopCard && isValid;
 
         // Handle drop on card - forward to column drop handler
-        const handleCardDrop = (e, cardLocation) => {
+        const handleCardDrop = () => {
           if (onDrop) {
             onDrop({ type: 'tableau', column: columnIndex });
           }

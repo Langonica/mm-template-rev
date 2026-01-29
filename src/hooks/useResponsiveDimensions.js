@@ -145,9 +145,15 @@ const updateCSSVariables = (dimensions) => {
  * Returns calculated dimensions and updates CSS variables on viewport change.
  */
 export const useResponsiveDimensions = () => {
-  const [dimensions, setDimensions] = useState(() =>
-    calculateDimensions(BASE_CARD_WIDTH)
-  );
+  const [dimensions, setDimensions] = useState(() => {
+    // Calculate initial dimensions from viewport synchronously
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const cardWidth = calculateCardWidthFromViewport(viewportWidth, viewportHeight);
+    const initialDimensions = calculateDimensions(cardWidth);
+    updateCSSVariables(initialDimensions);
+    return initialDimensions;
+  });
 
   const recalculate = useCallback(() => {
     const viewportWidth = window.innerWidth;
@@ -163,10 +169,8 @@ export const useResponsiveDimensions = () => {
   }, []);
 
   useEffect(() => {
-    // Initial calculation
-    recalculate();
-
-    // Debounced resize handler
+    // Set up resize/orientation change listeners only
+    // Initial dimensions already calculated in useState initializer
     let timeoutId;
     const handleResize = () => {
       clearTimeout(timeoutId);

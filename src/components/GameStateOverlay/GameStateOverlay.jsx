@@ -40,7 +40,6 @@ const GameStateOverlay = ({
   // Handle open/close with animation
   useEffect(() => {
     if (isOpen) {
-      setIsExiting(false);
       const timer = setTimeout(() => setIsVisible(true), 10);
       return () => clearTimeout(timer);
     } else {

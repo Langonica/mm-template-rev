@@ -126,19 +126,14 @@ export const useTouchDrag = (onDragStart, onDragEnd, onDrop, isValidTarget) => {
     const card = element.closest('.card');
     if (card) {
       // Find which column this card is in by checking parent lane-track
-      const parent = card.parentElement;
-      if (parent) {
-        const siblingTrack = parent.querySelector('.lane-track') ||
-                             document.querySelector('.lane-track');
-        // Cards are positioned absolutely, so find column from card's left position
-        const cardLeft = parseInt(window.getComputedStyle(card).left);
-        const startX = 300;
-        const cardWidth = 80;
-        const gap = 20;
-        const column = Math.round((cardLeft - startX) / (cardWidth + gap));
-        if (column >= 0 && column < 7) {
-          return { type: 'tableau', column };
-        }
+      // Cards are positioned absolutely, so find column from card's left position
+      const cardLeft = parseInt(window.getComputedStyle(card).left);
+      const startX = 300;
+      const cardWidth = 80;
+      const gap = 20;
+      const column = Math.round((cardLeft - startX) / (cardWidth + gap));
+      if (column >= 0 && column < 7) {
+        return { type: 'tableau', column };
       }
     }
 

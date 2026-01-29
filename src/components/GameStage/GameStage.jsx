@@ -56,8 +56,8 @@ const GameStage = ({
   }
 
   // Extract data from snapshot
-  const { tableau, stock, waste, pocket1, pocket2, foundations } = snapshot;
-  const metadata = snapshot.metadata;
+  const { tableau, pocket1, pocket2, foundations } = snapshot;
+
 
   return (
     <main id="game-stage">

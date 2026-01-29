@@ -80,7 +80,7 @@ function validateFoundationMove(movingCards, target, gameState) {
 /**
  * Validate move to tableau column
  */
-function validateTableauMove(movingCards, target, gameState, source) {
+function validateTableauMove(movingCards, target, gameState, source) { // eslint-disable-line no-unused-vars
   const column = gameState.tableau[target.column.toString()] || [];
   const columnType = gameState.columnState?.types?.[target.column] || 'traditional';
   
@@ -205,15 +205,17 @@ function removeFromSource(cards, source, state) {
       }
       break;
       
-    case 'tableau':
+    case 'tableau': {
       const column = state.tableau[source.column.toString()];
       column.splice(source.index, cards.length);
       break;
+    }
       
-    case 'foundation':
+    case 'foundation': {
       const foundation = state.foundations[source.zone][source.suit];
       foundation.splice(source.index, cards.length);
       break;
+    }
   }
 }
 
@@ -222,15 +224,17 @@ function removeFromSource(cards, source, state) {
  */
 function addToTarget(cards, target, state) {
   switch (target.type) {
-    case 'foundation':
+    case 'foundation': {
       const foundation = state.foundations[target.zone][target.suit];
       foundation.push(...cards);
       break;
+    }
       
-    case 'tableau':
+    case 'tableau': {
       const column = state.tableau[target.column.toString()];
       column.push(...cards);
       break;
+    }
       
     case 'pocket':
       if (target.pocketNum === 1) {
@@ -470,7 +474,7 @@ function findOptimalTableauMove(cardStr, card, gameState, source) {
  * Calculate a score for a tableau move to enable optimal selection
  * Higher score = better move
  */
-function calculateTableauMoveScore(column, columnType, movingCard, newColumnLength) {
+function calculateTableauMoveScore(column, columnType) {
   let score = 0;
   
   // Prefer building on longer sequences (extending existing work)
@@ -1170,7 +1174,7 @@ export function detectUnwinnableState(gameState, options = {}) {
       let newState;
       try {
         newState = executeMove(move.card, move.target, state);
-      } catch (e) {
+      } catch {
         continue; // Skip invalid moves
       }
 
@@ -1512,10 +1516,11 @@ export function executeFoundationMove(gameState, move) {
       if (from.pocketNum === 1) newState.pocket1 = null;
       if (from.pocketNum === 2) newState.pocket2 = null;
       break;
-    case 'tableau':
+    case 'tableau': {
       const col = from.column;
       newState.tableau[col] = newState.tableau[col].filter(c => c !== card);
       break;
+    }
     default:
       return null;
   }
@@ -1556,7 +1561,7 @@ export const HINT_PRIORITY = {
  */
 export function getHints(gameState, limit = 5) {
   const hints = [];
-  const { tableau, foundations, waste, pocket1, pocket2, stock } = gameState;
+  const { tableau, waste, pocket1, pocket2, stock } = gameState;
   
   // Helper to add hint if not duplicate
   const addHint = (hint) => {

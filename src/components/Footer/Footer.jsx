@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Footer = ({ config, currentSnapshot }) => {
+const Footer = ({ currentSnapshot }) => {
   const getVariantText = () => {
     if (!currentSnapshot) return 'NORMAL';
     return currentSnapshot.metadata.variant.toUpperCase();

@@ -39,7 +39,7 @@ export const useViewportScale = () => {
     };
   }, []);
 
-  const [dimensions, setDimensions] = useState(calculateScale);
+  const [dimensions, setDimensions] = useState(() => calculateScale());
 
   useEffect(() => {
     // Debounced resize handler
@@ -50,9 +50,6 @@ export const useViewportScale = () => {
         setDimensions(calculateScale());
       }, 100);
     };
-
-    // Initial calculation
-    setDimensions(calculateScale());
 
     // Listen for resize
     window.addEventListener('resize', handleResize);

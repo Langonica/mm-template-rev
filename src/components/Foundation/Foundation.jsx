@@ -77,7 +77,6 @@ const Foundation = ({
         // Check auto-complete phase for animation
         const autoCompletePhase = isAutoCompleteTarget ? autoCompleteAnimation?.currentMove?.phase : null;
         const isAutoCompleteArriving = autoCompletePhase === 'arriving';
-        const isAutoCompleteMoving = autoCompletePhase === 'moving';
 
         // Phase 2: Check if arc animation (double-click autoplay) is targeting this foundation
         const isArcTarget = autoMoveAnimation?.cardStr &&
@@ -86,7 +85,6 @@ const Foundation = ({
         
         const arcPhase = isArcTarget ? autoMoveAnimation?.phase : null;
         const isArcLanding = arcPhase === 'landing';
-        const isArcFlying = arcPhase === 'flying';
         
         return (
           <div
@@ -199,7 +197,7 @@ const Foundation = ({
                   className={isPopping ? 'foundation-popping' : isSlurping ? 'auto-move-slurping' : isArcLanding ? 'arc-landing' : ''}
                   onDragStart={onDragStart}
                   onDragEnd={onDragEnd}
-                  onDropCard={(e) => {
+                  onDropCard={() => {
                     if (onDrop) {
                       onDrop({ type: 'foundation', zone, suit });
                     }

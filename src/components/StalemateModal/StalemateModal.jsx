@@ -29,7 +29,6 @@ const StalemateModal = ({
   onRestart,
   onUndo,
   undoMoves = 5,
-  onClose,
 }) => {
   if (!isOpen) return null;
 

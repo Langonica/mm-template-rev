@@ -434,12 +434,7 @@ export const useGameStats = (onError) => {
     return Math.round((stats.wins / stats.totalGames) * 100);
   }, [stats.totalGames, stats.wins]);
 
-  const getAverageMovesPerWin = useCallback(() => {
-    if (stats.wins === 0) return null;
-    // This is approximate since we track total moves across all games
-    // For accuracy, we'd need to track moves per win separately
-    return null; // Not tracking this granularly
-  }, [stats.wins]);
+
   
   // Get perfect game rate
   const getPerfectGameRate = useCallback(() => {

@@ -60,7 +60,6 @@ class UndoManager {
     }
 
     this.currentIndex++;
-    const entry = this.history[this.currentIndex];
     
     // For redo, we need the state AFTER the move
     // This is stored in the next history entry

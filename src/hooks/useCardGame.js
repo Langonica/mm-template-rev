@@ -12,7 +12,6 @@ import {
   canAutoComplete,
   getAllFoundationMoves,
   executeFoundationMove,
-  getHints,
   getBestHint,
   detectUnwinnableState
 } from '../utils/gameLogic';
@@ -64,8 +63,7 @@ export const useCardGame = (callbacks = {}) => {
   // Conservative thresholds to reduce false positives
   const calculateNotificationTier = useCallback((trackerResult, unwinnableCheck = null) => {
     const { 
-      unproductiveCycleCount, 
-      movesSinceProgress 
+      unproductiveCycleCount
     } = trackerResult;
     
     // Tier 4: Confirmed unwinnable (solver-based detection)

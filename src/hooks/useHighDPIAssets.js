@@ -50,9 +50,6 @@ export const useHighDPIAssets = (scale, devicePixelRatio) => {
     
     // Debug logging - only in development
     if (import.meta.env.DEV) {
-      const computedSprite = getComputedStyle(root).getPropertyValue('--sprite-url').trim();
-      const computedBoard = getComputedStyle(root).getPropertyValue('--gamestage-url').trim();
-      
       // Debug logging removed for production
       // Enable by setting localStorage.setItem('debug-hidpi', '1') and reloading
     }

@@ -15,14 +15,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-
-// Available themes
-export const THEMES = {
-  BLUE_CASINO: 'blue-casino',
-  // Future themes:
-  // GREEN_CLASSIC: 'green-classic',
-  // CRIMSON_NIGHT: 'crimson-night',
-};
+import { THEMES } from './ThemeContext.constants.js';
 
 // Default theme
 const DEFAULT_THEME = THEMES.BLUE_CASINO;
@@ -203,5 +196,8 @@ export const useThemeStyles = () => {
     focusRing: 'var(--focus-ring)',
   };
 };
+
+// Re-export THEMES for backward compatibility
+export { THEMES };
 
 export default ThemeContext;
