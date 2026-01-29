@@ -245,11 +245,17 @@ function addToTarget(cards, target, state) {
 /**
  * Update column type after move
  * 
- * Column type is determined by the first face-up card (at index faceDownCount).
+ * Column types are "sticky" - once established, they persist regardless of
+ * card additions/removals until the column is emptied.
+ * 
+ * Type determination:
  * - Empty column: type = 'empty'
- * - 1 face-up card that is Ace: type = 'ace'
- * - 1 face-up card that is King: type = 'king'
- * - Otherwise: type = 'traditional'
+ * - First card is Ace: type = 'ace' (persists as cards added/removed)
+ * - First card is King: type = 'king' (persists as cards added/removed)
+ * - First card is other: type = 'traditional' (persists as cards added/removed)
+ * 
+ * Special case: When face-down cards are revealed (via flipRevealedCard),
+ * the type updates based on the newly revealed card.
  */
 function updateColumnType(columnIndex, state) {
   const column = state.tableau[columnIndex.toString()] || [];
@@ -264,31 +270,31 @@ function updateColumnType(columnIndex, state) {
     return;
   }
   
+  const currentType = state.columnState.types[columnIndex];
+  
+  // Case 2: Type already established and column not empty - preserve it
+  // Types are "sticky" - adding/removing cards doesn't change the column type
+  if (currentType && currentType !== 'empty') {
+    return;
+  }
+  
+  // Case 3: Empty column getting first card - determine initial type
   // Get face-down count (defaults to 0 for classic modes)
   const faceDownCount = state.columnState.faceDownCounts?.[columnIndex] || 0;
   
-  // Calculate face-up card count
-  const faceUpCount = column.length - faceDownCount;
+  // First face-up card determines column type
+  const firstFaceUpIndex = faceDownCount;
+  const card = parseCard(column[firstFaceUpIndex]);
   
-  // Case 2: Has face-up cards - type determined by first face-up card
-  if (faceUpCount > 0) {
-    // First face-up card is at index faceDownCount
-    const firstFaceUpIndex = faceDownCount;
-    const card = parseCard(column[firstFaceUpIndex]);
-    
-    if (card) {
-      // Type is 'ace' or 'king' only if exactly 1 face-up card AND it's A/K
-      if (faceUpCount === 1 && card.value === 'A') {
-        state.columnState.types[columnIndex] = 'ace';
-      } else if (faceUpCount === 1 && card.value === 'K') {
-        state.columnState.types[columnIndex] = 'king';
-      } else {
-        state.columnState.types[columnIndex] = 'traditional';
-      }
+  if (card) {
+    if (card.value === 'A') {
+      state.columnState.types[columnIndex] = 'ace';
+    } else if (card.value === 'K') {
+      state.columnState.types[columnIndex] = 'king';
+    } else {
+      state.columnState.types[columnIndex] = 'traditional';
     }
   }
-  // Note: faceUpCount === 0 should never happen in valid game state
-  // (non-empty columns always have at least 1 face-up card)
 }
 
 /**
@@ -1142,7 +1148,7 @@ export function getAllFoundationMoves(gameState) {
     const column = tableau?.[col.toString()] || [];
     if (column.length > 0) {
       const bottomCard = column[column.length - 1];
-      checkFoundationMove(bottomCard, { type: 'tableau', column });
+      checkFoundationMove(bottomCard, { type: 'tableau', column: col });
     }
   }
   
