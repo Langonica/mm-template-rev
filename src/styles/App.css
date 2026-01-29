@@ -980,7 +980,7 @@ header select {
   position: absolute;
   bottom: -8px;
   right: -8px;
-  background: rgba(33, 150, 243, 0.9);
+  background: rgba(0, 212, 255, 0.9);
   color: white;
   border-radius: var(--radius-round);
   width: 24px;
@@ -1047,7 +1047,7 @@ header select {
 .foundation-slot:focus,
 .pocket-slot:focus,
 .lane-track:focus {
-  outline: 2px solid rgba(33, 150, 243, 0.8);
+  outline: 2px solid rgba(0, 212, 255, 0.8);
   outline-offset: 2px;
 }
 
@@ -1197,7 +1197,7 @@ header select {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(33, 150, 243, 0.3), transparent);
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.3), transparent);
   animation: press-pulse 0.15s ease-out;
   pointer-events: none;
   z-index: var(--z-touch-drag);
@@ -1261,7 +1261,7 @@ header select {
 /* Undo/Redo button glow */
 .undo-button:not(:disabled):hover,
 .redo-button:not(:disabled):hover {
-  box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
 }
 
 /* Touch device indicator */
@@ -1348,8 +1348,8 @@ header select {
 .win-message {
   font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-bold);
-  color: #FFD700;
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  color: var(--accent-primary);
+  text-shadow: 0 0 20px var(--accent-glow);
   margin-bottom: var(--spacing-5);
   animation: celebration-pulse 1s ease-in-out infinite;
 }
@@ -1375,7 +1375,7 @@ header select {
   position: fixed;
   width: 10px;
   height: 10px;
-  background: #FFD700;
+  background: var(--accent-primary);
   animation: confetti-fall 3s linear infinite;
 }
 
@@ -1444,8 +1444,8 @@ header select {
 }
 
 .won .game-over-title {
-  color: #FFD700;
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  color: var(--accent-primary);
+  text-shadow: 0 0 20px var(--accent-glow);
 }
 
 .stalemate .game-over-title {
@@ -1461,7 +1461,7 @@ header select {
 }
 
 .won .game-over-level {
-  color: #4CAF50;
+  color: var(--color-success);
 }
 
 .game-over-message {
@@ -1502,7 +1502,7 @@ header select {
 }
 
 .won .game-over-stats .stat-value {
-  color: #FFD700;
+  color: var(--accent-primary);
 }
 
 .game-over-button {
@@ -1510,7 +1510,7 @@ header select {
   font-size: 16px;
   font-weight: bold;
   color: #fff;
-  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  background: linear-gradient(135deg, var(--color-success) 0%, #00B8D4 100%);
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -1559,7 +1559,7 @@ header select {
 }
 
 .won .game-over-stats .stat-compare {
-  color: #a08040;
+  color: var(--accent-secondary);
 }
 
 /* Game over badge for new records */
@@ -1567,7 +1567,7 @@ header select {
   display: inline-block;
   padding: 6px 16px;
   margin: 8px 4px;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
   color: #000;
   font-size: 12px;
   font-weight: bold;
@@ -1580,11 +1580,11 @@ header select {
 @keyframes badge-pulse {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 10px var(--accent-glow);
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    box-shadow: 0 0 20px var(--shadow-glow);
   }
 }
 
@@ -1675,20 +1675,20 @@ header select {
 /* ===== ACTIVE STATE (Valid card being dragged) ===== */
 .portal.active {
   transform: scale(1.2);
-  background: radial-gradient(circle, rgba(76, 175, 80, 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.4) 0%, transparent 70%);
 }
 
 .portal.active::before {
   animation: portal-active-vortex 0.6s linear infinite;
-  border-color: rgba(76, 175, 80, 0.8);
+  border-color: rgba(0, 212, 255, 0.8);
   border-width: 3px;
-  box-shadow: 0 0 15px rgba(76, 175, 80, 0.5), inset 0 0 15px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.5), inset 0 0 15px rgba(0, 212, 255, 0.3);
 }
 
 .portal.active::after {
   animation: portal-active-pull 0.5s ease-in-out infinite;
-  background: radial-gradient(circle, rgba(76, 175, 80, 0.4) 0%, transparent 60%);
-  border-color: rgba(76, 175, 80, 0.4);
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.4) 0%, transparent 60%);
+  border-color: rgba(0, 212, 255, 0.4);
 }
 
 @keyframes portal-active-vortex {
@@ -1735,7 +1735,7 @@ header select {
 @keyframes portal-absorb {
   0% {
     transform: scale(1) rotate(0deg);
-    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5), inset 0 0 15px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.5), inset 0 0 15px rgba(0, 212, 255, 0.3);
   }
   50% {
     transform: scale(1.2) rotate(180deg);

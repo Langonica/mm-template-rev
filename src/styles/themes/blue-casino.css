@@ -144,11 +144,39 @@
      ======================================== */
   --theme-foundation-up-bg: rgba(0, 212, 255, 0.05);
   --theme-foundation-up-border: rgba(0, 212, 255, 0.15);
-  --theme-foundation-up-accent: #FFD700; /* Keep gold for up */
+  --theme-foundation-up-accent: #00D4FF; /* Cyan for up */
   
   --theme-foundation-down-bg: rgba(255, 255, 255, 0.03);
   --theme-foundation-down-border: rgba(255, 255, 255, 0.1);
-  --theme-foundation-down-accent: #C0C0C0; /* Keep silver for down */
+  --theme-foundation-down-accent: #00B8D4; /* Cyan-secondary for down */
+  
+  /* ========================================
+     WIN/CELEBRATION COLORS
+     ======================================== */
+  --theme-win-gold: #00D4FF;
+  --theme-win-silver: #00B8D4;
+  
+  /* ========================================
+     LEGACY TOKEN ALIASES
+     Maps legacy gold/silver to cyan palette
+     ======================================== */
+  /* Gold aliases -> Cyan primary */
+  --theme-color-accent-gold: #00D4FF;
+  --theme-color-gold-50: rgba(0, 212, 255, 0.5);
+  --theme-color-gold-30: rgba(0, 212, 255, 0.3);
+  --theme-color-gold-20: rgba(0, 212, 255, 0.2);
+  --theme-color-gold-10: rgba(0, 212, 255, 0.1);
+  
+  /* Silver aliases -> Cyan secondary */
+  --theme-color-accent-silver: #00B8D4;
+  --theme-color-silver-50: rgba(0, 184, 212, 0.5);
+  --theme-color-silver-30: rgba(0, 184, 212, 0.3);
+  --theme-color-silver-20: rgba(0, 184, 212, 0.2);
+  --theme-color-silver-10: rgba(0, 184, 212, 0.1);
+  
+  /* Portal animation colors - Cyan themed */
+  --theme-portal-active: rgba(0, 212, 255, 0.5); /* Cyan for valid drop */
+  --theme-portal-active-glow: rgba(0, 229, 255, 0.6);
   
   /* ========================================
      GAME CONTROLS
@@ -164,7 +192,7 @@
      PORTAL ANIMATIONS
      ======================================== */
   --theme-portal-glow: rgba(0, 212, 255, 0.3);
-  --theme-portal-active: rgba(76, 175, 80, 0.5); /* Keep green for valid */
+  --theme-portal-active: rgba(0, 212, 255, 0.5); /* Cyan for valid drop */
   --theme-slurp-trail: rgba(0, 212, 255, 0.4);
   --theme-pop-glow: rgba(0, 229, 255, 0.5);
   

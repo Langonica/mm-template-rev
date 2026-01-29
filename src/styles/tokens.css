@@ -24,23 +24,29 @@
   --color-secondary-dark: #388E3C;
   --color-secondary-rgb: 76, 175, 80;
 
-  /* Accent - Gold (UP Foundations, Ace Columns) */
-  --color-accent-gold: #c9a050;
-  --color-accent-gold-light: #d4b06a;
-  --color-accent-gold-dark: #b18f3f;
-  --color-accent-gold-rgb: 201, 160, 80;
+  /* Accent - Gold (UP Foundations, Ace Columns)
+   * Now mapped to theme variables for multi-theme support
+   * In Blue Casino: Gold -> Cyan primary
+   */
+  --color-accent-gold: var(--theme-color-accent-gold, #00D4FF);
+  --color-accent-gold-light: var(--theme-accent-primary, #00D4FF);
+  --color-accent-gold-dark: var(--theme-accent-secondary, #00B8D4);
+  --color-accent-gold-rgb: 0, 212, 255;
 
-  /* Accent - Silver (DOWN Foundations, King Columns) */
-  --color-accent-silver: #7d92a1;
-  --color-accent-silver-light: #96a8b5;
-  --color-accent-silver-dark: #657b8a;
-  --color-accent-silver-rgb: 125, 146, 161;
+  /* Accent - Silver (DOWN Foundations, King Columns)
+   * Now mapped to theme variables for multi-theme support
+   * In Blue Casino: Silver -> Cyan secondary
+   */
+  --color-accent-silver: var(--theme-color-accent-silver, #00B8D4);
+  --color-accent-silver-light: var(--theme-accent-secondary, #00B8D4);
+  --color-accent-silver-dark: #0097A7;
+  --color-accent-silver-rgb: 0, 184, 212;
 
-  /* Success/Valid */
-  --color-success: #4CAF50;
-  --color-success-light: #66BB6A;
-  --color-success-dark: #388E3C;
-  --color-success-rgb: 76, 175, 80;
+  /* Success/Valid - Now mapped to cyan for Blue Casino theme */
+  --color-success: var(--theme-success, #00E5FF);
+  --color-success-light: var(--theme-success, #00E5FF);
+  --color-success-dark: #00B8D4;
+  --color-success-rgb: 0, 229, 255;
 
   /* Warning */
   --color-warning: #FFC107;
