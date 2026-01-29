@@ -552,7 +552,7 @@ function App() {
         undoMoves={5}
       />
 
-      {/* Home Screen }
+      {/* Home Screen */}
       {showHomeScreen && !showCampaignScreen && (
         <HomeScreen
           selectedMode={selectedMode}
