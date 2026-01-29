@@ -120,30 +120,46 @@ Current stalemate detection is basic (no moves + empty stock = stalemate). It mi
 
 ---
 
-**Phase 2: Circular Play Detection 🔄 IN PROGRESS**
+**Phase 2: Circular Play Detection 🔄 COMPLETE**
 
-**Detection System (Already Implemented in Phase 1):**
+**Detection System (Phase 1):**
 | Detection | Threshold | Method |
 |-----------|-----------|--------|
 | Circular play | 3+ identical states | `tracker.isCircularPlay()` |
 | No progress | 20 moves w/o foundation | `tracker.isNoProgress()` |
 | Cycle count | Consecutive repeats | `tracker.cycleCount` |
 
-**UI Implementation Tasks:**
-| Task | Description | Files |
-|------|-------------|-------|
-| Warning indicator | Subtle UI when 2 cycles detected | `GameControls.jsx` or stats bar |
-| Progress counter | Show "X moves since foundation" | `GameStats` component |
-| Cycle indicator | Visual indicator (⚠️) in header | `Header.jsx` |
-| Soft notification | Toast when entering circular pattern | `useNotification.jsx` |
+**UI Implementation (Phase 2):**
+| Task | Status | Files |
+|------|--------|-------|
+| Warning levels | ✅ Done | `useCardGame.js` |
+| Progress counter | ✅ Done | `GameStats.jsx` |
+| Visual indicators | ✅ Done | `GameStats.module.css` |
+| Component wiring | ✅ Done | `GameStage.jsx`, `App.jsx` |
 
 **Warning Levels:**
-| Level | Condition | UI | Action |
-|-------|-----------|-----|--------|
-| 🟡 Caution | 2 cycles (same state seen 3x) | Yellow indicator | "Consider undoing moves" tooltip |
-| 🔴 Critical | 3+ cycles | Red indicator + pulse | "Circular play detected" notification |
-| 📊 Progress | 15+ moves w/o foundation | Counter turns amber | Shows "15 moves since progress" |
-| 🛑 Stalled | 20+ moves w/o foundation | Counter turns red | Prepare for stalemate modal |
+| Level | Condition | UI |
+|-------|-----------|-----|
+| 🟡 Caution | 2 cycles OR 15+ moves w/o progress | Yellow "⚡ X moves" indicator |
+| 🔴 Critical | 3+ cycles detected | Red pulsing "⚠️ Circular play" indicator |
+| 🛑 Stalled | 20+ moves w/o progress | Red pulsing "⚠️ X moves - stalled" indicator |
+
+**Implementation:**
+```javascript
+// useCardGame.js exposes:
+circularPlayState: {
+  isCircular: boolean,
+  cycleCount: number,
+  isNoProgress: boolean,
+  movesSinceProgress: number,
+  warningLevel: 'none' | 'caution' | 'critical' | 'stalled'
+}
+```
+
+**Visual Feedback:**
+- Game stats bar shows indicator when warningLevel !== 'none'
+- Pulse animation on critical/stalled states
+- Color coding: yellow (caution), red (critical/stalled)
 
 **Components to Modify:**
 - `GameStats.jsx` - Add progress counter

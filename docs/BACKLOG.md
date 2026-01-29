@@ -7,7 +7,7 @@ A living document tracking deferred improvements, technical debt, and items to r
 ## In Progress
 
 ### Game State Analyzer & Smart Detection System
-**Priority:** 🔴 High | **Complexity:** High | **Added:** 2026-01-28 | **Status:** Phase 1 Complete, Phase 2 Ready
+**Priority:** 🔴 High | **Complexity:** High | **Added:** 2026-01-28 | **Status:** Phase 2 Complete, Phase 3 Ready
 
 **Goal:** Detect stalemates, circular play, and offer auto-complete for trivially winnable games.
 
@@ -19,10 +19,17 @@ A living document tracking deferred improvements, technical debt, and items to r
 - ✅ Track state history (fingerprint → visit count)
 - ✅ Track moves without progress
 
-**Phase 2: Circular Play Detection** 🔄 IN PROGRESS
-- Detect 3+ identical states = circular play
-- Count stock/waste cycles
-- 20 moves without foundation progress = warning
+**Phase 2: Circular Play Detection** ✅ COMPLETE
+- ✅ Detect 3+ identical states = circular play
+- ✅ Count stock/waste cycles
+- ✅ 20 moves without foundation progress = warning
+- ✅ Visual indicators in GameStats
+- ✅ Warning levels: caution, critical, stalled
+
+**Phase 3: Stalemate UX Modal** 🛑 IN PROGRESS
+- Create `StalemateModal` component
+- Stats display (moves, time, foundation cards)
+- Action buttons: [New Deal] [Restart] [Undo]
 
 **Phase 2: Circular Play Detection** 🔄
 - Detect 3+ identical states = circular play
