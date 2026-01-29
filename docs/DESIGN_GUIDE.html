@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meridian Solitaire - Design System & Asset Guide</title>
+  <style>
+    /* Print-friendly base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    @page {
+      size: letter;
+      margin: 0.75in;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 10pt;
+      line-height: 1.5;
+      color: #333;
+      background: white;
+    }
+    
+    /* Page break control */
+    .page {
+      page-break-after: always;
+      page-break-inside: avoid;
+    }
+    
+    .page:last-child {
+      page-break-after: auto;
+    }
+    
+    h1, h2, h3, h4 {
+      page-break-after: avoid;
+      page-break-inside: avoid;
+    }
+    
+    table, figure, .component-example, .color-swatch {
+      page-break-inside: avoid;
+    }
+    
+    /* Typography */
+    h1 {
+      font-size: 24pt;
+      font-weight: 700;
+      color: #1720c3;
+      margin-bottom: 0.5rem;
+      border-bottom: 3px solid #1720c3;
+      padding-bottom: 0.25rem;
+    }
+    
+    h2 {
+      font-size: 16pt;
+      font-weight: 600;
+      color: #1a237e;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      border-left: 4px solid #ffd700;
+      padding-left: 0.5rem;
+    }
+    
+    h3 {
+      font-size: 13pt;
+      font-weight: 600;
+      color: #333;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    h4 {
+      font-size: 11pt;
+      font-weight: 600;
+      color: #555;
+      margin-top: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    p {
+      margin-bottom: 0.5rem;
+    }
+    
+    /* Cover page */
+    .cover {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      page-break-after: always;
+    }
+    
+    .cover h1 {
+      font-size: 32pt;
+      border: none;
+      color: #1720c3;
+      margin-bottom: 1rem;
+    }
+    
+    .cover .subtitle {
+      font-size: 16pt;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+    
+    .cover .meta {
+      font-size: 11pt;
+      color: #888;
+      line-height: 2;
+    }
+    
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 9pt;
+    }
+    
+    th {
+      background: #f5f5f5;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.5rem;
+      border-bottom: 2px solid #ddd;
+    }
+    
+    td {
+      padding: 0.5rem;
+      border-bottom: 1px solid #eee;
+      vertical-align: top;
+    }
+    
+    tr:nth-child(even) {
+      background: #fafafa;
+    }
+    
+    /* Color swatches */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    
+    .color-swatch {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .color-preview {
+      height: 60px;
+      width: 100%;
+    }
+    
+    .color-info {
+      padding: 0.5rem;
+      font-size: 8pt;
+    }
+    
+    .color-name {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .color-hex {
+      font-family: 'Courier New', monospace;
+      color: #666;
+    }
+    
+    /* Component examples */
+    .component-example {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1rem;
+      margin: 1rem 0;
+      background: #fafafa;
+    }
+    
+    .component-label {
+      font-size: 8pt;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    
+    /* Priority badges */
+    .priority {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      font-size: 8pt;
+      font-weight: 600;
+    }
+    
+    .priority-critical {
+      background: #ffebee;
+      color: #c62828;
+    }
+    
+    .priority-high {
+      background: #fff3e0;
+      color: #ef6c00;
+    }
+    
+    .priority-medium {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    
+    .priority-low {
+      background: #f5f5f5;
+      color: #616161;
+    }
+    
+    /* Status badges */
+    .status {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      font-size: 8pt;
+    }
+    
+    .status-complete {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    
+    .status-pending {
+      background: #fff8e1;
+      color: #f9a825;
+    }
+    
+    .status-na {
+      background: #f5f5f5;
+      color: #9e9e9e;
+    }
+    
+    /* Lists */
+    ul, ol {
+      margin-left: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    li {
+      margin-bottom: 0.25rem;
+    }
+    
+    /* Notes/callouts */
+    .note {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 0.75rem;
+      margin: 1rem 0;
+      border-radius: 0 4px 4px 0;
+    }
+    
+    .warning {
+      background: #fff3e0;
+      border-left: 4px solid #ff9800;
+      padding: 0.75rem;
+      margin: 1rem 0;
+      border-radius: 0 4px 4px 0;
+    }
+    
+    /* Screenshot placeholder */
+    .screenshot-placeholder {
+      background: #f5f5f5;
+      border: 2px dashed #ccc;
+      border-radius: 4px;
+      padding: 2rem;
+      text-align: center;
+      color: #999;
+      font-style: italic;
+      margin: 1rem 0;
+    }
+    
+    /* Two-column layout for print */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    /* Competitive analysis */
+    .comp-example {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+    }
+    
+    .comp-title {
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 0.25rem;
+    }
+    
+    /* TOC */
+    .toc {
+      page-break-after: always;
+    }
+    
+    .toc h2 {
+      border-left: none;
+      padding-left: 0;
+    }
+    
+    .toc ul {
+      list-style: none;
+      margin-left: 0;
+    }
+    
+    .toc li {
+      padding: 0.25rem 0;
+      border-bottom: 1px dotted #ddd;
+    }
+    
+    .toc a {
+      color: #333;
+      text-decoration: none;
+    }
+    
+    /* Section numbering */
+    .section-num {
+      color: #1720c3;
+      font-weight: 700;
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Meridian Solitaire</h1>
+  <div class="subtitle">Design System & Asset Guide</div>
+  <div class="meta">
+    <strong>Version:</strong> 2.3.0<br>
+    <strong>Date:</strong> January 2026<br>
+    <strong>Target:</strong> Web (Desktop & Mobile)<br>
+    <strong>Base Resolution:</strong> 1280 × 720<br>
+  </div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc page">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><span class="section-num">1.</span> Executive Summary</li>
+    <li><span class="section-num">2.</span> Visual Design System</li>
+    <li><span class="section-num">3.</span> Card Asset Specifications</li>
+    <li><span class="section-num">4.</span> UI Component Library</li>
+    <li><span class="section-num">5.</span> Game Board Layout</li>
+    <li><span class="section-num">6.</span> Animation Specifications</li>
+    <li><span class="section-num">7.</span> Asset Inventory & Priority Matrix</li>
+    <li><span class="section-num">8.</span> Responsive Behavior</li>
+    <li><span class="section-num">9.</span> Accessibility Guidelines</li>
+    <li><span class="section-num">10.</span> Competitive References</li>
+  </ul>
+</div>
+
+<!-- PAGE 1: EXECUTIVE SUMMARY -->
+<div class="page">
+  <h1><span class="section-num">1.</span> Executive Summary</h1>
+  
+  <h2>Project Overview</h2>
+  <p>Meridian Solitaire is a modern web-based solitaire game featuring a unique dual-foundation system (building up from 7 AND down from 6). The game combines classic solitaire mechanics with contemporary visual design and smooth animations.</p>
+  
+  <h2>Key Design Principles</h2>
+  <ul>
+    <li><strong>Clarity First:</strong> Game state must be instantly readable</li>
+    <li><strong>Smooth Motion:</strong> All interactions have purposeful animation</li>
+    <li><strong>Accessibility:</strong> WCAG 2.1 AA compliant, reduced-motion support</li>
+    <li><strong>Scalability:</strong> Renders correctly from 320px to 2560px width</li>
+  </ul>
+  
+  <h2>Technical Constraints</h2>
+  <ul>
+    <li>Base canvas: 1280 × 720px (16:9)</li>
+    <li>Card size: 80 × 112px (1×), 160 × 224px (2× for Retina)</li>
+    <li>CSS-based scaling for responsive behavior</li>
+    <li>Sprite-sheet for card graphics (performance)</li>
+  </ul>
+  
+  <div class="note">
+    <strong>Note for Designers:</strong> This document serves as the single source of truth for all visual design decisions. Any discrepancies between implementation and this guide should be flagged for review.
+  </div>
+</div>
+
+<!-- PAGE 2-3: VISUAL DESIGN SYSTEM -->
+<div class="page">
+  <h1><span class="section-num">2.</span> Visual Design System</h1>
+  
+  <h2>2.1 Color Palette</h2>
+  
+  <h3>Primary Colors (Blues)</h3>
+  <div class="color-grid">
+    <div class="color-swatch">
+      <div class="color-preview" style="background: #1720c3;"></div>
+      <div class="color-info">
+        <div class="color-name">Primary</div>
+        <div class="color-hex">#1720c3</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-preview" style="background: #1e27d5;"></div>
+      <div class="color-info">
+        <div class="color-name">Primary Light</div>
+        <div class="color-hex">#1e27d5</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-preview" style="background: #0d1454;"></div>
+      <div class="color-info">
+        <div class="color-name">Primary Dark</div>
+        <div class="color-hex">#0d1454</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-preview" style="background: #00e5ff;"></div>
+      <div class="color-info">
+        <div class="color-name">Accent Cyan</div>
+        <div class="color-hex">#00e5ff</div>
+      </div>
+    </div>
+  </div>
+  
+  <h3>Accent Colors (Gold)</h3>
+  <div class="color-grid">
+    <div class="color-swatch">
+      <div class="color-preview" style="background: #ffd700;"></div>
+      <div class="color-info">
+        <div class="color-name">Gold Primary</div>
+        <div class="color-hex">#ffd700</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-preview" style="background: #ffed4a;"></div>
+      <div class="color-info">
+        <div class="color-name">Gold Light</div>
+        <div class="color-hex">#ffed4a</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-preview" style="background: #c7a500;"></div>
+      <div class="color-info">
+        <div class="color-name">Gold Dark</div>
+        <div class="color-hex">#c7a500</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="color-preview" style="background: rgba(255, 215, 0, 0.2);"></div>
+      <div class="color-info">
+        <div class="color-name">Gold Glow</div>
+        <div class="color-hex">rgba(255,215,0,0.2)</div>
+      </div>
+    </div>
+  </div>
+  
+  <h3>Semantic Colors</h3>
+  <table>
+    <tr>
+      <th>Usage</th>
+      <th>Color</th>
+      <th>Hex</th>
+    </tr>
+    <tr>
+      <td>Success/Valid</td>
+      <td>Green</td>
+      <td>#4CAF50</td>
+    </tr>
+    <tr>
+      <td>Error/Invalid</td>
+      <td>Red</td>
+      <td>#f44336</td>
+    </tr>
+    <tr>
+      <td>Warning</td>
+      <td>Orange</td>
+      <td>#ff9800</td>
+    </tr>
+    <tr>
+      <td>Info</td>
+      <td>Blue</td>
+      <td>#2196f3</td>
+    </tr>
+  </table>
+  
+  <h3>Background Scale</h3>
+  <table>
+    <tr>
+      <th>Layer</th>
+      <th>Color</th>
+      <th>Hex</th>
+      <th>Usage</th>
+    </tr>
+    <tr>
+      <td>Deepest</td>
+      <td>Near Black</td>
+      <td>#050505</td>
+      <td>Page background</td>
+    </tr>
+    <tr>
+      <td>Deep</td>
+      <td>Dark Blue-Gray</td>
+      <td>#0a0a1a</td>
+      <td>Game board</td>
+    </tr>
+    <tr>
+      <td>Surface</td>
+      <td>Dark Blue</td>
+      <td>#0d1454</td>
+      <td>Cards, panels</td>
+    </tr>
+    <tr>
+      <td>Elevated</td>
+      <td>Lighter Blue</td>
+      <td>#141b8c</td>
+      <td>Hover states</td>
+    </tr>
+  </table>
+</div>
+
+<div class="page">
+  <h2>2.2 Typography</h2>
+  
+  <table>
+    <tr>
+      <th>Element</th>
+      <th>Size</th>
+      <th>Weight</th>
+      <th>Usage</th>
+    </tr>
+    <tr>
+      <td>Hero Title</td>
+      <td>48px</td>
+      <td>900</td>
+      <td>Home screen "MERIDIAN"</td>
+    </tr>
+    <tr>
+      <td>H1</td>
+      <td>32px</td>
+      <td>700</td>
+      <td>Screen titles</td>
+    </tr>
+    <tr>
+      <td>H2</td>
+      <td>24px</td>
+      <td>700</td>
+      <td>Section headers</td>
+    </tr>
+    <tr>
+      <td>H3</td>
+      <td>18px</td>
+      <td>600</td>
+      <td>Card titles</td>
+    </tr>
+    <tr>
+      <td>Body</td>
+      <td>14px</td>
+      <td>400</td>
+      <td>General text</td>
+    </tr>
+    <tr>
+      <td>Small</td>
+      <td>12px</td>
+      <td>400</td>
+      <td>Labels, captions</td>
+    </tr>
+    <tr>
+      <td>Tiny</td>
+      <td>10px</td>
+      <td>600</td>
+      <td>Badge text, stats</td>
+    </tr>
+  </table>
+  
+  <h2>2.3 Spacing System</h2>
+  <p>Base unit: <strong>4px</strong>. All spacing uses multiples of 4.</p>
+  
+  <table>
+    <tr>
+      <th>Token</th>
+      <th>Value</th>
+      <th>Usage</th>
+    </tr>
+    <tr>
+      <td>--spacing-1</td>
+      <td>4px</td>
+      <td>Tight gaps</td>
+    </tr>
+    <tr>
+      <td>--spacing-2</td>
+      <td>8px</td>
+      <td>Button padding</td>
+    </tr>
+    <tr>
+      <td>--spacing-3</td>
+      <td>12px</td>
+      <td>Card padding</td>
+    </tr>
+    <tr>
+      <td>--spacing-4</td>
+      <td>16px</td>
+      <td>Section gaps</td>
+    </tr>
+    <tr>
+      <td>--spacing-5</td>
+      <td>24px</td>
+      <td>Container padding</td>
+    </tr>
+    <tr>
+      <td>--spacing-6</td>
+      <td>32px</td>
+      <td>Major sections</td>
+    </tr>
+  </table>
+  
+  <h2>2.4 Border Radius</h2>
+  <table>
+    <tr>
+      <th>Token</th>
+      <th>Value</th>
+      <th>Usage</th>
+    </tr>
+    <tr>
+      <td>--radius-sm</td>
+      <td>4px</td>
+      <td>Buttons, badges</td>
+    </tr>
+    <tr>
+      <td>--radius-md</td>
+      <td>6px</td>
+      <td>Cards</td>
+    </tr>
+    <tr>
+      <td>--radius-lg</td>
+      <td>8px</td>
+      <td>Panels, modals</td>
+    </tr>
+    <tr>
+      <td>--radius-xl</td>
+      <td>12px</td>
+      <td>Large containers</td>
+    </tr>
+  </table>
+</div>
+
+<!-- PAGE 4: CARD ASSET SPECIFICATIONS -->
+<div class="page">
+  <h1><span class="section-num">3.</span> Card Asset Specifications</h1>
+  
+  <h2>3.1 Card Dimensions</h2>
+  <table>
+    <tr>
+      <th>Asset</th>
+      <th>1× Size</th>
+      <th>2× Size</th>
+      <th>Aspect Ratio</th>
+    </tr>
+    <tr>
+      <td>Individual Card</td>
+      <td>80 × 112px</td>
+      <td>160 × 224px</td>
+      <td>5:7</td>
+    </tr>
+    <tr>
+      <td>Sprite Sheet</td>
+      <td>1040 × 560px</td>
+      <td>2080 × 1120px</td>
+      <td>13:7</td>
+    </tr>
+  </table>
+  
+  <h2>3.2 Sprite Sheet Layout</h2>
+  <p>The sprite sheet contains all 52 cards plus the card back in a 13 × 4 grid:</p>
+  
+  <table>
+    <tr>
+      <th>Row</th>
+      <th>Suit</th>
+      <th>Cards (left to right)</th>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td>Hearts (h)</td>
+      <td>A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>Diamonds (d)</td>
+      <td>A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Clubs (c)</td>
+      <td>A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Spades (s)</td>
+      <td>A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K</td>
+    </tr>
+  </table>
+  
+  <div class="note">
+    <strong>Card Back Position:</strong> The card back (face-down state) is at grid position row 6, column 0 of an extended sprite sheet (not in the main 4-row card grid).
+  </div>
+  
+  <h2>3.3 Card States</h2>
+  
+  <table>
+    <tr>
+      <th>State</th>
+      <th>Visual Treatment</th>
+      <th>CSS Class</th>
+    </tr>
+    <tr>
+      <td>Default</td>
+      <td>Normal appearance</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Hover</td>
+      <td>Scale 1.05, elevated shadow</td>
+      <td>:hover</td>
+    </tr>
+    <tr>
+      <td>Dragging</td>
+      <td>Scale 1.1, high shadow, slight rotation</td>
+      <td>.dragging</td>
+    </tr>
+    <tr>
+      <td>Valid Target</td>
+      <td>Green border glow</td>
+      <td>.valid-drop-target</td>
+    </tr>
+    <tr>
+      <td>Animating</td>
+      <td>Various (see Section 6)</td>
+      <td>See animation classes</td>
+    </tr>
+  </table>
+  
+  <div class="screenshot-placeholder">
+    [SCREENSHOT: Card states visualization - default, hover, dragging, valid target]
+  </div>
+</div>
+
+<!-- PAGE 5: UI COMPONENT LIBRARY -->
+<div class="page">
+  <h1><span class="section-num">4.</span> UI Component Library</h1>
+  
+  <h2>4.1 Buttons</h2>
+  
+  <h3>Primary Button</h3>
+  <div class="component-example">
+    <div class="component-label">Visual Style</div>
+    <p><strong>Background:</strong> Gradient (primary → primary-light)<br>
+    <strong>Border:</strong> 1px solid gold (30% opacity)<br>
+    <strong>Text:</strong> White, 14px, 600 weight<br>
+    <strong>Padding:</strong> 12px 24px<br>
+    <strong>Radius:</strong> 8px<br>
+    <strong>Hover:</strong> Brightness +10%, gold border intensifies</p>
+  </div>
+  
+  <h3>Secondary Button</h3>
+  <div class="component-example">
+    <div class="component-label">Visual Style</div>
+    <p><strong>Background:</strong> Transparent<br>
+    <strong>Border:</strong> 1px solid rgba(255,255,255,0.3)<br>
+    <strong>Text:</strong> White, 14px, 600 weight<br>
+    <strong>Hover:</strong> Background fills with white at 10% opacity</p>
+  </div>
+  
+  <h3>Tertiary Button</h3>
+  <div class="component-example">
+    <div class="component-label">Visual Style</div>
+    <p><strong>Background:</strong> Transparent<br>
+    <strong>Border:</strong> None<br>
+    <strong>Text:</strong> Cyan (#00e5ff), 14px, underlined on hover<br>
+    <strong>Use case:</strong> Text links, subtle actions</p>
+  </div>
+  
+  <h2>4.2 Cards / Containers</h2>
+  
+  <h3>ActionCard</h3>
+  <p>Used on home screen for Quick Play and Campaign options.</p>
+  <ul>
+    <li>Background: Semi-transparent dark blue</li>
+    <li>Border: 1px solid white at 10% opacity</li>
+    <li>Border radius: 12px</li>
+    <li>Padding: 20px</li>
+    <li>Shadow: Subtle drop shadow</li>
+  </ul>
+  
+  <h3>DataCard</h3>
+  <p>Used in statistics screens for metric display.</p>
+  <ul>
+    <li>Background: Gradient (surface → elevated)</li>
+    <li>Border radius: 12px</li>
+    <li>Value: Large bold number</li>
+    <li>Label: Small muted text below</li>
+  </ul>
+  
+  <h2>4.3 Progress Indicators</h2>
+  
+  <h3>ProgressBar</h3>
+  <ul>
+    <li>Height: 8px</li>
+    <li>Background: rgba(255,255,255,0.1)</li>
+    <li>Fill: Gold gradient</li>
+    <li>Radius: 4px (full pill)</li>
+  </ul>
+</div>
+
+<!-- PAGE 6-7: GAME BOARD LAYOUT -->
+<div class="page">
+  <h1><span class="section-num">5.</span> Game Board Layout</h1>
+  
+  <h2>5.1 Coordinate System</h2>
+  <table>
+    <tr>
+      <th>Property</th>
+      <th>Value</th>
+    </tr>
+    <tr>
+      <td>Base Canvas</td>
+      <td>1280 × 720px</td>
+    </tr>
+    <tr>
+      <td>Scaling Method</td>
+      <td>CSS transform: scale()</td>
+    </tr>
+    <tr>
+      <td>Aspect Ratio</td>
+      <td>16:9 (locked)</td>
+    </tr>
+  </table>
+  
+  <h2>5.2 Layout Zones</h2>
+  
+  <div class="screenshot-placeholder">
+    [SCREENSHOT: Annotated game board showing all zones with pixel coordinates]
+  </div>
+  
+  <h3>Foundation Zone (Top)</h3>
+  <table>
+    <tr>
+      <th>Element</th>
+      <th>Position</th>
+      <th>Size</th>
+    </tr>
+    <tr>
+      <td>Down Foundations (LEFT)</td>
+      <td>Top-left area</td>
+      <td>~400px width</td>
+    </tr>
+    <tr>
+      <td>Up Foundations (RIGHT)</td>
+      <td>Top-right area</td>
+      <td>~400px width</td>
+    </tr>
+  </table>
+  
+  <h3>Tableau Zone (Center)</h3>
+  <table>
+    <tr>
+      <th>Element</th>
+      <th>Position</th>
+      <th>Notes</th>
+    </tr>
+    <tr>
+      <td>7 Columns</td>
+      <td>Horizontal row, centered</td>
+      <td>Start X: 300px, Gap: 100px</td>
+    </tr>
+    <tr>
+      <td>Column Track Height</td>
+      <td>290px</td>
+      <td>Fixed for all columns</td>
+    </tr>
+    <tr>
+      <td>Card Overlap</td>
+      <td>16px vertical</td>
+      <td>Different for Ace columns</td>
+    </tr>
+  </table>
+</div>
+
+<div class="page">
+  <h3>Stock/Waste/Pocket Zone (Bottom)</h3>
+  <table>
+    <tr>
+      <th>Element</th>
+      <th>Position</th>
+      <th>Size</th>
+    </tr>
+    <tr>
+      <td>Stock Pile</td>
+      <td>Bottom-left</td>
+      <td>80 × 112px</td>
+    </tr>
+    <tr>
+      <td>Waste Pile</td>
+      <td>Right of Stock</td>
+      <td>80 × 112px, 10px gap</td>
+    </tr>
+    <tr>
+      <td>Pocket 1</td>
+      <td>Right of Waste</td>
+      <td>80 × 112px, 40px gap</td>
+    </tr>
+    <tr>
+      <td>Pocket 2</td>
+      <td>Right of Pocket 1</td>
+      <td>80 × 112px, 10px gap</td>
+    </tr>
+  </table>
+  
+  <h2>5.3 Z-Index Layers</h2>
+  <table>
+    <tr>
+      <th>Layer</th>
+      <th>CSS Variable</th>
+      <th>Value</th>
+      <th>Contents</th>
+    </tr>
+    <tr>
+      <td>Base</td>
+      <td>--z-game-base</td>
+      <td>100</td>
+      <td>Static elements</td>
+    </tr>
+    <tr>
+      <td>Foundations</td>
+      <td>--z-foundations</td>
+      <td>200</td>
+      <td>Foundation piles</td>
+    </tr>
+    <tr>
+      <td>Cards</td>
+      <td>--z-cards</td>
+      <td>300</td>
+      <td>Tableau cards</td>
+    </tr>
+    <tr>
+      <td>Portal</td>
+      <td>--z-portal</td>
+      <td>400</td>
+      <td>Empty column animations</td>
+    </tr>
+    <tr>
+      <td>Drag Ghost</td>
+      <td>--z-drag-ghost</td>
+      <td>600</td>
+      <td>Dragged card</td>
+    </tr>
+    <tr>
+      <td>Overlay</td>
+      <td>--z-overlay</td>
+      <td>900</td>
+      <td>Modals, screens</td>
+    </tr>
+  </table>
+</div>
+
+<!-- PAGE 8: ANIMATION SPECIFICATIONS -->
+<div class="page">
+  <h1><span class="section-num">6.</span> Animation Specifications</h1>
+  
+  <h2>6.1 Timing Standards</h2>
+  <table>
+    <tr>
+      <th>Speed</th>
+      <th>Duration</th>
+      <th>Use Case</th>
+    </tr>
+    <tr>
+      <td>Instant</td>
+      <td>0ms</td>
+      <td>State updates, no visual change</td>
+    </tr>
+    <tr>
+      <td>Fast</td>
+      <td>100-200ms</td>
+      <td>Micro-interactions, lifts</td>
+    </tr>
+    <tr>
+      <td>Normal</td>
+      <td>200-400ms</td>
+      <td>Most transitions, pops</td>
+    </tr>
+    <tr>
+      <td>Slow</td>
+      <td>400-600ms</td>
+      <td>Complex sequences</td>
+    </tr>
+  </table>
+  
+  <h2>6.2 Easing Functions</h2>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Value</th>
+      <th>Use Case</th>
+    </tr>
+    <tr>
+      <td>Standard</td>
+      <td>ease</td>
+      <td>General transitions</td>
+    </tr>
+    <tr>
+      <td>Out</td>
+      <td>ease-out</td>
+      <td>Elements entering</td>
+    </tr>
+    <tr>
+      <td>Spring</td>
+      <td>cubic-bezier(0.34, 1.56, 0.64, 1)</td>
+      <td>Bouncy effects (pops)</td>
+    </tr>
+  </table>
+  
+  <h2>6.3 Animation Types</h2>
+  
+  <h3>Portal Animation (Ace Reveal)</h3>
+  <table>
+    <tr>
+      <th>Phase</th>
+      <th>Duration</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>Pause</td>
+      <td>400ms</td>
+      <td>Wait for flip</td>
+    </tr>
+    <tr>
+      <td>Slurp</td>
+      <td>300ms</td>
+      <td>Card shrinks into portal</td>
+    </tr>
+    <tr>
+      <td>Pop</td>
+      <td>400ms</td>
+      <td>Card scales up at destination</td>
+    </tr>
+  </table>
+  
+  <h3>Auto-Complete Sequence</h3>
+  <table>
+    <tr>
+      <th>Phase</th>
+      <th>Duration</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>Departing</td>
+      <td>200ms</td>
+      <td>Card lifts, source glows</td>
+    </tr>
+    <tr>
+      <td>Moving</td>
+      <td>300ms</td>
+      <td>Card flies, state updates</td>
+    </tr>
+    <tr>
+      <td>Arriving</td>
+      <td>200ms</td>
+      <td>Card lands, foundation glows</td>
+    </tr>
+  </table>
+  
+  <h3>Arc Motion (Double-Click Autoplay)</h3>
+  <table>
+    <tr>
+      <th>Phase</th>
+      <th>Duration</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>Lifting</td>
+      <td>100ms</td>
+      <td>Card scales up, shadow grows</td>
+    </tr>
+    <tr>
+      <td>Flying</td>
+      <td>300ms</td>
+      <td>Arc trajectory, ghost trails</td>
+    </tr>
+    <tr>
+      <td>Landing</td>
+      <td>200ms</td>
+      <td>Bounce at destination</td>
+    </tr>
+  </table>
+  
+  <div class="warning">
+    <strong>Reduced Motion:</strong> All animations respect <code>prefers-reduced-motion</code>. When enabled, animations become instant opacity transitions.
+  </div>
+</div>
+
+<!-- PAGE 9-10: ASSET INVENTORY -->
+<div class="page">
+  <h1><span class="section-num">7.</span> Asset Inventory & Priority Matrix</h1>
+  
+  <h2>7.1 Required Sprites</h2>
+  
+  <table>
+    <tr>
+      <th>Asset</th>
+      <th>Priority</th>
+      <th>Status</th>
+      <th>Notes</th>
+    </tr>
+    <tr>
+      <td>Card Fronts (52)</td>
+      <td><span class="priority priority-critical">CRITICAL</span></td>
+      <td><span class="status status-complete">Complete</span></td>
+      <td>Standard playing cards</td>
+    </tr>
+    <tr>
+      <td>Card Back</td>
+      <td><span class="priority priority-critical">CRITICAL</span></td>
+      <td><span class="status status-complete">Complete</span></td>
+      <td>Universal face-down design</td>
+    </tr>
+    <tr>
+      <td>2× Card Sprites</td>
+      <td><span class="priority priority-high">HIGH</span></td>
+      <td><span class="status status-complete">Complete</span></td>
+      <td>For Retina displays</td>
+    </tr>
+  </table>
+  
+  <h2>7.2 CSS-Generated Elements</h2>
+  <p>These elements require NO image assets - styled entirely with CSS:</p>
+  
+  <table>
+    <tr>
+      <th>Element</th>
+      <th>Implementation</th>
+    </tr>
+    <tr>
+      <td>Buttons</td>
+      <td>Gradients, borders, shadows</td>
+    </tr>
+    <tr>
+      <td>Cards/Containers</td>
+      <td>Background colors, border-radius</td>
+    </tr>
+    <tr>
+      <td>Progress Bars</td>
+      <td>Divs with percentage widths</td>
+    </tr>
+    <tr>
+      <td>Glow Effects</td>
+      <td>Box-shadow animations</td>
+    </tr>
+    <tr>
+      <td>Portal Effect</td>
+      <td>Radial gradients + CSS animation</td>
+    </tr>
+  </table>
+  
+  <h2>7.3 Icon Requirements</h2>
+  
+  <table>
+    <tr>
+      <th>Icon</th>
+      <th>Usage</th>
+      <th>Priority</th>
+    </tr>
+    <tr>
+      <td>Settings/Gear</td>
+      <td>Game menu access</td>
+      <td><span class="priority priority-high">HIGH</span></td>
+    </tr>
+    <tr>
+      <td>Undo/Redo</td>
+      <td>Control buttons</td>
+      <td><span class="priority priority-medium">MEDIUM</span></td>
+    </tr>
+    <tr>
+      <td>Pause</td>
+      <td>Pause overlay</td>
+      <td><span class="priority priority-medium">MEDIUM</span></td>
+    </tr>
+    <tr>
+      <td>Trophy</td>
+      <td>Campaign completion</td>
+      <td><span class="priority priority-low">LOW</span></td>
+    </tr>
+  </table>
+</div>
+
+<div class="page">
+  <h2>7.4 Future Asset Considerations</h2>
+  
+  <table>
+    <tr>
+      <th>Asset</th>
+      <th>Use Case</th>
+      <th>Priority</th>
+      <th>Notes</th>
+    </tr>
+    <tr>
+      <td>Particle Sprites</td>
+      <td>Victory confetti</td>
+      <td><span class="priority priority-low">LOW</span></td>
+      <td>Optional polish</td>
+    </tr>
+    <tr>
+      <td>Sound Effects</td>
+      <td>Card movements</td>
+      <td><span class="priority priority-low">LOW</span></td>
+      <td>Requires audio assets</td>
+    </tr>
+    <tr>
+      <td>Background Patterns</td>
+      <td>Game board texture</td>
+      <td><span class="priority priority-na">N/A</span></td>
+      <td>Currently CSS gradient</td>
+    </tr>
+  </table>
+  
+  <h2>7.5 Animation Assets</h2>
+  <p><strong>None required.</strong> All animations implemented via CSS keyframes. No sprite sheets, GIFs, or video files needed for motion.</p>
+</div>
+
+<!-- PAGE 11: RESPONSIVE BEHAVIOR -->
+<div class="page">
+  <h1><span class="section-num">8.</span> Responsive Behavior</h1>
+  
+  <h2>8.1 Scaling Strategy</h2>
+  <p>The game uses CSS <code>transform: scale()</code> to fit within any viewport while maintaining the 16:9 aspect ratio.</p>
+  
+  <table>
+    <tr>
+      <th>Viewport Width</th>
+      <th>Scale Factor</th>
+      <th>Notes</th>
+    </tr>
+    <tr>
+      <td>320-480px</td>
+      <td>0.25-0.38</td>
+      <td>Mobile portrait minimum</td>
+    </tr>
+    <tr>
+      <td>480-768px</td>
+      <td>0.38-0.60</td>
+      <td>Tablets, large phones</td>
+    </tr>
+    <tr>
+      <td>768-1280px</td>
+      <td>0.60-1.0</td>
+      <td>Tablets, small laptops</td>
+    </tr>
+    <tr>
+      <td>1280-1920px</td>
+      <td>1.0-1.5</td>
+      <td>Standard desktop</td>
+    </tr>
+    <tr>
+      <td>1920-2560px</td>
+      <td>1.5-2.0</td>
+      <td>Large monitors (2× assets)</td>
+    </tr>
+  </table>
+  
+  <h2>8.2 2× Asset Strategy</h2>
+  <p>For viewports scaling above 1.5× or with device pixel ratio ≥ 2:</p>
+  <ul>
+    <li>Load <code>cardspritesheet@2x.png</code> (2080 × 1120px)</li>
+    <li>Load <code>mm-gameboard@2x.png</code> (2560 × 1440px)</li>
+    <li>CSS scales down by 50%</li>
+  </ul>
+  
+  <h2>8.3 Portrait Blocker</h2>
+  <p>On mobile devices in portrait orientation (< 500px width):</p>
+  <ul>
+    <li>Display orientation blocker overlay</li>
+    <li>Message: "Please rotate your device to landscape"</li>
+    <li>Icon: Phone rotating animation</li>
+  </ul>
+</div>
+
+<!-- PAGE 12: ACCESSIBILITY -->
+<div class="page">
+  <h1><span class="section-num">9.</span> Accessibility Guidelines</h1>
+  
+  <h2>9.1 Color Contrast</h2>
+  <p>All text meets WCAG 2.1 AA standards:</p>
+  <ul>
+    <li>Normal text: 4.5:1 minimum</li>
+    <li>Large text (18px+): 3:1 minimum</li>
+    <li>UI components: 3:1 minimum</li>
+  </ul>
+  
+  <h2>9.2 Focus States</h2>
+  <p>All interactive elements have visible focus indicators:</p>
+  <ul>
+    <li>Outline: 2px solid cyan (#00e5ff)</li>
+    <li>Offset: 2px from element edge</li>
+    <li>Used for: Buttons, cards, form elements</li>
+  </ul>
+  
+  <h2>9.3 Motion Preferences</h2>
+  <p>Respect <code>prefers-reduced-motion</code>:</p>
+  <ul>
+    <li>Disable all animations</li>
+    <li>Use instant opacity transitions</li>
+    <li>Preserve state changes (just no motion)</li>
+  </ul>
+  
+  <h2>9.4 Screen Reader Considerations</h2>
+  <ul>
+    <li>Semantic HTML structure</li>
+    <li>ARIA labels for card locations</li>
+    <li>Live regions for game status</li>
+    <li>Keyboard navigation support</li>
+  </ul>
+</div>
+
+<!-- PAGE 13: COMPETITIVE REFERENCES -->
+<div class="page">
+  <h1><span class="section-num">10.</span> Competitive References</h1>
+  
+  <h2>10.1 Reference Games</h2>
+  
+  <div class="comp-example">
+    <div class="comp-title">Microsoft Solitaire Collection</div>
+    <p><strong>Strengths:</strong> Smooth card physics, clear drop indicators, celebratory win animations<br>
+    <strong>Takeaway:</strong> Foundation placement should have satisfying "snap" with subtle bounce</p>
+  </div>
+  
+  <div class="comp-example">
+    <div class="comp-title">Solitaire by MobilityWare</div>
+    <p><strong>Strengths:</strong> Clean card design, intuitive tap-to-move, daily challenges<br>
+    <strong>Takeaway:</strong> Auto-hint system reduces frustration without solving for player</p>
+  </div>
+  
+  <div class="comp-example">
+    <div class="comp-title">Classic Solitaire (CardGames.io)</div>
+    <p><strong>Strengths:</strong> Minimalist design, fast load times, no distractions<br>
+    <strong>Takeaway:</strong> Avoid visual clutter; focus on game clarity</p>
+  </div>
+  
+  <h2>10.2 Differentiation</h2>
+  <p>Meridian Solitaire differentiates through:</p>
+  <ul>
+    <li><strong>Dual Foundation System:</strong> Unique mechanic (build up AND down)</li>
+    <li><strong>Cinematic Animations:</strong> Portal effects, arc trajectories, ghost trails</li>
+    <li><strong>Campaign Mode:</strong> Progressive levels with tier badges</li>
+    <li><strong>Modern Aesthetic:</strong> Dark theme with gold accents vs. traditional green</li>
+  </ul>
+  
+  <h2>10.3 Inspiration Sources</h2>
+  <ul>
+    <li><strong>Card Design:</strong> Minimalist, high contrast suits</li>
+    <li><strong>Motion Design:</strong> Game feel principles (juice, anticipation)</li>
+    <li><strong>Color Palette:</strong> Premium app aesthetics (dark + gold accent)</li>
+  </ul>
+</div>
+
+<!-- END MATTER -->
+<div class="page">
+  <h2>Document Information</h2>
+  <table>
+    <tr>
+      <td><strong>Version:</strong></td>
+      <td>2.3.0</td>
+    </tr>
+    <tr>
+      <td><strong>Last Updated:</strong></td>
+      <td>January 2026</td>
+    </tr>
+    <tr>
+      <td><strong>Author:</strong></td>
+      <td>Meridian Solitaire Team</td>
+    </tr>
+    <tr>
+      <td><strong>Format:</strong></td>
+      <td>HTML (Print to PDF)</td>
+    </tr>
+  </table>
+  
+  <div class="note" style="margin-top: 2rem;">
+    <strong>Usage:</strong> This document is optimized for printing to PDF on US Letter (8.5 × 11") paper. Use browser print dialog with "Save as PDF" option, landscape orientation recommended for best readability.
+  </div>
+</div>
+
+</body>
+</html>

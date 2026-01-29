@@ -76,6 +76,12 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ## Animation Refinements
 
+### ~~Auto-Complete Animation Sequence~~
+**Resolved:** 2026-01-28 | Implemented Phase 1 with 3-phase animation (departing/moving/arriving). Cards visibly move from source to foundation with gold glow effects. Win screen delays 500ms after sequence completes.
+
+### ~~Arc Motion for Double-Click Autoplay~~
+**Resolved:** 2026-01-28 | Implemented Phase 2 with arc trajectory animation. Phases: lifting (100ms) → flying with ghost trails (300ms) → landing with bounce (200ms). Source flash effect on departing location.
+
 ### Portal Animation for Card Stacks
 **Priority:** Medium | **Complexity:** Medium | **Added:** 2026-01-20
 
@@ -129,6 +135,15 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 ## Completed Items
 
 *Move items here when resolved, with date and brief note:*
+
+### ~~Animation Phase 1: Auto-Complete Sequence~~
+**Resolved:** 2026-01-28 | New `autoCompleteAnimation` state with sequential card movement. Three phases: departing (200ms) with source lift, moving (300ms) with state update, arriving (200ms) with foundation glow. Win screen delays 500ms to show final state. Foundation and Column components updated with visual effects.
+
+### ~~Animation Phase 2: Arc Motion for Regular Autoplay~~
+**Resolved:** 2026-01-28 | Replaced slurp/pop with 3-phase arc animation. Total duration 600ms (faster than previous 700ms). Lifting phase scales card up; flying phase includes 3 ghost trails with staggered fade; landing phase has bounce effect. Source vacancy flash on column/waste/pocket. Gold glow on destination foundation. CSS includes prefers-reduced-motion support.
+
+### ~~UI Redux: Full-Bleed Screens~~
+**Resolved:** 2026-01-28 | Moved all full-bleed screens inside game-container for proper CSS transform scaling. Updated FullBleedScreen with optional headers. Removed obsolete headers/footers, restored back buttons. Removed borders from containers. Updated HowToPlay, Statistics, Campaign, Home screens. Deleted deprecated RulesModal and StatsModal components.
 
 ### ~~Code Audit - Phase 2: Debug Cleanup & Component Refactoring~~
 **Resolved:** 2026-01-28 | Completed console.log cleanup and z-index consolidation. Removed ~20 debug console.log statements from validateSnapshots.js (wrapped in DEBUG flag) and useHighDPIAssets.js. Consolidated 11 hardcoded z-index values to use CSS custom properties from tokens.css. Mappings: 110 → calc(), 600 → --z-drag-ghost, 9999/10000 → --z-overlay, 1000 → calc(var(--z-portal) + 300). All z-index values now use design tokens as single source of truth.
