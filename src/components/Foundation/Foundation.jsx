@@ -94,13 +94,6 @@ const Foundation = ({
               width: 'var(--fnd-card-w)',
               height: 'var(--fnd-card-h)',
               position: 'relative',
-              borderColor: isValid
-                ? 'rgba(76, 175, 80, 0.8)'
-                : isAutoCompleteTarget || isArcTarget
-                  ? 'rgba(255, 215, 0, 0.8)' // Gold glow for auto-complete/arc target
-                  : isDownFoundation
-                    ? 'var(--temp-silver)'
-                    : 'var(--temp-gold)',
               borderRadius: '4px',
               background: isValid
                 ? 'rgba(76, 175, 80, 0.1)'

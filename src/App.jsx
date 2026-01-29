@@ -598,7 +598,7 @@ function App() {
   
   useEffect(() => {
     if (!import.meta.env.DEV) return;
-    
+
     // Test scenarios for notification system testing
     window.__TEST_DEALS__ = {
       // Nearly won - all face up, ready for auto-complete
@@ -630,7 +630,7 @@ function App() {
         loadGameState(testState);
         console.log('[TEST] Loaded nearly-won game state');
       },
-      
+
       // Blocked game - requires cycling without progress
       blocked: () => {
         const testState = {
@@ -660,7 +660,7 @@ function App() {
         loadGameState(testState);
         console.log('[TEST] Loaded blocked game state (for testing cycles)');
       },
-      
+
       // High cycles - simulate by loading blocked and setting cycles
       highCycles: () => {
         window.__TEST_DEALS__.blocked();
@@ -672,7 +672,7 @@ function App() {
           }
         }, 100);
       },
-      
+
       // Unwinnable - specific configuration
       unwinnable: () => {
         const testState = {
@@ -703,13 +703,13 @@ function App() {
         console.log('[TEST] Loaded unwinnable game state');
       }
     };
-    
+
     console.log('[TEST] Test deals available. Try: __TEST_DEALS__.blocked()');
-    
+
     return () => {
       delete window.__TEST_DEALS__;
     };
-  }, [loadGameState]);
+  }, []);
 
   return (
     <div
