@@ -12,6 +12,7 @@
 | 0 | Cleanup (isFun Removal) | ✅ COMPLETE | 2026-01-28 | 2026-01-28 |
 | 1 | Foundation (Component Library) | ✅ COMPLETE | 2026-01-28 | 2026-01-28 |
 | 2 | Screen Redesigns | ✅ COMPLETE | 2026-01-28 | 2026-01-28 |
+| 2.5 | Modal/Overlay Screens | 🔄 IN PROGRESS | - | - |
 | 3 | UI Unification | ⏳ PENDING | - | - |
 | 4 | Enhanced Metrics | ⏳ PENDING | - | - |
 
@@ -151,3 +152,61 @@ All components created and building clean:
 10. `TextLinkGroup` - Secondary navigation links
 
 **Build Status:** ✅ Clean
+
+
+---
+
+## Phase 2.5: Modal/Overlay Screens
+
+### Objective
+Redesign remaining modal and overlay screens using the unified component library.
+
+### Audit of Modal/Overlay Screens
+
+| Screen | Type | Current Status | Action Required |
+|--------|------|----------------|-----------------|
+| **PauseOverlay** | Overlay | Uses old Button component | Redesign with DataCard, PrimaryButton, SecondaryButton |
+| **StalemateModal** | Modal | Uses old Button component | Redesign with DataCard, ProgressBar, new buttons |
+| **ConfirmDialog** | Dialog | Custom button styles | Update to use PrimaryButton, SecondaryButton |
+| **RulesModal** | Legacy | ❌ DEPRECATED | Remove after App.jsx integration |
+| **StatsModal** | Legacy | ❌ DEPRECATED | Remove after App.jsx integration |
+
+### Implementation Plan
+
+#### 1. PauseOverlay Redesign
+**Current:** Semi-transparent backdrop with stats and buttons
+**New Design:**
+- Keep backdrop pattern (click outside to resume)
+- Use DataCards for stats (moves, time, progress)
+- Use PrimaryButton for Resume
+- Use SecondaryButton for Home/Restart
+- Add ProgressBar for foundation progress
+
+#### 2. StalemateModal Redesign
+**Current:** Centered modal with game over stats
+**New Design:**
+- Use FullBleedScreen OR keep centered modal pattern
+- DataCards for final stats
+- ProgressBar showing progress at stalemate
+- PrimaryButton for New Deal
+- SecondaryButton for Restart
+- TertiaryButton for Undo
+
+#### 3. ConfirmDialog Update
+**Current:** Custom styled buttons
+**New Design:**
+- Keep centered dialog pattern
+- Replace custom buttons with PrimaryButton/SecondaryButton
+- Maintain danger variant styling
+
+### Commits
+
+| Commit | Description | Date |
+|--------|-------------|------|
+
+---
+
+### Notes
+
+*Last updated: 2026-01-28*
+
