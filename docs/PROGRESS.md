@@ -67,6 +67,157 @@ Actual (bug): Column reads column[0] (face-down card) and sets wrong type
 
 ---
 
+### v2.3.0 - Game State Analyzer & Smart Detection - PLANNED 🧠
+
+**Objective:** Implement comprehensive game state tracking to detect stalemates, circular play, and offer auto-complete for trivially winnable games. This system will also serve as the foundation for a future hint system.
+
+**Problem Statement:**
+Current stalemate detection is basic (no moves + empty stock = stalemate). It misses:
+- Circular play patterns (recycling stock with no progress)
+- Unwinnable positions (blocked sequences that can never be freed)
+- Trivially winnable games that could auto-complete
+
+**Solution: Multi-Phase Game State Analyzer**
+
+---
+
+**Phase 1: State Fingerprinting & Tracking**
+| Task | Description | Files |
+|------|-------------|-------|
+| Create `GameStateTracker` class | Track state history, detect repeats | `gameLogic.js` or new `stateTracker.js` |
+| Implement `getStateFingerprint()` | Hash board state for comparison | `cardUtils.js` |
+| Track stock/waste cycles | Count recycles without progress | `useCardGame.js` |
+| Store state history | Map of fingerprint → visit count | `GameStateTracker` |
+
+**State Fingerprint Elements:**
+```javascript
+{
+  tableauHash: hashColumns(gameState.tableau),  // Column order + cards
+  stockTop: gameState.stock[0] || null,         // Top stock card
+  wasteTop: gameState.waste[top] || null,       // Top waste card
+  foundationCounts: countFoundationCards(),     // Progress metric
+  pockets: [pocket1, pocket2],                  // Pocket contents
+  totalFoundationCards: calculateProgress()     // Overall progress
+}
+```
+
+---
+
+**Phase 2: Circular Play Detection**
+| Task | Description | Trigger |
+|------|-------------|---------|
+| Detect repeated states | Same fingerprint seen 3+ times | 3 cycles = stalemate |
+| Track moves without progress | No foundation cards added | 20 moves = warning |
+| Cycle counter | Increment on stock recycle | Reset on new state |
+
+**Stalemate Detection Levels:**
+| Level | Condition | Action |
+|-------|-----------|--------|
+| 1 - Immediate | No moves + stock empty | Stalemate modal |
+| 2 - Circular | 3+ identical states | Stalemate modal |
+| 3 - No Progress | 20 moves, no foundation adds | Warning indicator |
+
+---
+
+**Phase 3: Stalemate UX Modal**
+| Component | Purpose |
+|-----------|---------|
+| `StalemateModal` | Display when game unwinnable |
+| Stats display | Moves made, time elapsed, cards on foundation |
+| Action buttons | [New Deal] [Restart Level] [Undo Moves] |
+| Soft warning | Subtle indicator before hard stalemate |
+
+**UX Flow:**
+```
+Detect Stalemate
+    ↓
+Show Modal with stats
+    ↓
+[New Deal] → Generate new random deal (same mode)
+[Restart]  → Reset to original snapshot
+[Undo]     → Go back N moves (let player explore)
+```
+
+---
+
+**Phase 4: Auto-Complete Detection**
+| Condition | Required State |
+|-----------|----------------|
+| Stock empty | `stock.length === 0` |
+| Waste empty | `waste.length === 0` |
+| Pockets empty | `pocket1 === null && pocket2 === null` |
+| All tableau face-up | No face-down cards in any column |
+| No blocked sequences | No circular dependencies (7♠ on 8♥ blocking both) |
+
+**Auto-Complete Algorithm:**
+```javascript
+function canAutoComplete(gameState) {
+  // Check preconditions
+  if (!stockEmpty || !wasteEmpty || !pocketsEmpty) return false;
+  if (hasFaceDownCards()) return false;
+  if (hasBlockedSequences()) return false;
+  
+  // All cards are face-up and playable
+  return true;
+}
+```
+
+---
+
+**Phase 5: Auto-Complete Execution**
+| Feature | Implementation |
+|---------|----------------|
+| Detection trigger | Check after every move |
+| Offer UI | "Auto-Complete Available" button appears |
+| Execution | Chain obvious moves with delay |
+| Animation | Sequential card movements to foundation |
+| Undo support | Record as single "auto-complete" move |
+| Cancel option | Stop mid-execution if user clicks |
+
+**Execution Flow:**
+```
+Move made
+    ↓
+Check auto-complete conditions
+    ↓
+IF met: Show "Auto-Complete" button
+    ↓
+User clicks → Execute chain
+    ↓
+Each card: Find foundation → Animate → Repeat
+    ↓
+Complete: Win celebration
+```
+
+---
+
+**Phase 6: Hint System Foundation**
+| Extension | Reuses From Previous Phases |
+|-----------|----------------------------|
+| Available moves count | `getAvailableMoves()` from Phase 1 |
+| Best move suggestion | Scoring from optimal selection |
+| Highlight system | Animation system from Phase 5 |
+| Explanation text | Move description from `getAvailableMoves()` |
+
+**Future Hint Button:**
+- Shows count of available moves
+- Highlights best move (green pulse)
+- Explains why: "Frees the 8♥ for foundation"
+
+---
+
+**Implementation Priority:**
+| Phase | Value | Complexity | Recommendation |
+|-------|-------|------------|----------------|
+| 1 | High | Medium | Start here |
+| 2 | High | Medium | Continue |
+| 3 | Medium | Low | Quick win |
+| 4 | High | High | Major feature |
+| 5 | High | Medium | Build on 4 |
+| 6 | Medium | Low | Extend existing |
+
+---
+
 ### v2.2.3 - Code Audit Phase 2 Completion - COMPLETE ✅
 
 **Objective:** Complete remaining Code Audit Phase 2 items: console.log cleanup and z-index consolidation.

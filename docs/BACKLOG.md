@@ -6,7 +6,53 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ## In Progress
 
-### (No active tasks - see Completed Items below)
+### Game State Analyzer & Smart Detection System
+**Priority:** 🔴 High | **Complexity:** High | **Added:** 2026-01-28 | **Status:** Planned
+
+**Goal:** Detect stalemates, circular play, and offer auto-complete for trivially winnable games.
+
+**Six-Phase Implementation:**
+
+**Phase 1: State Fingerprinting** 🎯
+- Create `GameStateTracker` class
+- Implement `getStateFingerprint()` - hash board state
+- Track state history (fingerprint → visit count)
+- Track moves without progress
+
+**Phase 2: Circular Play Detection** 🔄
+- Detect 3+ identical states = circular play
+- Count stock/waste cycles
+- 20 moves without foundation progress = warning
+
+**Phase 3: Stalemate UX Modal** 🛑
+- `StalemateModal` component
+- Stats display (moves, time, cards on foundation)
+- Actions: [New Deal] [Restart] [Undo]
+
+**Phase 4: Auto-Complete Detection** ✨
+- Conditions: stock/waste/pockets empty + all face-up + no blocked sequences
+- `canAutoComplete()` function
+- Check after every move
+
+**Phase 5: Auto-Complete Execution** ⚡
+- "Auto-Complete" button appears when available
+- Chain obvious moves with animation delays
+- Record as single move for undo
+- Cancel option
+
+**Phase 6: Hint System Foundation** 💡
+- Reuse move detection from Phase 1
+- Show available moves count
+- Highlight best move
+- Explain why
+
+**Files to Modify:**
+- `src/utils/gameLogic.js` - Core detection logic
+- `src/utils/cardUtils.js` - State fingerprinting
+- `src/hooks/useCardGame.js` - Integration
+- `src/components/` - StalemateModal, AutoComplete UI
+
+**Status:** Ready to implement Phase 1
 
 ---
 
