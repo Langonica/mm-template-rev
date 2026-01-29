@@ -9,6 +9,7 @@
 
 - [Design Tokens](./DESIGN_TOKENS.md) - Concrete implementation (colors, spacing, CSS variables)
 - [Design Assets](../guides/DESIGN_ASSETS.md) - Asset specifications
+- **[Visual Asset Preview](../../public/ASSET_PREVIEW.html)** - Interactive checklist with live previews
 - [CODE_QUALITY.md](./CODE_QUALITY.md) - CSS architecture and patterns
 
 ---

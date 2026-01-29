@@ -10,6 +10,7 @@
 
 - [Design System](./DESIGN_SYSTEM.md) - Design principles and taxonomy
 - [Design Assets](../guides/DESIGN_ASSETS.md) - Asset specifications
+- **[Visual Asset Preview](../../public/ASSET_PREVIEW.html)** - Interactive checklist with live previews
 - See [archive/reference/LAYOUT_AUDIT.md](../archive/reference/LAYOUT_AUDIT.md) for historical layout research
 
 ---

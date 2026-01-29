@@ -4,6 +4,23 @@ This document catalogs all visual assets for Meridian Solitaire and provides spe
 
 ---
 
+## Quick Links
+
+- **[Visual Asset Preview](../../public/ASSET_PREVIEW.html)** - Interactive checklist with live previews and CSS fallbacks
+- **[Printable Asset Checklist](../DESIGN_GUIDE.html)** - Page 11 of Design Guide (PDF-optimized)
+
+---
+
+## Asset Status at a Glance
+
+| Category | Count | Check Via |
+|----------|-------|-----------|
+| Required | 4 | Interactive preview or checklist below |
+| Optional (with CSS fallbacks) | 6 | Interactive preview shows fallback comparison |
+| Future UI | 3 | Planned for future enhancement |
+
+---
+
 ## Asset Independence (Phase 5)
 
 **The game now works with CSS-only styling by default.** All track backgrounds, plinths, and placeholders use CSS gradients. This means:

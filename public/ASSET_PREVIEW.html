@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meridian Solitaire - Asset Preview & Checklist</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #0d1b2a 50%, #1b2838 100%);
+      min-height: 100vh;
+      color: #fff;
+      padding: 2rem;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #00d4ff, #00e5ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.1rem;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .status-dot.complete { background: #4caf50; }
+    .status-dot.missing { background: #ff5252; }
+    .status-dot.optional { background: #ff9800; }
+
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid rgba(0, 212, 255, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge.required {
+      background: #ff5252;
+      color: white;
+    }
+
+    .badge.optional {
+      background: #ff9800;
+      color: white;
+    }
+
+    .badge.ui {
+      background: #00d4ff;
+      color: #0a1628;
+    }
+
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .asset-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .asset-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .asset-card.missing {
+      border-color: rgba(255, 82, 82, 0.3);
+    }
+
+    .asset-card.complete {
+      border-color: rgba(76, 175, 80, 0.3);
+    }
+
+    .asset-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 1rem;
+    }
+
+    .asset-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .asset-status {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .asset-status.complete {
+      background: rgba(76, 175, 80, 0.2);
+      color: #4caf50;
+    }
+
+    .asset-status.missing {
+      background: rgba(255, 82, 82, 0.2);
+      color: #ff5252;
+    }
+
+    .preview-container {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .preview-image {
+      max-width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+    }
+
+    .preview-placeholder {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.4);
+      padding: 2rem;
+    }
+
+    .preview-placeholder-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .preview-placeholder-text {
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .preview-placeholder-hint {
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .css-fallback {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      border-left: 4px solid #00d4ff;
+    }
+
+    .css-fallback-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #00d4ff;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .css-fallback-preview {
+      width: 100%;
+      height: 80px;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+
+    .css-fallback-code {
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.6);
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.5rem;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+
+    .specs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .spec-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+    }
+
+    .spec-label {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .spec-value {
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .spec-value.warning {
+      color: #ff9800;
+    }
+
+    .spec-value.error {
+      color: #ff5252;
+    }
+
+    .dimension-warning {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: rgba(255, 152, 0, 0.1);
+      border: 1px solid rgba(255, 152, 0, 0.3);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: #ff9800;
+    }
+
+    .info-box {
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .info-box h3 {
+      color: #00d4ff;
+      margin-bottom: 0.5rem;
+    }
+
+    .info-box p {
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.6;
+    }
+
+    .file-path {
+      font-family: 'Monaco', 'Menlo', monospace;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      .asset-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎨 Asset Preview & Checklist</h1>
+    <p>Visual confirmation of all game assets and their CSS fallbacks</p>
+    
+    <div class="status-bar">
+      <div class="status-item">
+        <span class="status-dot complete"></span>
+        <span id="complete-count">0 Complete</span>
+      </div>
+      <div class="status-item">
+        <span class="status-dot missing"></span>
+        <span id="missing-count">0 Missing</span>
+      </div>
+      <div class="status-item">
+        <span class="status-dot optional"></span>
+        <span id="optional-count">0 Optional</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <h3>How to Use This Checklist</h3>
+    <p>
+      This page automatically detects which assets are present in <span class="file-path">public/assets/</span>.
+      <strong>Required</strong> assets must be present for the game to function.
+      <strong>Optional</strong> assets have CSS fallbacks that display when sprites are missing.
+      Upload assets to see them rendered below with dimension validation.
+    </p>
+  </div>
+
+  <!-- Required Assets -->
+  <div class="section">
+    <h2 class="section-title">
+      Required Assets
+      <span class="badge required">Must Have</span>
+    </h2>
+    <div class="asset-grid" id="required-grid"></div>
+  </div>
+
+  <!-- Optional Assets -->
+  <div class="section">
+    <h2 class="section-title">
+      Optional Assets
+      <span class="badge optional">CSS Fallback</span>
+    </h2>
+    <div class="asset-grid" id="optional-grid"></div>
+  </div>
+
+  <!-- UI Button Assets -->
+  <div class="section">
+    <h2 class="section-title">
+      UI Button Assets
+      <span class="badge ui">Future</span>
+    </h2>
+    <div class="asset-grid" id="ui-grid"></div>
+  </div>
+
+  <script>
+    // Asset definitions
+    const assets = {
+      required: [
+        {
+          name: 'Card Sprite Sheet (1×)',
+          filename: 'cardspritesheet.png',
+          expectedSize: { width: 1040, height: 560 },
+          format: 'PNG-24',
+          description: '52 cards in 13×4 grid + card back',
+          grid: '13 cols × 5 rows, 80×112px cells'
+        },
+        {
+          name: 'Card Sprite Sheet (2×)',
+          filename: 'cardspritesheet@2x.png',
+          expectedSize: { width: 2080, height: 1120 },
+          format: 'PNG-24',
+          description: 'High-DPI version for retina displays',
+          grid: '13 cols × 5 rows, 160×224px cells'
+        },
+        {
+          name: 'Game Board Background (1×)',
+          filename: 'mm-gameboard.png',
+          expectedSize: { width: 1280, height: 720 },
+          format: 'PNG-24',
+          description: 'Main play area background'
+        },
+        {
+          name: 'Game Board Background (2×)',
+          filename: 'mm-gameboard@2x.png',
+          expectedSize: { width: 2560, height: 1440 },
+          format: 'PNG-24',
+          description: 'High-DPI background for retina displays'
+        }
+      ],
+      optional: [
+        {
+          name: 'Ace Track Background',
+          filename: 'aces-up.png',
+          expectedSize: { width: 80, height: 290 },
+          format: 'PNG-24 transparent',
+          description: 'Visual style for ace columns (builds A→6)',
+          cssFallback: {
+            background: 'linear-gradient(180deg, rgba(227, 242, 253, 0.08) 0%, rgba(227, 242, 253, 0.02) 100%)',
+            border: '1px solid rgba(0, 212, 255, 0.2)'
+          }
+        },
+        {
+          name: 'King Track Background',
+          filename: 'kings-down.png',
+          expectedSize: { width: 80, height: 290 },
+          format: 'PNG-24 transparent',
+          description: 'Visual style for king columns (builds K→7)',
+          cssFallback: {
+            background: 'linear-gradient(180deg, rgba(13, 71, 161, 0.15) 0%, rgba(13, 71, 161, 0.05) 100%)',
+            border: '1px solid rgba(0, 150, 200, 0.15)'
+          }
+        },
+        {
+          name: 'Traditional Track Background',
+          filename: 'default-down.png',
+          expectedSize: { width: 80, height: 290 },
+          format: 'PNG-24 transparent',
+          description: 'Visual style for flexible-direction columns',
+          cssFallback: {
+            background: 'linear-gradient(180deg, rgba(27, 40, 56, 0.1) 0%, rgba(27, 40, 56, 0.05) 100%)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }
+        },
+        {
+          name: 'Empty Track Background',
+          filename: 'empty.png',
+          expectedSize: { width: 80, height: 290 },
+          format: 'PNG-24 transparent',
+          description: 'Visual style for empty/available columns',
+          cssFallback: {
+            background: 'rgba(10, 22, 40, 0.5)',
+            border: '1px dashed rgba(255, 255, 255, 0.1)'
+          }
+        },
+        {
+          name: 'Ace Badge',
+          filename: 'ace-badge.png',
+          expectedSize: { width: 80, height: 112 },
+          format: 'PNG-24 transparent',
+          description: 'Marks ace column anchor position (top)',
+          cssFallback: {
+            content: '"A"',
+            color: 'rgba(0, 212, 255, 0.5)',
+            fontSize: '24px'
+          }
+        },
+        {
+          name: 'King Badge',
+          filename: 'king-badge.png',
+          expectedSize: { width: 80, height: 112 },
+          format: 'PNG-24 transparent',
+          description: 'Marks king column anchor position (bottom)',
+          cssFallback: {
+            content: '"K"',
+            color: 'rgba(0, 150, 200, 0.5)',
+            fontSize: '24px'
+          }
+        }
+      ],
+      ui: [
+        {
+          name: 'Primary Button Sprite',
+          filename: 'button-primary.png',
+          expectedSize: { width: 200, height: 60 },
+          format: 'PNG-24 or SVG',
+          description: 'Main action button (New Game, etc.)',
+          cssFallback: {
+            background: 'linear-gradient(135deg, #00d4ff, #00b8d4)',
+            borderRadius: '6px'
+          },
+          note: 'Future enhancement - currently CSS-only'
+        },
+        {
+          name: 'Secondary Button Sprite',
+          filename: 'button-secondary.png',
+          expectedSize: { width: 200, height: 60 },
+          format: 'PNG-24 or SVG',
+          description: 'Secondary action button (Cancel, etc.)',
+          cssFallback: {
+            background: 'transparent',
+            border: '1px solid rgba(0, 212, 255, 0.5)',
+            borderRadius: '6px'
+          },
+          note: 'Future enhancement - currently CSS-only'
+        },
+        {
+          name: 'Icon Sprite Sheet',
+          filename: 'ui-icons.png',
+          expectedSize: { width: 256, height: 256 },
+          format: 'PNG-24 transparent',
+          description: 'Game UI icons (undo, redo, pause, etc.)',
+          cssFallback: {
+            content: 'Lucide icons from npm',
+            note: 'Currently using lucide-react library'
+          },
+          note: 'Future enhancement - currently using Lucide React'
+        }
+      ]
+    };
+
+    let completeCount = 0;
+    let missingCount = 0;
+    let optionalCount = 0;
+
+    function createAssetCard(asset, type) {
+      const card = document.createElement('div');
+      card.className = 'asset-card';
+      card.id = `card-${asset.filename.replace(/[^a-z0-9]/gi, '-')}`;
+
+      const isOptional = type === 'optional' || type === 'ui';
+
+      card.innerHTML = `
+        <div class="asset-header">
+          <div class="asset-name">${asset.name}</div>
+          <span class="asset-status" id="status-${asset.filename}">Checking...</span>
+        </div>
+        
+        <div class="preview-container" id="preview-${asset.filename}">
+          <div class="preview-placeholder">
+            <div class="preview-placeholder-icon">🖼️</div>
+            <div class="preview-placeholder-text">Loading...</div>
+          </div>
+        </div>
+
+        ${isOptional ? createCSSFallback(asset) : ''}
+        
+        <div class="specs">
+          <div class="spec-item">
+            <span class="spec-label">File</span>
+            <span class="spec-value file-path">${asset.filename}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Format</span>
+            <span class="spec-value">${asset.format}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Expected</span>
+            <span class="spec-value">${asset.expectedSize.width}×${asset.expectedSize.height}px</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Actual</span>
+            <span class="spec-value" id="actual-${asset.filename}">-</span>
+          </div>
+        </div>
+        
+        ${asset.description ? `<div class="spec-item" style="margin-top: 0.5rem;">
+          <span class="spec-label">Purpose</span>
+          <span class="spec-value" style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">${asset.description}</span>
+        </div>` : ''}
+        
+        ${asset.grid ? `<div class="spec-item" style="margin-top: 0.5rem;">
+          <span class="spec-label">Grid</span>
+          <span class="spec-value" style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">${asset.grid}</span>
+        </div>` : ''}
+        
+        ${asset.note ? `<div style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(0, 212, 255, 0.1); border-radius: 4px; font-size: 0.8rem; color: #00d4ff;">${asset.note}</div>` : ''}
+      `;
+
+      return card;
+    }
+
+    function createCSSFallback(asset) {
+      if (!asset.cssFallback) return '';
+
+      const css = asset.cssFallback;
+      let styleString = '';
+      
+      if (css.background) styleString += `background: ${css.background}; `;
+      if (css.border) styleString += `border: ${css.border}; `;
+      if (css.borderRadius) styleString += `border-radius: ${css.borderRadius}; `;
+
+      return `
+        <div class="css-fallback">
+          <div class="css-fallback-title">CSS Fallback</div>
+          <div class="css-fallback-preview" style="${styleString}"></div>
+          <div class="css-fallback-code">${Object.entries(css).map(([k, v]) => `${k}: ${v};`).join('<br>')}</div>
+        </div>
+      `;
+    }
+
+    function checkAsset(asset, type) {
+      const img = new Image();
+      const previewContainer = document.getElementById(`preview-${asset.filename}`);
+      const statusEl = document.getElementById(`status-${asset.filename}`);
+      const actualEl = document.getElementById(`actual-${asset.filename}`);
+      const card = document.getElementById(`card-${asset.filename.replace(/[^a-z0-9]/gi, '-')}`);
+
+      img.onload = function() {
+        // Success - image exists
+        const actualWidth = img.naturalWidth;
+        const actualHeight = img.naturalHeight;
+        const expectedWidth = asset.expectedSize.width;
+        const expectedHeight = asset.expectedSize.height;
+
+        // Update preview
+        previewContainer.innerHTML = '';
+        img.className = 'preview-image';
+        previewContainer.appendChild(img);
+
+        // Update status
+        statusEl.textContent = '✓ Complete';
+        statusEl.className = 'asset-status complete';
+        card.classList.add('complete');
+
+        // Update actual size
+        const sizeMatch = actualWidth === expectedWidth && actualHeight === expectedHeight;
+        actualEl.textContent = `${actualWidth}×${actualHeight}px`;
+        actualEl.className = sizeMatch ? 'spec-value' : 'spec-value warning';
+
+        // Add dimension warning if needed
+        if (!sizeMatch) {
+          const warning = document.createElement('div');
+          warning.className = 'dimension-warning';
+          warning.innerHTML = `⚠️ Dimension mismatch! Expected ${expectedWidth}×${expectedHeight}px`;
+          card.querySelector('.specs').after(warning);
+        }
+
+        // Update counts
+        completeCount++;
+        if (type === 'optional' || type === 'ui') optionalCount++;
+        updateStatusBar();
+      };
+
+      img.onerror = function() {
+        // Failed to load - show placeholder
+        const isOptional = type === 'optional' || type === 'ui';
+        
+        previewContainer.innerHTML = `
+          <div class="preview-placeholder">
+            <div class="preview-placeholder-icon">📭</div>
+            <div class="preview-placeholder-text">${isOptional ? 'Optional Asset' : 'Not Uploaded Yet'}</div>
+            <div class="preview-placeholder-hint">
+              ${isOptional 
+                ? 'CSS fallback will be used' 
+                : `Add to public/assets/${asset.filename}`}
+            </div>
+          </div>
+        `;
+
+        statusEl.textContent = isOptional ? '○ Optional' : '✗ Missing';
+        statusEl.className = isOptional ? 'asset-status' : 'asset-status missing';
+        if (!isOptional) card.classList.add('missing');
+
+        actualEl.textContent = 'Not found';
+        actualEl.className = 'spec-value error';
+
+        // Update counts
+        if (!isOptional) missingCount++;
+        if (isOptional) optionalCount++;
+        updateStatusBar();
+      };
+
+      // Attempt to load from assets folder
+      img.src = `/assets/${asset.filename}`;
+    }
+
+    function updateStatusBar() {
+      document.getElementById('complete-count').textContent = `${completeCount} Complete`;
+      document.getElementById('missing-count').textContent = `${missingCount} Missing`;
+      document.getElementById('optional-count').textContent = `${optionalCount} Optional`;
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      // Render required assets
+      const requiredGrid = document.getElementById('required-grid');
+      assets.required.forEach(asset => {
+        requiredGrid.appendChild(createAssetCard(asset, 'required'));
+        checkAsset(asset, 'required');
+      });
+
+      // Render optional assets
+      const optionalGrid = document.getElementById('optional-grid');
+      assets.optional.forEach(asset => {
+        optionalGrid.appendChild(createAssetCard(asset, 'optional'));
+        checkAsset(asset, 'optional');
+      });
+
+      // Render UI assets
+      const uiGrid = document.getElementById('ui-grid');
+      assets.ui.forEach(asset => {
+        uiGrid.appendChild(createAssetCard(asset, 'ui'));
+        checkAsset(asset, 'ui');
+      });
+    });
+  </script>
+</body>
+</html>

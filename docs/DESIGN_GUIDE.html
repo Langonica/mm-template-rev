@@ -1372,6 +1372,169 @@
   </ul>
 </div>
 
+<!-- PAGE 11: Asset Checklist -->
+<div class="page">
+  <h1>11. Asset Checklist</h1>
+  
+  <div class="note">
+    <strong>Interactive Preview:</strong> For a visual asset preview with live rendering and CSS fallback demonstrations, open <code>public/ASSET_PREVIEW.html</code> in a browser while the development server is running.
+  </div>
+  
+  <h2>11.1 Required Assets</h2>
+  <p>These assets must be present for the game to function correctly:</p>
+  
+  <table>
+    <tr>
+      <th>Asset</th>
+      <th>Filename</th>
+      <th>Dimensions</th>
+      <th>Format</th>
+      <th>Status</th>
+    </tr>
+    <tr>
+      <td>Card Sprite Sheet (1×)</td>
+      <td><code>cardspritesheet.png</code></td>
+      <td>1040×560px</td>
+      <td>PNG-24</td>
+      <td class="status"><span class="status-pending">☐ Check</span></td>
+    </tr>
+    <tr>
+      <td>Card Sprite Sheet (2×)</td>
+      <td><code>cardspritesheet@2x.png</code></td>
+      <td>2080×1120px</td>
+      <td>PNG-24</td>
+      <td class="status"><span class="status-pending">☐ Check</span></td>
+    </tr>
+    <tr>
+      <td>Game Board Background (1×)</td>
+      <td><code>mm-gameboard.png</code></td>
+      <td>1280×720px</td>
+      <td>PNG-24</td>
+      <td class="status"><span class="status-pending">☐ Check</span></td>
+    </tr>
+    <tr>
+      <td>Game Board Background (2×)</td>
+      <td><code>mm-gameboard@2x.png</code></td>
+      <td>2560×1440px</td>
+      <td>PNG-24</td>
+      <td class="status"><span class="status-pending">☐ Check</span></td>
+    </tr>
+  </table>
+  
+  <h2>11.2 Optional Assets (with CSS Fallbacks)</h2>
+  <p>These assets enhance visuals but have CSS gradient fallbacks if not provided:</p>
+  
+  <table>
+    <tr>
+      <th>Asset</th>
+      <th>Filename</th>
+      <th>Dimensions</th>
+      <th>CSS Fallback</th>
+      <th>Status</th>
+    </tr>
+    <tr>
+      <td>Ace Track Background</td>
+      <td><code>aces-up.png</code></td>
+      <td>80×290px</td>
+      <td>Light blue gradient</td>
+      <td class="status"><span class="status-pending">☐ Check</span></td>
+    </tr>
+    <tr>
+      <td>King Track Background</td>
+      <td><code>kings-down.png</code></td>
+      <td>80×290px</td>
+      <td>Deep blue gradient</td>
+      <td class="status"><span class="status-pending">☐ Check</span></td>
+    </tr>
+    <tr>
+      <td>Traditional Track</td>
+      <td><code>default-down.png</code></td>
+      <td>80×290px</td>
+      <td>Blue-grey gradient</td>
+      <td class="status"><span class="status-pending">☐ Check</span></td>
+    </tr>
+    <tr>
+      <td>Empty Track</td>
+      <td><code>empty.png</code></td>
+      <td>80×290px</td>
+      <td>Dark inset + dashed border</td>
+      <td class="status"><span class="status-pending">☐ Check</span></td>
+    </tr>
+    <tr>
+      <td>Ace Badge</td>
+      <td><code>ace-badge.png</code></td>
+      <td>80×112px</td>
+      <td>Text "A" in cyan</td>
+      <td class="status"><span class="status-pending">☐ Check</span></td>
+    </tr>
+    <tr>
+      <td>King Badge</td>
+      <td><code>king-badge.png</code></td>
+      <td>80×112px</td>
+      <td>Text "K" in blue</td>
+      <td class="status"><span class="status-pending">☐ Check</span></td>
+    </tr>
+  </table>
+  
+  <h2>11.3 Future UI Assets</h2>
+  <p>Planned assets for future button/icon sprite systems:</p>
+  
+  <table>
+    <tr>
+      <th>Asset</th>
+      <th>Filename</th>
+      <th>Notes</th>
+      <th>Status</th>
+    </tr>
+    <tr>
+      <td>Primary Button Sprite</td>
+      <td><code>button-primary.png</code></td>
+      <td>Currently CSS gradient</td>
+      <td class="status"><span class="status-na">Future</span></td>
+    </tr>
+    <tr>
+      <td>Secondary Button Sprite</td>
+      <td><code>button-secondary.png</code></td>
+      <td>Currently CSS outlined</td>
+      <td class="status"><span class="status-na">Future</span></td>
+    </tr>
+    <tr>
+      <td>UI Icon Sprite Sheet</td>
+      <td><code>ui-icons.png</code></td>
+      <td>Currently Lucide React</td>
+      <td class="status"><span class="status-na">Future</span></td>
+    </tr>
+  </table>
+  
+  <h2>11.4 Asset Guidelines</h2>
+  
+  <h3>File Naming</h3>
+  <ul>
+    <li>Use lowercase with hyphens: <code>asset-name.png</code></li>
+    <li>High-DPI versions add <code>@2x</code> suffix: <code>asset@2x.png</code></li>
+    <li>Place all assets in <code>public/assets/</code></li>
+  </ul>
+  
+  <h3>Format Requirements</h3>
+  <ul>
+    <li><strong>PNG-24</strong> for all assets with transparency</li>
+    <li>No compression artifacts (use PNG-8 only for simple icons)</li>
+    <li>Color profile: sRGB</li>
+  </ul>
+  
+  <h3>Grid Alignment (Card Sprites)</h3>
+  <pre style="background: #f5f5f5; padding: 1rem; border-radius: 4px; font-size: 9pt; overflow-x: auto;">
+Row 0 (y=0):     Hearts    A 2 3 4 5 6 7 8 9 10 J Q K
+Row 1 (y=112):   Diamonds  A 2 3 4 5 6 7 8 9 10 J Q K  
+Row 2 (y=224):   Clubs     A 2 3 4 5 6 7 8 9 10 J Q K
+Row 3 (y=336):   Spades    A 2 3 4 5 6 7 8 9 10 J Q K
+Row 4 (y=448):   Card Back (column 6 only)</pre>
+  
+  <div class="warning" style="margin-top: 1.5rem;">
+    <strong>Important:</strong> After adding or modifying assets, run <code>npm run build</code> to verify the build completes without errors. Check the Asset Preview page to confirm all images load correctly and dimensions match specifications.
+  </div>
+</div>
+
 <!-- END MATTER -->
 <div class="page">
   <h2>Document Information</h2>
