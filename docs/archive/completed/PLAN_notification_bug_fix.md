@@ -1,8 +1,11 @@
-# Plan: Game State Notification Bug Fix
+# [COMPLETED] Game State Notification Bug Fix
 
 **Created:** 2026-01-29
-**Status:** Ready for Implementation
+**Status:** ✅ COMPLETED (2026-01-29)
 **Priority:** Critical (blocks user interaction)
+
+> **Note:** This plan has been implemented. See CHANGELOG.md v2.3.1 for release details.
+> - Commit: `dedace0`
 
 ---
 

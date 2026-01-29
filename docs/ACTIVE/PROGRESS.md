@@ -988,21 +988,31 @@ Reducing foundation cards to 65% size saves ~40px vertical space while remaining
 
 ---
 
-## Next Steps (Planned)
+## Archived Planning (Historical)
 
-### Version 2.1.0
-- Hint system (highlight available moves)
-- Auto-complete detection
-- Sound effects
+*The following section is preserved from earlier development phases. These features have been implemented or reprioritized.*
 
-### Version 2.2.0
-- Achievements
-- Daily challenges
-- Custom themes
+### Version 2.1.0 (Historical Plan - Implemented)
+- ~~Hint system~~ ✅ Implemented in v2.3.0
+- ~~Auto-complete detection~~ ✅ Implemented in v2.3.0
+- Sound effects 📋 Still planned
 
-### Version 3.0.0
-- Leaderboards
-- Progressive web app (PWA)
+### Version 2.2.0 (Historical Plan - Implemented)
+- ~~Deep Blue Theme~~ ✅ Implemented in v2.2.0
+- ~~Multi-theme architecture~~ ✅ Implemented in v2.2.0
+- ~~Responsive scaling~~ ✅ Implemented in v2.1.0
+- Achievements 📋 Still planned
+- Daily challenges 📋 Still planned
+
+### Version 3.0.0 (Future)
+- Leaderboards 📋 Planned
+- Progressive web app (PWA) 📋 Planned
+
+---
+
+## Current Priorities
+
+See [BACKLOG.md](./BACKLOG.md) for active work items and technical debt.
 
 ---
 

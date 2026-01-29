@@ -2,7 +2,7 @@
 
 A modern, feature-rich implementation of Meridian Solitaire with drag-and-drop, undo/redo, touch support, and more.
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Version](https://img.shields.io/badge/version-2.3.1-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![React](https://img.shields.io/badge/react-18.3.1-61dafb)
 ![Vite](https://img.shields.io/badge/vite-5.4.11-646cff)
@@ -32,6 +32,9 @@ A modern, feature-rich implementation of Meridian Solitaire with drag-and-drop, 
 - **Notifications**: Toast-style feedback for actions
 - **Haptic Feedback**: Vibration on touch devices (where supported)
 - **Visual Feedback**: Green glow on valid targets, animations everywhere
+- **Hint System**: 3 hints per game with keyboard shortcut (H)
+- **Auto-Complete**: Detects and executes trivially winnable endgames
+- **Game State Detection**: Circular play detection and stalemate warnings
 
 ### 🏆 Campaign Mode
 - **30 Progressive Levels**: Bronze, Silver, and Gold tiers
@@ -326,12 +329,10 @@ Edit `src/styles/App.css` to customize:
 - [x] Design system overhaul (v2.0.0)
 
 ### Planned 🎯
-- [ ] Hint system
-- [ ] Auto-complete detection
 - [ ] Sound effects
 - [ ] Achievements
 - [ ] Daily challenges
-- [ ] Custom themes
+- [ ] Additional themes (Green Classic, Crimson Night)
 - [ ] Progressive web app (PWA)
 
 ---

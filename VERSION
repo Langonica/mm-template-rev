@@ -1,7 +1,7 @@
 Meridian Solitaire - Complete Edition
-Version: 2.3.0
-Release Date: TBD
-Build: PLANNED - Game State Analyzer & Smart Detection
+Version: 2.3.1
+Release Date: 2026-01-29
+Build: RELEASED - Game State Analyzer, Smart Detection & Bug Fixes
 
 Features:
 ✅ Complete game engine
@@ -15,9 +15,10 @@ Features:
 ✅ Deep Blue Casino Theme (v2.2)
 ✅ Multi-theme architecture
 ✅ Theme switching system
-🔄 Game State Analyzer (v2.3 - planned)
-🔄 Circular play detection (v2.3 - planned)
-🔄 Auto-complete system (v2.3 - planned)
+✅ Game State Analyzer (v2.3 - released)
+✅ Circular play detection (v2.3 - released)
+✅ Auto-complete system (v2.3 - released)
+✅ Hint system (v2.3 - released)
 
 Phases Completed:
 - Phase 1: Stock/Waste Foundation
@@ -27,9 +28,9 @@ Phases Completed:
 - Phase 5: Interactions & Polish
 - Phase 6: Code Audit & Performance (v2.1)
 - Phase 7: Deep Blue Theme & Architecture (v2.2)
-- Phase 8: Game State Analyzer (v2.3 - planned)
+- Phase 8: Game State Analyzer (v2.3 - released)
 
-Phases Planned:
+Phases Completed (v2.3):
 - Phase 1/6: State fingerprinting (ready to implement)
 - Phase 2/6: Circular play detection
 - Phase 3/6: Stalemate UX modal
