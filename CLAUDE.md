@@ -229,15 +229,27 @@ HTML5 Drag API for desktop, custom touch handling for mobile (100ms long-press, 
 - Follow z-index token scale (`--z-*` variables)
 - Use `Icon` component for all icons (no emojis)
 
-## Model Selection
+## Model Delegation (CRITICAL PRACTICE)
 
-**Use the right-sized model for each task.** Delegate to agents when appropriate:
+**Always delegate to the lightest model capable of the task.** This is a core practice, not a suggestion. Opus should only do work that requires Opus-level reasoning.
 
-| Task Type | Model | Examples |
-|-----------|-------|----------|
-| Architecture, complex debugging | Opus | Layout planning, mysterious bugs, trade-off analysis |
-| Feature implementation, refactoring | Sonnet | Component updates, hook creation, standard fixes |
-| Simple edits, searches, docs | Haiku | CSS variable swaps, find/replace, PROGRESS.md updates |
+| Task Type | Model | When to Use |
+|-----------|-------|-------------|
+| **Haiku** | Simple | CSS edits, doc updates, searches, find/replace, PROGRESS.md, straightforward file changes |
+| **Sonnet** | Standard | Feature implementation, refactoring, component updates, standard bug fixes, code generation |
+| **Opus** | Complex | Architecture decisions, mysterious bugs, multi-system debugging, trade-off analysis, planning |
+
+**Delegation workflow:**
+1. Opus identifies the work needed (planning, diagnosis)
+2. Opus delegates implementation tasks to Sonnet/Haiku via Task agents
+3. Opus reviews results and handles any complex follow-up
+
+**Examples of proper delegation:**
+- Updating PROGRESS.md after completing work → **Haiku**
+- Writing a new React component from a clear spec → **Sonnet**
+- Fixing a CSS token value → **Haiku**
+- Debugging why a useEffect causes infinite loops → **Opus**
+- Implementing a bug fix once root cause is known → **Sonnet**
 
 See `docs/guides/MODEL_SELECTION.md` for detailed guidance.
 
@@ -249,12 +261,6 @@ See `docs/guides/MODEL_SELECTION.md` for detailed guidance.
   - Semantic version tag (vMAJOR.MINOR.PATCH)
   - Release notes summarizing changes
 - Maintain CHANGELOG.md with version history
-
-## Model Delegation (IMPORTANT)
-- Always delegate to lighter models when possible
-- Haiku: CSS edits, docs, searches, simple file changes
-- Sonnet: Feature implementation, refactors, component updates
-- Opus: Architecture, complex debugging, planning only
 
 ## Conventions
 

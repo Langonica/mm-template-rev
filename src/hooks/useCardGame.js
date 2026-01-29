@@ -82,8 +82,8 @@ export const useCardGame = (callbacks = {}) => {
       return { tier: 'concern', reason: 'cycles', value: unproductiveCycleCount };
     }
     
-    // Tier 1: Hint (2 unproductive cycles - subtle indicator)
-    if (unproductiveCycleCount >= 2) {
+    // Tier 1: Hint (3 unproductive cycles - subtle indicator)
+    if (unproductiveCycleCount >= 3) {
       return { tier: 'hint', reason: 'cycles', value: unproductiveCycleCount };
     }
     

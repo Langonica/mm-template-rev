@@ -6,57 +6,6 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ## In Progress
 
-### Game State Analyzer & Smart Detection System
-**Priority:** 🔴 High | **Complexity:** High | **Added:** 2026-01-28 | **Status:** Phase 3 Complete, Phase 4 Ready
-
-**Goal:** Detect stalemates, circular play, and offer auto-complete for trivially winnable games.
-
-**Six-Phase Implementation:**
-
-**Phase 1: State Fingerprinting** ✅ COMPLETE
-- ✅ Create `GameStateTracker` class
-- ✅ Implement `getStateFingerprint()` - hash board state
-- ✅ Track state history (fingerprint → visit count)
-- ✅ Track moves without progress
-
-**Phase 2: Circular Play Detection** ✅ COMPLETE
-- ✅ Detect 3+ identical states = circular play
-- ✅ Count stock/waste cycles
-- ✅ 20 moves without foundation progress = warning
-- ✅ Visual indicators in GameStats
-- ✅ Warning levels: caution, critical, stalled
-
-**Phase 3: Stalemate UX Modal** ✅ COMPLETE
-- ✅ `StalemateModal` component
-- ✅ Stats display (moves, time, cards on foundation)
-- ✅ Actions: [New Deal] [Restart] [Undo]
-- ✅ Auto-trigger on stalemate detection
-
-**Phase 4: Auto-Complete Detection** ✨ IN PROGRESS
-- Conditions: stock/waste/pockets empty + all face-up + no blocked sequences
-- `canAutoComplete()` function
-- Check after every move
-- Show "Auto-Complete" button when available
-
-**Phase 5: Auto-Complete Execution** ⚡
-- Chain obvious moves with animation delays
-- Record as single move for undo
-- Cancel option
-
-**Phase 6: Hint System Foundation** 💡
-- Reuse move detection from Phase 1
-- Show available moves count
-- Highlight best move
-- Explain why
-
-**Files to Modify:**
-- `src/utils/gameLogic.js` - Core detection logic
-- `src/utils/cardUtils.js` - State fingerprinting
-- `src/hooks/useCardGame.js` - Integration
-- `src/components/` - StalemateModal, AutoComplete UI
-
-**Status:** Ready to implement Phase 1
-
 ---
 
 ## Queued (Ready to Implement)
@@ -136,6 +85,9 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 
 *Move items here when resolved, with date and brief note:*
 
+### ~~Game State Notification Bug Fix (v2.3.1)~~
+**Resolved:** 2026-01-29 | Fixed toast dismiss loop where notification would immediately reopen after user dismissed it. Root cause: useEffect re-triggered when `gameStateToastOpen` changed but tier was still elevated. Fix: Added `dismissedNotificationTier` suppression state that prevents re-triggering until tier escalates or resets. Also removed redundant action button from toast and raised hint threshold from 2 to 3 cycles.
+
 ### ~~Animation Phase 1: Auto-Complete Sequence~~
 **Resolved:** 2026-01-28 | New `autoCompleteAnimation` state with sequential card movement. Three phases: departing (200ms) with source lift, moving (300ms) with state update, arriving (200ms) with foundation glow. Win screen delays 500ms to show final state. Foundation and Column components updated with visual effects.
 
@@ -150,6 +102,9 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 
 ### ~~Extended Autoplay System~~
 **Resolved:** 2026-01-28 | Extended double-click autoplay from foundation-only to include tableau moves. Renamed `tryAutoMoveToFoundation()` → `tryAutoMove()` in gameLogic.js. Added `findOptimalTableauMove()` with scoring system that prefers longer sequences and Ace/King columns. Priority order: Foundation → Tableau build → Empty column. Updated useCardGame.js to handle tableau move animations and record move destination type for undo history.
+
+### ~~Game State Analyzer & Smart Detection System (v2.3.0)~~
+**Resolved:** 2026-01-29 | All 6 phases complete. Phase 1: State fingerprinting (`GameStateTracker`, `getStateFingerprint()`). Phase 2: Circular play detection with 4-tier warning system (none→hint→concern→warning→confirmed). Phase 3: StalemateModal with stats and actions. Phase 4: Auto-complete detection (`canAutoComplete()`, `hasBlockedSequences()`). Phase 5: Auto-complete execution UI with sequential animations. Phase 6: Hint system with 3 hints/game, keyboard shortcut (H), priority ranking. **Note:** Toast dismiss loop bug discovered post-completion, tracked separately as v2.3.1.
 
 ### ~~Critical Bug Fix: Column Typing in Hidden Modes~~
 **Resolved:** 2026-01-28 | Fixed column type calculation bug in `hidden` and `hidden_double` modes. `updateColumnType()` was using `column[0]` (physical bottom card) instead of `column[faceDownCount]` (first face-up card). In hidden modes, the bottom card is often face-down, causing incorrect type assignment. Fix: Calculate `firstFaceUpIndex = faceDownCount`, determine type from that card. Type is 'ace'/'king' only when exactly 1 face-up card AND it's A/K. Also fixed `flipRevealedCard()` logic and reordered operations in `executeMove()` to ensure flip happens before type update.
@@ -192,4 +147,4 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 
 ---
 
-*Last Updated: 2026-01-28* | *v2.1.0 released: Large viewport scaling and high-DPI asset support*
+*Last Updated: 2026-01-29* | *v2.3.1 in progress: Notification bug fix*

@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.3.1] - 2026-01-29
+
+### Bug Fix: Toast Notification Dismiss Loop
+
+Fixed critical bug where the GameStateToast notification could not be dismissed - clicking the dismiss button would cause immediate re-appearance.
+
+#### Fixed
+
+- **Toast dismiss loop** - Added `dismissedNotificationTier` state to track when user dismisses a notification. Suppresses re-triggering until tier escalates (hint→concern→warning) or resets to 'none'
+- **Wrong handler on action button** - Removed redundant action button that had incorrect `handleOverlayDismiss` handler
+- **False positive triggers** - Raised hint tier threshold from 2 to 3 unproductive cycles
+
+#### Technical
+
+- New state: `dismissedNotificationTier` in App.jsx
+- New helper: `tierIsHigherThan()` for tier severity comparison
+- Suppression resets on: new game, tier escalation, tier returning to 'none'
+- Files modified: `App.jsx`, `useCardGame.js`
+
+---
+
 ## [2.3.0] - TBD
 
 ### Game State Notification System (Enhanced)

@@ -8,6 +8,39 @@ Meridian Solitaire is a unique card game implementation with dual foundation sys
 
 ## Current Work
 
+### v2.3.1 - Game State Notification Bug Fix - COMPLETE ✅
+
+**Objective:** Fix critical bug where toast notification cannot be dismissed and loops indefinitely.
+
+**Bug Report:** Users report that autoplaying a card triggers "Tip: Try a different approach" modal that cannot be dismissed - clicking dismiss causes immediate re-appearance.
+
+**Root Causes Identified (2026-01-29):**
+
+| Bug | Severity | Description |
+|-----|----------|-------------|
+| #1 | Critical | Toast re-triggers after dismiss (useEffect sees tier unchanged, reopens) |
+| #2 | Medium | Action button has wrong handler (`handleOverlayDismiss` instead of `handleToastDismiss`) |
+| #3 | Medium | Productivity criteria too strict - valid tableau moves trigger false positives |
+
+**Solution Design:**
+1. Add `dismissedNotificationTier` state to track user dismissal
+2. Suppress re-triggering until tier escalates or resets to 'none'
+3. Remove redundant action button from toast
+4. Expand productivity criteria to count sequence extensions
+
+**Implementation Plan:** `docs/ACTIVE/PLAN_notification_bug_fix.md`
+
+**Status:** Complete (2026-01-29)
+
+**Changes Applied:**
+- `App.jsx`: Added `dismissedNotificationTier` state with suppression logic
+- `App.jsx`: Added `tierIsHigherThan` helper for tier comparison
+- `App.jsx`: Updated `handleToastDismiss` to track dismissed tier
+- `App.jsx`: Removed redundant `onAction`/`actionLabel` from GameStateToast
+- `useCardGame.js`: Raised hint threshold from 2 to 3 cycles
+
+---
+
 ### v2.3.0 - Animation System Overhaul - COMPLETE ✅
 
 **Objective:** Replace basic slurp/pop animations with sophisticated sequences for auto-complete and double-click autoplay.
@@ -997,4 +1030,4 @@ Reducing foundation cards to 65% size saves ~40px vertical space while remaining
 
 ---
 
-*Last Updated: 2026-01-24*
+*Last Updated: 2026-01-29*

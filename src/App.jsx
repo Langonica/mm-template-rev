@@ -128,6 +128,7 @@ function App() {
   const [stalemateModalOpen, setStalemateModalOpen] = useState(false)
   const [gameStateToastOpen, setGameStateToastOpen] = useState(false)
   const [gameStateOverlayOpen, setGameStateOverlayOpen] = useState(false)
+  const [dismissedNotificationTier, setDismissedNotificationTier] = useState(null)
   const [lastGameResult, setLastGameResult] = useState(null) // Stores result for game-over display
   const [currentCampaignLevel, setCurrentCampaignLevel] = useState(null) // Track active campaign level
   const gameEndedRef = useRef(false) // Prevent double-recording
@@ -188,6 +189,8 @@ function App() {
     if (newDeal) {
       loadGameState(newDeal)
       gameEndedRef.current = false // Reset for new game
+      // Reset notification suppression
+      setDismissedNotificationTier(null)
     }
     setShowHomeScreen(false)
   }, [selectedMode, loadGameState, hasGameInProgress, moveCount, recordForfeit])
@@ -217,6 +220,8 @@ function App() {
     setShowCampaignScreen(false)
     setShowHomeScreen(false)
     gameEndedRef.current = false
+    // Reset notification suppression
+    setDismissedNotificationTier(null)
   }, [loadSnapshot, recordCampaignAttempt])
 
   const [confirmDialog, setConfirmDialog] = useState({
@@ -255,6 +260,8 @@ function App() {
     const action = () => {
       // Clear campaign level when starting a new quick play game
       setCurrentCampaignLevel(null)
+      // Reset notification suppression
+      setDismissedNotificationTier(null)
       const newDeal = generateRandomDeal(selectedMode)
       if (newDeal) {
         loadGameState(newDeal)
@@ -292,6 +299,8 @@ function App() {
       loadSnapshot(currentCampaignLevel.id)
       recordCampaignAttempt(currentCampaignLevel.id)
       gameEndedRef.current = false
+      // Reset notification suppression
+      setDismissedNotificationTier(null)
     }
   }, [currentCampaignLevel, resumeTimer, loadSnapshot, recordCampaignAttempt])
 
@@ -423,17 +432,43 @@ function App() {
 
   // Phase 3: Game State Notification System - Toast and Overlay
   // Phase 4: Respects notification settings
+  // Tier comparison helper for suppression logic (memoized to avoid effect dep issues)
+  const tierIsHigherThan = useCallback((tier, comparedTo) => {
+    const TIER_SEVERITY = { none: 0, hint: 1, concern: 2, warning: 3, confirmed: 4 }
+    return (TIER_SEVERITY[tier] || 0) > (TIER_SEVERITY[comparedTo] || 0)
+  }, [])
+
   useEffect(() => {
     if (!circularPlayState || showHomeScreen || gameStatus?.isGameOver) return
-    
+
     const { tier } = circularPlayState
-    
+
     // Don't show notifications if game is over or paused
     if (isPaused) return
-    
+
     // Check settings - skip if disabled or minimal mode excludes this tier
     if (!isTierEnabled(tier)) return
-    
+
+    // Reset suppression if tier escalated or returned to none
+    if (tier === 'none') {
+      if (dismissedNotificationTier) {
+        setDismissedNotificationTier(null)
+      }
+      setGameStateToastOpen(false)
+      setGameStateOverlayOpen(false)
+      return
+    }
+
+    // Reset suppression if tier escalated beyond what was dismissed
+    if (dismissedNotificationTier && tierIsHigherThan(tier, dismissedNotificationTier)) {
+      setDismissedNotificationTier(null)
+    }
+
+    // Don't show if user already dismissed this tier level (or higher)
+    if (dismissedNotificationTier && !tierIsHigherThan(tier, dismissedNotificationTier)) {
+      return
+    }
+
     switch (tier) {
       case 'hint':
         // Hint tier - subtle toast, auto-dismiss
@@ -460,14 +495,8 @@ function App() {
         setGameStateToastOpen(false)
         setGameStateOverlayOpen(false)
         break
-      default:
-        // Reset when tier goes back to 'none'
-        if (tier === 'none') {
-          setGameStateToastOpen(false)
-          setGameStateOverlayOpen(false)
-        }
     }
-  }, [circularPlayState, showHomeScreen, gameStatus, isPaused, gameStateToastOpen, gameStateOverlayOpen, stalemateModalOpen, isTierEnabled])
+  }, [circularPlayState, showHomeScreen, gameStatus, isPaused, gameStateToastOpen, gameStateOverlayOpen, stalemateModalOpen, isTierEnabled, dismissedNotificationTier, tierIsHigherThan])
 
   // Calculate foundation cards for stalemate modal stats
   const getFoundationCardCount = useCallback(() => {
@@ -512,7 +541,9 @@ function App() {
   // Phase 3: Game State Notification handlers
   const handleToastDismiss = useCallback(() => {
     setGameStateToastOpen(false)
-  }, [])
+    // Remember which tier was dismissed to prevent re-triggering
+    setDismissedNotificationTier(circularPlayState?.tier || null)
+  }, [circularPlayState?.tier])
 
   const handleOverlayDismiss = useCallback(() => {
     setGameStateOverlayOpen(false)
@@ -786,8 +817,6 @@ function App() {
         isOpen={gameStateToastOpen}
         {...getToastContent()}
         onDismiss={handleToastDismiss}
-        onAction={handleOverlayDismiss}
-        actionLabel="Dismiss"
       />
 
       {/* Phase 3: Game State Overlay (warning tier) */}
