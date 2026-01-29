@@ -44,7 +44,7 @@ export const useCardGame = () => {
   });
 
   // Auto-complete detection state (Phase 4)
-  const [, setAutoCompleteAvailable] = useState(false);
+  const [autoCompleteAvailable, setAutoCompleteAvailable] = useState(false);
 
   // Initialize undo system
   const undoSystem = useUndo();
