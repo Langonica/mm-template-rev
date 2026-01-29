@@ -38,7 +38,7 @@ const GameStage = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: '#777',
+        color: 'var(--text-muted)',
         fontSize: '14px'
       }}>
         Loading game snapshot...
