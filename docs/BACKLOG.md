@@ -6,6 +6,26 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ## In Progress
 
+### Critical Bug Fix: Column Typing in Hidden Modes
+**Priority:** 🔴 Critical | **Complexity:** Medium | **Added:** 2026-01-28 | **Started:** 2026-01-28
+
+**Issue:** In `hidden` and `hidden_double` modes, column type is calculated incorrectly.
+
+**Bug:** `updateColumnType()` uses `column[0]` (physical bottom) instead of `column[faceDownCount]` (first face-up).
+
+**Impact:** Columns prematurely switch type based on face-down cards.
+
+**Fix:**
+- Calculate `firstFaceUpIndex = faceDownCount`
+- Read type-determining card from `column[firstFaceUpIndex]`
+- Type = 'ace'/'king' only when exactly 1 face-up card AND that card is A/K
+- Otherwise type = 'traditional'
+
+**Files:** `src/utils/gameLogic.js`
+**Functions:** `updateColumnType()`, execution order in `executeMove()`
+
+---
+
 ### Code Audit - Phase 2: Debug Cleanup & Component Refactoring
 **Priority:** 🟡 High | **Complexity:** Low-Medium | **Added:** 2026-01-28 | **Started:** 2026-01-28
 

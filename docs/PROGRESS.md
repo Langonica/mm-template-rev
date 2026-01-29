@@ -8,6 +8,48 @@ Meridian Solitaire is a unique card game implementation with dual foundation sys
 
 ## Current Work
 
+### v2.2.1 - Column Typing Bug Fix - IN PROGRESS 🐛
+
+**Objective:** Fix critical bug in hidden game modes where columns prematurely switch type based on face-down cards instead of face-up cards.
+
+**Bug Summary:**
+In `hidden` and `hidden_double` modes, the `updateColumnType()` function in `gameLogic.js` incorrectly used `column[0]` (physical bottom card) to determine column type. In hidden modes, `column[0]` is often a face-down card, causing columns to adopt wrong types.
+
+**Example Bug Scenario:**
+```
+Column state: [Fd, Fd, Fd, Ah] (3 face-down, Ace face-up)
+Player moves Ah to foundation
+Expected: Column stays 'traditional' (or reveals next card)
+Actual (bug): Column reads column[0] (face-down card) and sets wrong type
+```
+
+**Root Cause:**
+- `updateColumnType()` hardcoded `column[0]` instead of `column[faceDownCount]`
+- Only checked `column.length === 1` instead of calculating face-up count
+- No awareness of hidden mode card visibility
+
+**Fix Strategy:**
+1. Read `faceDownCount` from column state
+2. Calculate `firstFaceUpIndex = faceDownCount`
+3. Use `column[firstFaceUpIndex]` to determine type
+4. Type = 'ace' if 1 face-up card is Ace
+5. Type = 'king' if 1 face-up card is King  
+6. Type = 'traditional' otherwise
+
+**Files to Modify:**
+- `src/utils/gameLogic.js` - `updateColumnType()` function
+- `src/utils/gameLogic.js` - Execution order in `executeMove()`
+
+**Verification Scenarios:**
+| Scenario | Mode | Expected Result |
+|----------|------|-----------------|
+| Move Ace from column | hidden | Column becomes 'traditional' |
+| Move King from column | hidden_double | Column becomes 'traditional' |
+| Reveal Ace from face-down | hidden | Column becomes 'ace' |
+| Classic mode column 0 | classic | Unchanged (faceDownCount=0) |
+
+---
+
 ### v2.2.0 - Deep Blue Casino Theme - 2026-01-28 - COMPLETE ✅
 
 **Objective:** Implement new Blue Casino theme with multi-theme architecture.

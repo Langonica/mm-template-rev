@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.1] - 2026-01-28
+
+### Critical Bug Fix: Column Typing in Hidden Modes
+
+Fixed column type calculation bug affecting `hidden` and `hidden_double` game modes where columns would incorrectly switch type based on face-down cards.
+
+#### Fixed
+
+- **Column Typing Logic** (`gameLogic.js`)
+  - `updateColumnType()` now correctly uses `column[faceDownCount]` instead of `column[0]`
+  - Properly calculates face-up card count: `faceUpCount = column.length - faceDownCount`
+  - Type now determined by first visible (face-up) card, not physical bottom card
+  - Fixed premature type switching when moving cards from columns
+
+#### Bug Details
+
+**Affected Modes:** `hidden`, `hidden_double`
+**Severity:** High - Gameplay impact in hidden modes
+**Root Cause:** Hardcoded `column[0]` reference ignored face-down card state
+
+**Before:**
+```javascript
+const card = parseCard(column[0]); // Wrong: reads face-down card
+```
+
+**After:**
+```javascript
+const faceDownCount = state.columnState?.faceDownCounts?.[columnIndex] || 0;
+const card = parseCard(column[faceDownCount]); // Correct: reads first face-up
+```
+
+---
+
 ## [2.2.0] - 2026-01-28
 
 ### Deep Blue Casino Theme & Multi-Theme Architecture
