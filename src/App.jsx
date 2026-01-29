@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import GameStage from './components/GameStage/GameStage'
 import GameMenu from './components/GameMenu'
 import ConfirmDialog from './components/ConfirmDialog'
-import StatsModal from './components/StatsModal'
 import HomeScreen from './components/HomeScreen'
-import RulesModal from './components/RulesModal'
+import HowToPlayScreen from './components/HowToPlayScreen'
+import StatisticsScreen from './components/StatisticsScreen'
 import CampaignScreen from './components/CampaignScreen'
 import PauseOverlay from './components/PauseOverlay'
 import OrientationBlocker from './components/OrientationBlocker'
@@ -22,6 +22,36 @@ import { generateRandomDeal, getGameModes } from './utils/dealGenerator'
 import './styles/App.css'
 
 function App() {
+  const {
+    notification,
+    showSuccess,
+    showError,
+    showInfo,
+    clearNotification
+  } = useNotification()
+
+  // Stats hook must come before useCardGame (needed for tracking callbacks)
+  const {
+    stats,
+    session,
+    currentGameTime,
+    isPaused,
+    recordGameStart,
+    recordGameEnd,
+    recordForfeit,
+    recordCardsMoved,
+    recordUndo,
+    recordFoundationCompleted,
+    resetStats,
+    pauseTimer,
+    resumeTimer,
+    getWinRate,
+    getPerfectGameRate,
+    getSessionWinRate,
+    formatTime,
+    formatNumber
+  } = useGameStats(showError)
+
   const {
     config,
     currentSnapshot,
@@ -61,29 +91,10 @@ function App() {
     hintsRemaining,
     showHint,
     clearHint
-  } = useCardGame()
-
-  const {
-    notification,
-    showSuccess,
-    showError,
-    showInfo,
-    clearNotification
-  } = useNotification()
-
-  const {
-    stats,
-    currentGameTime,
-    isPaused,
-    recordGameStart,
-    recordGameEnd,
-    recordForfeit,
-    resetStats,
-    pauseTimer,
-    resumeTimer,
-    getWinRate,
-    formatTime
-  } = useGameStats(showError)
+  } = useCardGame({
+    onCardsMoved: recordCardsMoved,
+    onFoundationCompleted: recordFoundationCompleted
+  })
 
   const {
     progress: campaignProgress,
@@ -108,11 +119,12 @@ function App() {
 
   const [selectedSnapshotId, setSelectedSnapshotId] = useState('classic_normal_easy_01')
   const [selectedMode, setSelectedMode] = useState('classic')
-  const [statsModalOpen, setStatsModalOpen] = useState(false)
+  const [showHowToPlay, setShowHowToPlay] = useState(false)
+  const [showStatistics, setShowStatistics] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showHomeScreen, setShowHomeScreen] = useState(true)
   const [showCampaignScreen, setShowCampaignScreen] = useState(false)
-  const [rulesModalOpen, setRulesModalOpen] = useState(false)
+
   const [stalemateModalOpen, setStalemateModalOpen] = useState(false)
   const [lastGameResult, setLastGameResult] = useState(null) // Stores result for game-over display
   const [currentCampaignLevel, setCurrentCampaignLevel] = useState(null) // Track active campaign level
@@ -121,13 +133,6 @@ function App() {
   // Refs for stats values to avoid excessive useEffect dependencies (Performance fix - Phase 1)
   const statsRef = useRef(stats)
   statsRef.current = stats
-
-  // Mode options for GameMenu
-  const GAME_MODES = getGameModes()
-  const modeOptions = GAME_MODES.map(mode => ({
-    value: mode.id,
-    label: mode.name
-  }))
 
   // Menu handlers
   const handleMenuToggle = useCallback(() => {
@@ -339,6 +344,7 @@ function App() {
     const success = handleUndo()
     if (success) {
       showInfo(NOTIFICATION_MESSAGES.UNDONE)
+      recordUndo() // Track undo usage for stats
     } else {
       showError(NOTIFICATION_MESSAGES.NO_UNDO)
     }
@@ -495,6 +501,7 @@ function App() {
       }}
     >
       <OrientationBlocker />
+      
       <div
         className={`game-container ${dragState?.isDragging ? 'dragging' : ''}`}
         style={{
@@ -502,6 +509,57 @@ function App() {
           transformOrigin: 'top left',
         }}
       >
+        {/* Full-bleed screens inside game-container to scale properly */}
+        {/* How To Play Screen */}
+        <HowToPlayScreen
+          isOpen={showHowToPlay}
+          onClose={() => setShowHowToPlay(false)}
+        />
+
+        {/* Statistics Screen */}
+        <StatisticsScreen
+          isOpen={showStatistics}
+          onClose={() => setShowStatistics(false)}
+          stats={stats}
+          session={session}
+          winRate={getWinRate()}
+          perfectGameRate={getPerfectGameRate()}
+          sessionWinRate={getSessionWinRate()}
+          formatTime={formatTime}
+          formatNumber={formatNumber}
+          onReset={resetStats}
+        />
+
+        {/* Home Screen */}
+        {showHomeScreen && !showCampaignScreen && (
+          <HomeScreen
+            selectedMode={selectedMode}
+            onModeChange={setSelectedMode}
+            modeOptions={getGameModes().map(m => ({ value: m.id, label: m.name }))}
+            onNewGame={handleNewGameFromHome}
+            onContinue={handleContinueGame}
+            hasGameInProgress={hasGameInProgress}
+            onShowRules={() => setShowHowToPlay(true)}
+            onShowStats={() => setShowStatistics(true)}
+            onShowCampaign={handleShowCampaign}
+            campaignProgress={campaignProgress}
+          />
+        )}
+
+        {/* Campaign Screen */}
+        {showCampaignScreen && (
+          <CampaignScreen
+            progress={campaignProgress}
+            isLevelUnlocked={isLevelUnlocked}
+            isLevelCompleted={isLevelCompleted}
+            getLevelStats={getLevelStats}
+            getTierProgress={getTierProgress}
+            getCampaignProgress={getCampaignProgress}
+            onPlayLevel={handlePlayCampaignLevel}
+            onBack={handleBackFromCampaign}
+            formatTime={formatTime}
+          />
+        )}
         <Notification
         notification={notification}
         onClose={clearNotification}
@@ -519,22 +577,6 @@ function App() {
         variant={confirmDialog.variant}
       />
 
-      {/* Stats Modal */}
-      <StatsModal
-        isOpen={statsModalOpen}
-        onClose={() => setStatsModalOpen(false)}
-        stats={stats}
-        winRate={getWinRate()}
-        formatTime={formatTime}
-        onReset={resetStats}
-      />
-
-      {/* Rules Modal */}
-      <RulesModal
-        isOpen={rulesModalOpen}
-        onClose={() => setRulesModalOpen(false)}
-      />
-
       {/* Stalemate Modal */}
       <StalemateModal
         isOpen={stalemateModalOpen}
@@ -550,37 +592,6 @@ function App() {
         onUndo={handleStalemateUndo}
         undoMoves={5}
       />
-
-      {/* Home Screen */}
-      {showHomeScreen && !showCampaignScreen && (
-        <HomeScreen
-          selectedMode={selectedMode}
-          onModeChange={setSelectedMode}
-          modeOptions={getGameModes().map(m => ({ value: m.id, label: m.name }))}
-          onNewGame={handleNewGameFromHome}
-          onContinue={handleContinueGame}
-          hasGameInProgress={hasGameInProgress}
-          onShowRules={() => setRulesModalOpen(true)}
-          onShowStats={() => setStatsModalOpen(true)}
-          onShowCampaign={handleShowCampaign}
-          campaignProgress={campaignProgress}
-        />
-      )}
-
-      {/* Campaign Screen */}
-      {showCampaignScreen && (
-        <CampaignScreen
-          progress={campaignProgress}
-          isLevelUnlocked={isLevelUnlocked}
-          isLevelCompleted={isLevelCompleted}
-          getLevelStats={getLevelStats}
-          getTierProgress={getTierProgress}
-          getCampaignProgress={getCampaignProgress}
-          onPlayLevel={handlePlayCampaignLevel}
-          onBack={handleBackFromCampaign}
-          formatTime={formatTime}
-        />
-      )}
 
       {/* Game UI - only render when not on home screen */}
       {!showHomeScreen && (
@@ -751,7 +762,7 @@ function App() {
                       </button>
                       <button
                         className="game-over-button secondary"
-                        onClick={() => setStatsModalOpen(true)}
+                        onClick={() => setShowStatistics(true)}
                       >
                         View Stats
                       </button>
@@ -815,20 +826,18 @@ function App() {
               isOpen={isMenuOpen}
               onToggle={handleMenuToggle}
               onClose={handleMenuClose}
-              onNewGame={handleNewGame}
               onRestartLevel={handleRestartLevel}
               isCampaignGame={!!currentCampaignLevel}
               campaignLevelNumber={currentCampaignLevel?.levelNumber}
-              selectedMode={selectedMode}
-              onModeChange={handleModeChange}
-              modeOptions={modeOptions}
-              onOpenStats={() => setStatsModalOpen(true)}
+              onOpenStats={() => setShowStatistics(true)}
               onGoHome={handleGoHome}
               hideToggle={true}
             />
           </div>
-
-          {/* Pause Overlay */}
+        </>
+      )}
+        {/* Pause Overlay - inside game-container for proper scaling */}
+        {!showHomeScreen && (
           <PauseOverlay
             isOpen={isPaused}
             onResume={handleResume}
@@ -844,8 +853,7 @@ function App() {
               foundationProgress: getFoundationProgress()
             }}
           />
-        </>
-      )}
+        )}
       </div>
     </div>
   )

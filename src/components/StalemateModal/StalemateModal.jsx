@@ -1,21 +1,20 @@
 import React from 'react';
 import styles from './StalemateModal.module.css';
-import Button from '../Button';
+import FullBleedScreen from '../FullBleedScreen';
+import DataCard from '../DataCard';
+import PrimaryButton from '../PrimaryButton';
+import SecondaryButton from '../SecondaryButton';
+import TertiaryButton from '../TertiaryButton';
+import ProgressBar from '../ProgressBar';
 
 /**
- * StalemateModal Component
- * 
- * Displayed when the game is in an unwinnable state:
- * - No further moves available
- * - Circular play detected (3+ cycles)
- * - No progress for extended period (20+ moves)
- * 
+ * StalemateModal Component (Redesigned)
+ *
+ * Displayed when the game is in an unwinnable state.
+ * Uses unified component library and FullBleedScreen pattern.
+ *
  * @param {boolean} isOpen - Whether modal is visible
  * @param {object} stats - Game statistics
- * @param {number} stats.moveCount - Total moves made
- * @param {number} stats.currentTime - Time elapsed in seconds
- * @param {number} stats.foundationCards - Cards on foundation
- * @param {number} stats.totalCards - Total cards (52)
  * @param {function} onNewDeal - Handler for new random deal
  * @param {function} onRestart - Handler for restart level
  * @param {function} onUndo - Handler for undo moves
@@ -29,7 +28,7 @@ const StalemateModal = ({
   onRestart,
   onUndo,
   undoMoves = 5,
-  onClose
+  onClose,
 }) => {
   if (!isOpen) return null;
 
@@ -46,83 +45,54 @@ const StalemateModal = ({
   const progressPercentage = Math.round((foundationCards / totalCards) * 100);
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
-        <div className={styles.header}>
-          <span className={styles.icon}>🏁</span>
-          <h2 className={styles.title}>Game Stalled</h2>
+    <FullBleedScreen isOpen={isOpen}>
+      <div className={styles.screen}>
+        {/* Stalemate Message */}
+        <div className={styles.messageBox}>
+          <span className={styles.icon}>🚫</span>
+          <h2 className={styles.heading}>No Moves Available</h2>
+          <p className={styles.subtext}>
+            This game has reached a stalemate. You cannot make any more moves.
+          </p>
         </div>
 
-        {/* Message */}
-        <p className={styles.message}>
-          No further moves available. The game is in an unwinnable state.
-        </p>
+        {/* Final Stats */}
+        <div className={styles.statsSection}>
+          <h3 className={styles.sectionTitle}>Final Statistics</h3>
+          <div className={styles.statsGrid}>
+            <DataCard value={moveCount || 0} label="Moves Made" />
+            <DataCard value={formatTime(currentTime)} label="Time Elapsed" />
+            <DataCard value={`${progressPercentage}%`} label="Completion" />
+            <DataCard value={`${foundationCards}/${totalCards}`} label="Cards Placed" />
+          </div>
+        </div>
 
-        {/* Stats */}
-        <div className={styles.stats}>
-          <h3 className={styles.statsTitle}>Game Stats</h3>
-          
-          <div className={styles.statRow}>
-            <span className={styles.statLabel}>Moves Made:</span>
-            <span className={styles.statValue}>{moveCount || 0}</span>
-          </div>
-          
-          <div className={styles.statRow}>
-            <span className={styles.statLabel}>Time Elapsed:</span>
-            <span className={styles.statValue}>{formatTime(currentTime)}</span>
-          </div>
-          
-          <div className={styles.statRow}>
-            <span className={styles.statLabel}>Foundation Cards:</span>
-            <span className={styles.statValue}>
-              {foundationCards || 0} / {totalCards}
-              <span className={styles.percentage}> ({progressPercentage}%)</span>
-            </span>
-          </div>
-
-          {/* Progress bar */}
-          <div className={styles.progressBar}>
-            <div 
-              className={styles.progressFill} 
-              style={{ width: `${progressPercentage}%` }}
-            />
-          </div>
+        {/* Progress Bar */}
+        <div className={styles.progressSection}>
+          <ProgressBar
+            current={foundationCards}
+            total={totalCards}
+            showPercentage={false}
+            label={`${foundationCards}/${totalCards} cards`}
+          />
         </div>
 
         {/* Action Buttons */}
         <div className={styles.actions}>
-          <Button 
-            variant="primary" 
-            onClick={onNewDeal}
-            className={styles.actionButton}
-          >
+          <PrimaryButton onClick={onNewDeal}>
             New Deal
-          </Button>
+          </PrimaryButton>
           
-          <Button 
-            variant="secondary" 
-            onClick={onRestart}
-            className={styles.actionButton}
-          >
+          <SecondaryButton onClick={onRestart}>
             Restart Level
-          </Button>
+          </SecondaryButton>
           
-          <Button 
-            variant="ghost" 
-            onClick={onUndo}
-            className={styles.actionButton}
-          >
-            Undo {undoMoves} Moves
-          </Button>
+          <TertiaryButton onClick={onUndo}>
+            Undo Last {undoMoves} Moves
+          </TertiaryButton>
         </div>
-
-        {/* Close button */}
-        <button className={styles.closeButton} onClick={onClose} aria-label="Close">
-          ×
-        </button>
       </div>
-    </div>
+    </FullBleedScreen>
   );
 };
 

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import styles from './GameMenu.module.css';
 import MenuItem from '../MenuItem';
 import Select from '../Select';
-import { useTheme, THEMES } from '../../contexts/ThemeContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 /**
  * GameMenu Component
@@ -13,10 +13,7 @@ import { useTheme, THEMES } from '../../contexts/ThemeContext';
  * @param {boolean} isOpen - Whether menu is open
  * @param {function} onToggle - Toggle menu open/closed
  * @param {function} onClose - Close the menu
- * @param {function} onNewGame - Start new game handler
- * @param {string} selectedMode - Current game mode
- * @param {function} onModeChange - Mode change handler
- * @param {Array} modeOptions - Available game modes [{value, label}]
+
  * @param {function} onOpenStats - Open statistics modal
  * @param {function} onGoHome - Return to home screen
  * @param {function} onSnapshotChange - Snapshot change handler
@@ -27,13 +24,9 @@ const GameMenu = ({
   isOpen,
   onToggle,
   onClose,
-  onNewGame,
   onRestartLevel,
   isCampaignGame = false,
   campaignLevelNumber = null,
-  selectedMode,
-  onModeChange,
-  modeOptions = [],
   onOpenStats,
   onGoHome,
   snapshotSelector,
@@ -73,11 +66,6 @@ const GameMenu = ({
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
 
-  const handleNewGame = () => {
-    onNewGame();
-    onClose();
-  };
-
   const handleRestartLevel = () => {
     onRestartLevel?.();
     onClose();
@@ -94,11 +82,11 @@ const GameMenu = ({
   };
 
   // Theme selector
-  const { theme, setTheme, availableThemes, themeInfo } = useTheme();
+  const { theme, setTheme, availableThemes } = useTheme();
   
   const themeOptions = availableThemes.map(t => ({
     value: t,
-    label: t === THEMES.BLUE_CASINO ? 'Deep Blue Casino' : t
+    label: t
   }));
   
   const handleThemeChange = (e) => {
@@ -142,31 +130,11 @@ const GameMenu = ({
               />
             </>
           ) : (
-            <>
-              <MenuItem
-                label="New Game"
-                icon="+"
-                onClick={handleNewGame}
-              />
-              <MenuItem
-                label="Home"
-                icon="^"
-                onClick={handleGoHome}
-              />
-
-              {/* Mode Selector - only show in Quick Play */}
-              <div className={styles.modeGroup}>
-                <span className={styles.modeLabel}>Game Mode</span>
-                <Select
-                  variant="primary"
-                  size="sm"
-                  options={modeOptions}
-                  value={selectedMode}
-                  onChange={(e) => onModeChange(e.target.value)}
-                  className={styles.modeSelect}
-                />
-              </div>
-            </>
+            <MenuItem
+              label="Home"
+              icon="^"
+              onClick={handleGoHome}
+            />
           )}
         </div>
 

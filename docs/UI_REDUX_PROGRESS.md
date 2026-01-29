@@ -12,9 +12,9 @@
 | 0 | Cleanup (isFun Removal) | ✅ COMPLETE | 2026-01-28 | 2026-01-28 |
 | 1 | Foundation (Component Library) | ✅ COMPLETE | 2026-01-28 | 2026-01-28 |
 | 2 | Screen Redesigns | ✅ COMPLETE | 2026-01-28 | 2026-01-28 |
-| 2.5 | Modal/Overlay Screens | 🔄 IN PROGRESS | - | - |
-| 3 | UI Unification | ⏳ PENDING | - | - |
-| 4 | Enhanced Metrics | ⏳ PENDING | - | - |
+| 2.5 | Modal/Overlay Screens | ✅ COMPLETE | 2026-01-28 | 2026-01-28 |
+| 3 | UI Unification | ✅ COMPLETE | 2026-01-28 | 2026-01-28 |
+| 4 | Enhanced Metrics | ✅ COMPLETE | 2026-01-28 | 2026-01-28 |
 
 ---
 
@@ -73,6 +73,172 @@ Create the unified component library that will power all redesigned screens.
 ---
 
 ## Notes
+
+---
+
+## Phase 3: UI Unification
+
+### Objective
+Integrate new screens into App.jsx and remove deprecated legacy components.
+
+### Changes Made
+
+#### App.jsx Integration
+| Change | Description |
+|--------|-------------|
+| **Imports** | Replaced `RulesModal` → `HowToPlayScreen`, `StatsModal` → `StatisticsScreen` |
+| **State** | Renamed `rulesModalOpen` → `showHowToPlay`, `statsModalOpen` → `showStatistics` |
+| **Props** | Updated HomeScreen, GameMenu callbacks to use new state setters |
+| **JSX** | Replaced modal components with new screen components |
+
+#### Legacy Component Removal
+| Component | Action | Reason |
+|-----------|--------|--------|
+| `RulesModal/` | ❌ Deleted | Replaced by HowToPlayScreen |
+| `StatsModal/` | ❌ Deleted | Replaced by StatisticsScreen |
+
+### Files Modified
+- `src/App.jsx` - Updated imports, state, props, and JSX
+- `src/components/RulesModal/` - Deleted
+- `src/components/StatsModal/` - Deleted
+
+### Build Status
+```
+✓ 1851 modules transformed
+✓ built in 871ms
+```
+
+### Commits
+
+| Commit | Description | Date |
+|--------|-------------|------|
+| [TBD] | Phase 3: UI Unification - App integration & legacy removal | 2026-01-28 |
+
+---
+
+### Notes
+
+---
+
+## Phase 4: Enhanced Metrics
+
+### Objective
+Add fun and informative metrics to enhance player engagement and provide deeper insights into gameplay.
+
+### New Metrics Implemented
+
+#### 1. Total Cards Moved
+- Tracks every card movement (drag/drop and auto-move)
+- Displayed in Statistics screen with formatted numbers (K/M suffixes for large numbers)
+
+#### 2. Perfect Games (No Undos)
+- Counts wins where zero undos were used
+- Shows percentage of wins that were "perfect"
+- Tracked per game mode
+- Highlighted with special styling in Records tab
+
+#### 3. Session Stats (Today's Activity)
+- New "Today" tab in Statistics screen
+- Tracks daily: games played, wins, moves, time, cards moved, undos used
+- Resets automatically each day
+- Session win rate calculated separately
+
+#### 4. Foundations Completed
+- Tracks how many foundation piles (52 cards) have been completed across all games
+- Incremented when any foundation zone gets all 13 cards of a suit
+
+#### 5. Undo Count
+- Tracks total undos used across all games
+- Tracked per session as well
+- Used to calculate perfect games
+
+### Technical Implementation
+
+#### useGameStats Hook Enhancements
+```javascript
+// New stats fields
+{
+  totalCardsMoved: 0,
+  perfectGames: 0,
+  foundationsCompleted: 0,
+  totalUndosUsed: 0
+}
+
+// Session tracking (daily)
+{
+  date: 'Tue Jan 28 2026',
+  gamesPlayed: 0,
+  gamesWon: 0,
+  totalMoves: 0,
+  totalTime: 0,
+  cardsMoved: 0,
+  undosUsed: 0
+}
+
+// New callbacks for tracking
+recordCardsMoved(count)
+recordUndo()
+recordFoundationCompleted()
+```
+
+#### useCardGame Integration
+- Accepts optional `callbacks` parameter with `onCardsMoved` and `onFoundationCompleted`
+- Calls tracking callbacks after successful moves
+- Tracks both manual moves and auto-moves
+
+#### StatisticsScreen Updates
+- New "Today" tab showing session stats
+- Enhanced Overview tab with activity metrics
+- Records tab shows perfect games with percentage
+- By Mode tab shows perfect games per mode
+- DataCard values formatted for large numbers (1.2K, 3.5M)
+
+### Files Modified
+| File | Changes |
+|------|---------|
+| `hooks/useGameStats.js` | Added enhanced metrics tracking, session stats, new callbacks |
+| `hooks/useCardGame.js` | Added callbacks parameter, track card moves and foundation completions |
+| `components/StatisticsScreen/` | Added Today tab, enhanced existing tabs, new formatting |
+| `App.jsx` | Pass tracking callbacks to useCardGame, pass new props to StatisticsScreen |
+
+### Build Status
+```
+✓ 1851 modules transformed
+dist/assets/index-BWx7IfDn.css  140.29 kB │ gzip: 26.58 kB
+dist/assets/index-BON1LcPt.js   876.99 kB │ gzip: 155.02 kB
+✓ built in 865ms
+```
+
+### Commits
+
+| Commit | Description | Date |
+|--------|-------------|------|
+| [TBD] | Phase 4: Enhanced Metrics Implementation | 2026-01-28 |
+
+---
+
+## Project Complete ✅
+
+All phases of the UI Redux project have been successfully implemented:
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 0 | Cleanup (isFun Removal) | ✅ Complete |
+| 1 | Foundation (Component Library) | ✅ Complete |
+| 2 | Screen Redesigns | ✅ Complete |
+| 2.5 | Modal/Overlay Screens | ✅ Complete |
+| 3 | UI Unification | ✅ Complete |
+| 4 | Enhanced Metrics | ✅ Complete |
+
+### Final Statistics
+- **Total commits:** 6 major phases
+- **Files created:** 10+ new components
+- **Files modified:** 15+ core files
+- **Lines changed:** Thousands (net reduction in CSS due to unification)
+- **Build size:** CSS 140KB, JS 877KB
+- **Build status:** ✅ Clean, no warnings
+
+### Notes
 
 *Last updated: 2026-01-28*
 
@@ -199,10 +365,26 @@ Redesign remaining modal and overlay screens using the unified component library
 - Replace custom buttons with PrimaryButton/SecondaryButton
 - Maintain danger variant styling
 
+### Components Updated
+
+| Component | Changes | Components Used |
+|-----------|---------|-----------------|
+| **PauseOverlay** | Redesigned with DataCard grid, ProgressBar, PrimaryButton, SecondaryButton, TertiaryButton | DataCard (stats), ProgressBar (foundation), PrimaryButton (Resume), SecondaryButton (Restart), TertiaryButton (Home/New Game) |
+| **StalemateModal** | Converted to FullBleedScreen pattern with DataCards and ProgressBar | FullBleedScreen, DataCard (stats), ProgressBar, PrimaryButton (New Deal), SecondaryButton (Restart), TertiaryButton (Undo) |
+| **ConfirmDialog** | Updated buttons to use PrimaryButton (with danger variant) and TertiaryButton | PrimaryButton (danger variant), TertiaryButton |
+
+### PrimaryButton Enhancement
+
+Added `danger` variant to PrimaryButton for destructive actions:
+- `--accent-danger` color with red tones
+- Hover glow effect in red
+- Used in ConfirmDialog for reset/clear actions
+
 ### Commits
 
 | Commit | Description | Date |
 |--------|-------------|------|
+| [TBD] | Phase 2.5: Modal/Overlay Screens Redesign | 2026-01-28 |
 
 ---
 

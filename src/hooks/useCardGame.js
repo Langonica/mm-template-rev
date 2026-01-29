@@ -17,7 +17,8 @@ import {
 } from '../utils/gameLogic';
 import { findCardLocation, parseCard, canPlaceOnFoundation, deepClone } from '../utils/cardUtils';
 
-export const useCardGame = () => {
+export const useCardGame = (callbacks = {}) => {
+  const { onCardsMoved, onFoundationCompleted } = callbacks;
   const [config, setConfig] = useState({
     mode: 'classic',
     variant: 'normal',
@@ -525,12 +526,25 @@ export const useCardGame = () => {
       }
 
       setMoveCount(prev => prev + 1);
+      
+      // Track card movement for statistics
+      if (onCardsMoved) {
+        onCardsMoved(1); // Single card moved
+      }
+      
+      // Track foundation completion (check if foundation now has 13 cards)
+      if (onFoundationCompleted && target.type === 'foundation') {
+        const foundationPile = newState.foundations[target.zone]?.[target.suit] || [];
+        if (foundationPile.length === 13) {
+          onFoundationCompleted();
+        }
+      }
 
       return true;
     }
 
     return false;
-  }, [gameState, undoSystem, stateTracker, updateCircularPlayState, checkAutoComplete, clearHint]);
+  }, [gameState, undoSystem, stateTracker, updateCircularPlayState, checkAutoComplete, clearHint, onCardsMoved, onFoundationCompleted]);
   
   // Handle double-click auto-move with slurp/pop animation
   // Tries foundation first, then tableau builds, then empty columns
@@ -645,6 +659,19 @@ export const useCardGame = () => {
       clearHint(); // Clear hints after move
 
       setMoveCount(prev => prev + 1);
+      
+      // Track card movement for statistics
+      if (onCardsMoved) {
+        onCardsMoved(1); // Single card moved
+      }
+      
+      // Track foundation completion
+      if (onFoundationCompleted && isFoundationMove) {
+        const foundationPile = testState.foundations[targetZone]?.[targetSuit] || [];
+        if (foundationPile.length === 13) {
+          onFoundationCompleted();
+        }
+      }
 
       // Switch to pop animation
       setAutoMoveAnimation(prev => prev ? { ...prev, phase: 'pop' } : null);
@@ -656,7 +683,7 @@ export const useCardGame = () => {
     }, 300);
 
     return true;
-  }, [gameState, undoSystem, stateTracker, updateCircularPlayState, checkAutoComplete, clearHint]);
+  }, [gameState, undoSystem, stateTracker, updateCircularPlayState, checkAutoComplete, clearHint, onCardsMoved, onFoundationCompleted]);
   
   // Undo last move
   const handleUndo = useCallback(() => {

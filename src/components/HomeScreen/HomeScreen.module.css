@@ -1,193 +1,80 @@
-/**
- * HomeScreen Component Styles (Redesigned)
- *
- * Full-bleed home screen with single-column layout.
- * Uses unified component library.
- */
+/* HomeScreen - Full screen, centered content, no header */
 
-.homeScreen {
-  position: fixed;
-  inset: 0;
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: linear-gradient(180deg, var(--bg-deepest) 0%, var(--bg-deep) 50%, #000 100%);
-  z-index: var(--z-home);
   overflow: hidden;
 }
 
-/* Header */
-.header {
-  height: var(--screen-header-height);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--spacing-6);
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-subtle);
-  flex-shrink: 0;
-}
-
-.headerLeft,
-.headerRight {
-  min-width: var(--btn-icon-size);
-  display: flex;
-  align-items: center;
-}
-
-.headerRight {
-  justify-content: flex-end;
-}
-
-.headerTitle {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-  margin: 0;
-  flex: 1;
-  text-align: center;
-}
-
-/* Content */
 .content {
   flex: 1;
-  overflow-y: auto;
-  padding: var(--screen-padding);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-6);
+  justify-content: center;
+  gap: 20px;
+  padding: 24px;
+  overflow-y: auto;
 }
 
-/* Title Area */
 .titleArea {
   text-align: center;
-  margin-bottom: var(--spacing-2);
 }
 
-.title {
-  font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-black);
-  color: var(--temp-gold, #c9a050);
-  letter-spacing: var(--letter-spacing-wider);
+.mainTitle {
+  font-size: 48px;
+  font-weight: 900;
+  color: var(--text-primary);
   margin: 0;
-  text-shadow: 0 2px 20px rgba(201, 160, 80, 0.3);
+  letter-spacing: 4px;
+  text-shadow: 0 0 40px var(--accent-glow);
 }
 
 .subtitle {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-normal);
+  font-size: 16px;
   color: var(--text-secondary);
-  margin: var(--spacing-2) 0 0 0;
-  letter-spacing: var(--letter-spacing-wide);
+  margin: 8px 0 0;
 }
 
-/* Continue Section */
-.continueSection {
-  width: 100%;
-  max-width: var(--screen-max-width);
+.cards {
   display: flex;
-  justify-content: center;
-}
-
-/* Action Cards */
-.actionCard {
+  flex-direction: column;
+  gap: 16px;
   width: 100%;
-  max-width: var(--screen-max-width);
+  max-width: 280px;
 }
 
-/* Quick Play Actions */
-.quickPlayActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-3);
-  align-items: center;
-}
-
-.modeSelect {
-  flex: 1;
-  min-width: 150px;
-}
-
-/* Campaign Progress */
-.campaignProgress {
+.select {
   width: 100%;
-  margin-bottom: var(--spacing-3);
 }
 
-/* Secondary Navigation */
-.secondaryNav {
-  margin-top: var(--spacing-4);
-}
-
-/* Footer */
-.footer {
-  padding: var(--spacing-4);
-  text-align: center;
+.version {
+  font-size: 12px;
   color: var(--text-muted);
-  font-size: var(--font-size-xs);
-  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 16px;
 }
 
-/* Animations */
 .fadeIn {
-  animation: fadeIn 0.4s ease-out;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .fadeOut {
-  animation: fadeOut 0.3s ease-out forwards;
+  animation: fadeOut 0.25s ease-in forwards;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
-/* Responsive */
-@media (max-width: 640px) {
-  .header {
-    padding: 0 var(--spacing-4);
-  }
-
-  .headerTitle {
-    font-size: var(--font-size-md);
-  }
-
-  .content {
-    padding: var(--spacing-4);
-    gap: var(--spacing-4);
-  }
-
-  .title {
-    font-size: var(--font-size-3xl);
-    letter-spacing: var(--letter-spacing-wide);
-  }
-
-  .subtitle {
-    font-size: var(--font-size-md);
-  }
-
-  .quickPlayActions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .modeSelect {
-    width: 100%;
-  }
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.98); }
 }

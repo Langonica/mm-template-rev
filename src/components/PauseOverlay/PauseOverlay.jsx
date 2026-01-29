@@ -1,11 +1,25 @@
 import React, { useEffect, useCallback } from 'react';
 import styles from './PauseOverlay.module.css';
-import Button from '../Button';
+import DataCard from '../DataCard';
+import PrimaryButton from '../PrimaryButton';
+import SecondaryButton from '../SecondaryButton';
+import ProgressBar from '../ProgressBar';
 
 /**
- * PauseOverlay - Semi-transparent overlay shown when game is paused
- * Displays in-game stats and provides Resume/Home/New Game options
- * In campaign mode, shows Restart Level instead of New Game
+ * PauseOverlay Component (Redesigned)
+ *
+ * Semi-transparent overlay shown when game is paused.
+ * Displays in-game stats and provides Resume/Home/New Game options.
+ * Uses unified component library.
+ *
+ * @param {boolean} isOpen - Whether overlay is visible
+ * @param {function} onResume - Resume game handler
+ * @param {function} onHome - Return to home handler
+ * @param {function} onNewGame - New game handler
+ * @param {function} onRestartLevel - Restart level handler (campaign)
+ * @param {boolean} isCampaignGame - Whether in campaign mode
+ * @param {number} campaignLevelNumber - Current campaign level
+ * @param {object} gameStats - Current game statistics
  */
 const PauseOverlay = ({
   isOpen,
@@ -15,7 +29,7 @@ const PauseOverlay = ({
   onRestartLevel,
   isCampaignGame = false,
   campaignLevelNumber = null,
-  gameStats = {}
+  gameStats = {},
 }) => {
   const { moves = 0, elapsedTime = 0, mode = 'classic', foundationProgress = {} } = gameStats;
 
@@ -41,7 +55,7 @@ const PauseOverlay = ({
   const upCount = foundationProgress.up || 0;
   const downCount = foundationProgress.down || 0;
   const totalCards = 52;
-  const progressPercent = Math.round(((upCount + downCount) / totalCards) * 100);
+  const placedCards = upCount + downCount;
 
   // Handle escape key to resume
   const handleKeyDown = useCallback((e) => {
@@ -71,49 +85,46 @@ const PauseOverlay = ({
       <div className={styles.content}>
         <h2 className={styles.title}>PAUSED</h2>
 
-        <div className={styles.stats}>
-          <div className={styles.statRow}>
-            <span className={styles.statLabel}>Mode</span>
-            <span className={styles.statValue}>{formatModeName(mode)}</span>
-          </div>
-          <div className={styles.statRow}>
-            <span className={styles.statLabel}>Moves</span>
-            <span className={styles.statValue}>{moves}</span>
-          </div>
-          <div className={styles.statRow}>
-            <span className={styles.statLabel}>Time</span>
-            <span className={styles.statValue}>{formatTime(elapsedTime)}</span>
-          </div>
-          <div className={styles.statRow}>
-            <span className={styles.statLabel}>Progress</span>
-            <span className={styles.statValue}>{progressPercent}% ({upCount + downCount}/{totalCards})</span>
-          </div>
-          <div className={styles.progressBar}>
-            <div className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
-          </div>
+        {/* Game Stats */}
+        <div className={styles.statsGrid}>
+          <DataCard value={formatModeName(mode)} label="Mode" />
+          <DataCard value={moves} label="Moves" />
+          <DataCard value={formatTime(elapsedTime)} label="Time" />
+          <DataCard value={placedCards} label="Cards Placed" />
         </div>
 
+        {/* Progress Bar */}
+        <div className={styles.progressSection}>
+          <ProgressBar
+            current={placedCards}
+            total={totalCards}
+            showPercentage={true}
+          />
+        </div>
+
+        {/* Action Buttons */}
         <div className={styles.buttons}>
-          <Button variant="primary" size="large" onClick={onResume}>
+          <PrimaryButton onClick={onResume}>
             Resume
-          </Button>
+          </PrimaryButton>
+          
           {isCampaignGame ? (
             <>
-              <Button variant="secondary" size="medium" onClick={onRestartLevel}>
+              <SecondaryButton onClick={onRestartLevel}>
                 Restart Level {campaignLevelNumber}
-              </Button>
-              <Button variant="ghost" size="medium" onClick={onHome}>
+              </SecondaryButton>
+              <SecondaryButton onClick={onHome}>
                 Back to Campaign
-              </Button>
+              </SecondaryButton>
             </>
           ) : (
             <>
-              <Button variant="secondary" size="medium" onClick={onHome}>
+              <SecondaryButton onClick={onHome}>
                 Home
-              </Button>
-              <Button variant="ghost" size="medium" onClick={onNewGame}>
+              </SecondaryButton>
+              <SecondaryButton onClick={onNewGame}>
                 New Game
-              </Button>
+              </SecondaryButton>
             </>
           )}
         </div>

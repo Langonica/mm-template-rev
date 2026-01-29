@@ -178,6 +178,9 @@ html {
 .game-wrapper {
   position: relative;
   overflow: hidden;
+  border: none;
+  outline: none;
+  box-shadow: none;
   /* Dimensions set dynamically via inline style */
   /* Required for absolute positioning of child elements in full-bleed layout */
 }
@@ -186,7 +189,6 @@ html {
   width: var(--stage-w);
   height: var(--stage-h);
   position: relative;
-  border: var(--border-width-thin) solid var(--color-neutral-700);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1124,9 +1126,7 @@ header select {
     display: none !important;
   }
   
-  .game-container {
-    border: none;
-  }
+  /* Print styles */
 }
 
 

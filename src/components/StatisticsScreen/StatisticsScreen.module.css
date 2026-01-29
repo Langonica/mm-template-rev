@@ -1,23 +1,49 @@
-/**
- * StatisticsScreen Component Styles
- *
- * Full-bleed screen for game statistics.
- */
+/* StatisticsScreen - with back button */
 
-.container {
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  background: var(--bg-deep);
+  overflow: hidden;
+}
+
+.backButton {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 100;
+  border-radius: 4px;
+}
+
+.backButton:hover {
+  background: var(--bg-overlay-light);
+  color: var(--text-primary);
 }
 
 .tabBar {
+  margin-top: 56px;
   flex-shrink: 0;
 }
 
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: var(--spacing-6);
+  padding: 16px 24px;
 }
 
 .tabContent {
@@ -25,199 +51,165 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Reset Confirm in Header */
-.resetConfirm {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-
-.resetWarning {
-  font-size: var(--font-size-sm);
-  color: var(--color-danger);
-  margin-right: var(--spacing-2);
-}
-
-/* Overview Tab */
-.overviewGrid {
+.grid4 {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-6);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
-.summaryCard {
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 16px 0 12px;
+}
+
+.summary {
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-5);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
 }
 
 .summaryRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.summaryLabel {
-  font-size: var(--font-size-md);
+  padding: 8px 0;
   color: var(--text-secondary);
 }
 
-.summaryValue {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+.summaryRow:not(:last-child) {
+  border-bottom: 1px solid var(--bg-elevated);
+}
+
+.value {
+  font-weight: 700;
   color: var(--accent-primary);
   font-family: var(--font-family-mono);
 }
 
-/* Records Tab */
+.resetSection {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.resetConfirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.resetWarning {
+  font-size: 14px;
+  color: var(--color-danger);
+  margin-right: 8px;
+}
+
+.sessionDate {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
 .recordsGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-6);
-  max-width: 800px;
-  margin: 0 auto;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 }
 
 .recordCard {
   background: linear-gradient(135deg, var(--bg-surface), var(--bg-elevated));
-  border: 2px solid var(--border-subtle);
-  border-radius: var(--border-radius-xl);
-  padding: var(--spacing-8);
+  border-radius: 12px;
+  padding: 20px;
   text-align: center;
-  transition: all var(--transition-fast);
-}
-
-.recordCard:hover {
-  border-color: var(--accent-primary);
-  transform: var(--hover-lift);
-  box-shadow: var(--shadow-glow);
 }
 
 .recordIcon {
-  font-size: 48px;
-  margin-bottom: var(--spacing-4);
-  filter: grayscale(0.3);
+  font-size: 32px;
+  margin-bottom: 8px;
 }
 
 .recordValue {
-  font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-black);
+  font-size: 28px;
+  font-weight: 800;
   color: var(--accent-primary);
-  margin-bottom: var(--spacing-3);
+  margin-bottom: 4px;
   font-family: var(--font-family-mono);
-  text-shadow: 0 0 20px var(--accent-glow);
 }
 
 .recordLabel {
-  font-size: var(--font-size-md);
+  font-size: 12px;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-normal);
-  font-weight: var(--font-weight-semibold);
 }
 
-/* By Mode Tab */
+.recordSubtext {
+  font-size: 12px;
+  color: var(--accent-secondary);
+  margin-top: 4px;
+}
+
+.highlight {
+  background: linear-gradient(135deg, var(--bg-surface), rgba(94, 234, 212, 0.1));
+}
+
 .modeTable {
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--border-radius-lg);
+  border-radius: 8px;
   overflow: hidden;
-  max-width: 900px;
-  margin: 0 auto;
 }
 
-.modeHeader,
-.modeRow {
+.modeHeader, .modeRow {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr;
-  gap: var(--spacing-4);
-  padding: var(--spacing-4) var(--spacing-5);
-  font-size: var(--font-size-sm);
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
 }
 
 .modeHeader {
   background: var(--bg-elevated);
   color: var(--text-muted);
-  font-weight: var(--font-weight-bold);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-tight);
-  border-bottom: 2px solid var(--border-subtle);
+  font-size: 12px;
 }
 
 .modeRow {
   color: var(--text-secondary);
-  border-bottom: 1px solid var(--border-subtle);
-  transition: background var(--transition-fast);
 }
 
-.modeRow:hover {
-  background: var(--hover-bg);
-}
-
-.modeRow:last-child {
-  border-bottom: none;
+.modeRow:not(:last-child) {
+  border-bottom: 1px solid var(--bg-elevated);
 }
 
 .modeName {
   color: var(--accent-primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: 600;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .content {
-    padding: var(--spacing-4);
-  }
-
-  .overviewGrid {
+@media (max-width: 960px) {
+  .grid4, .recordsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
-
-  .recordsGrid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-4);
-  }
-
-  .recordCard {
-    padding: var(--spacing-6);
-  }
-
-  .recordValue {
-    font-size: var(--font-size-3xl);
-  }
-
-  .modeHeader,
-  .modeRow {
-    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
-    padding: var(--spacing-3) var(--spacing-4);
-    font-size: var(--font-size-xs);
-  }
 }
 
-@media (max-width: 480px) {
-  .overviewGrid {
+@media (max-width: 640px) {
+  .grid4, .recordsGrid {
     grid-template-columns: 1fr;
   }
-
-  .resetConfirm {
-    flex-direction: column;
-    gap: var(--spacing-1);
-  }
-
-  .resetWarning {
-    font-size: var(--font-size-xs);
-    margin-right: 0;
+  
+  .content {
+    padding: 12px 16px;
   }
 }

@@ -41,6 +41,19 @@
   box-shadow: none;
 }
 
+/* Danger Variant */
+.danger {
+  background: var(--accent-danger, #ef4444);
+  border-color: var(--accent-danger, #ef4444);
+  color: var(--text-inverse, #0f172a);
+}
+
+.danger:hover:not(:disabled) {
+  background: #dc2626;
+  border-color: #dc2626;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
 /* Responsive: Full width on mobile */
 @media (max-width: 640px) {
   .button {

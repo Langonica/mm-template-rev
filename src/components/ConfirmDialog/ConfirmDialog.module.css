@@ -1,143 +1,49 @@
-/**
- * ConfirmDialog Component Styles
- *
- * Modal confirmation dialog with variant support (default, warning, danger).
- * Uses design tokens for consistent styling.
- */
+/* ConfirmDialog */
 
-/* Overlay backdrop */
 .overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--bg-overlay-heavy);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: var(--z-modal);
-  animation: fadeIn var(--duration-normal) var(--timing-ease-out);
+  z-index: var(--z-overlay);
 }
 
-/* Modal card */
 .dialog {
-  background: linear-gradient(145deg, var(--bg-elevated) 0%, var(--bg-surface) 100%);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-6);
-  min-width: 320px;
-  max-width: 400px;
-  box-shadow: var(--shadow-2xl);
-  border: var(--border-width-thin) solid var(--bg-overlay-medium);
-  animation: slideIn var(--duration-normal) var(--timing-ease-out);
+  background: var(--bg-deep);
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-/* Header */
 .title {
-  margin: 0 0 var(--spacing-4) 0;
+  font-size: 20px;
+  font-weight: 700;
   color: var(--text-primary);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  margin: 0;
+  text-align: center;
 }
 
-/* Message */
 .message {
-  margin: 0 0 var(--spacing-6) 0;
+  font-size: 14px;
   color: var(--text-secondary);
-  font-size: var(--font-size-md);
-  line-height: var(--line-height-normal);
+  margin: 0;
+  text-align: center;
+  line-height: 1.5;
 }
 
-/* Button row */
 .buttonRow {
   display: flex;
-  gap: var(--spacing-3);
-  justify-content: flex-end;
-}
-
-/* Cancel button */
-.cancelButton {
-  padding: var(--spacing-2) var(--spacing-5);
-  background: var(--bg-elevated);
-  border: var(--border-width-thin) solid var(--border-medium);
-  border-radius: var(--radius-md);
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-bold);
-  transition: var(--transition-normal);
-}
-
-.cancelButton:hover {
-  background: var(--hover-bg);
-  border-color: var(--border-strong);
-  color: var(--text-primary);
-}
-
-/* Confirm button base */
-.confirmButton {
-  padding: var(--spacing-2) var(--spacing-5);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-bold);
-  transition: var(--transition-normal);
-  border: var(--border-width-thin) solid;
-}
-
-/* Default variant */
-.confirmButton.default {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-  color: var(--bg-deepest);
-}
-
-.confirmButton.default:hover {
-  background: var(--accent-secondary);
-  border-color: var(--accent-secondary);
-}
-
-/* Warning variant */
-.confirmButton.warning {
-  background: var(--color-warning-bg);
-  border-color: var(--color-warning);
-  color: var(--color-warning);
-}
-
-.confirmButton.warning:hover {
-  background: var(--color-warning);
-  color: var(--bg-deepest);
-}
-
-/* Danger variant */
-.confirmButton.danger {
-  background: var(--color-danger-bg);
-  border-color: var(--color-danger);
-  color: var(--color-danger);
-}
-
-.confirmButton.danger:hover {
-  background: var(--color-danger);
-  color: var(--text-primary);
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  gap: 12px;
+  justify-content: center;
+  padding-top: 8px;
 }

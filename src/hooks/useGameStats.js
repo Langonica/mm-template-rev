@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { validateStats, safeParseAndValidate } from '../utils/storageValidation';
 
 const STORAGE_KEY = 'meridian_solitaire_stats';
+const SESSION_KEY = 'meridian_solitaire_session';
 
 const DEFAULT_STATS = {
   totalGames: 0,
@@ -14,13 +15,28 @@ const DEFAULT_STATS = {
   bestWinTime: null,
   totalMoves: 0,
   totalPlayTime: 0,
+  // Enhanced metrics
+  totalCardsMoved: 0,
+  perfectGames: 0, // Wins with no undos
+  foundationsCompleted: 0, // Total foundations completed across all games
+  totalUndosUsed: 0, // Total undos across all games
   byMode: {
-    classic: { games: 0, wins: 0, forfeits: 0, bestMoves: null, bestTime: null },
-    classic_double: { games: 0, wins: 0, forfeits: 0, bestMoves: null, bestTime: null },
-    hidden: { games: 0, wins: 0, forfeits: 0, bestMoves: null, bestTime: null },
-    hidden_double: { games: 0, wins: 0, forfeits: 0, bestMoves: null, bestTime: null }
+    classic: { games: 0, wins: 0, forfeits: 0, bestMoves: null, bestTime: null, perfectGames: 0 },
+    classic_double: { games: 0, wins: 0, forfeits: 0, bestMoves: null, bestTime: null, perfectGames: 0 },
+    hidden: { games: 0, wins: 0, forfeits: 0, bestMoves: null, bestTime: null, perfectGames: 0 },
+    hidden_double: { games: 0, wins: 0, forfeits: 0, bestMoves: null, bestTime: null, perfectGames: 0 }
   },
   lastPlayed: null
+};
+
+const DEFAULT_SESSION = {
+  date: new Date().toDateString(),
+  gamesPlayed: 0,
+  gamesWon: 0,
+  totalMoves: 0,
+  totalTime: 0,
+  cardsMoved: 0,
+  undosUsed: 0
 };
 
 // Map old mode names to new ones for backwards compatibility
@@ -58,6 +74,7 @@ const loadStats = (onError) => {
               games: (existingStats.games || 0) + (oldStats.games || 0),
               wins: (existingStats.wins || 0) + (oldStats.wins || 0),
               forfeits: (existingStats.forfeits || 0) + (oldStats.forfeits || 0),
+              perfectGames: (existingStats.perfectGames || 0) + (oldStats.perfectGames || 0),
               bestMoves: oldStats.bestMoves !== null
                 ? (existingStats.bestMoves !== null ? Math.min(existingStats.bestMoves, oldStats.bestMoves) : oldStats.bestMoves)
                 : existingStats.bestMoves,
@@ -99,13 +116,49 @@ const saveStats = (stats, onError) => {
   }
 };
 
+// Load or initialize session stats
+const loadSession = () => {
+  try {
+    const stored = localStorage.getItem(SESSION_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      const today = new Date().toDateString();
+      // Reset if it's a new day
+      if (parsed.date !== today) {
+        return { ...DEFAULT_SESSION, date: today };
+      }
+      return { ...DEFAULT_SESSION, ...parsed };
+    }
+  } catch (e) {
+    console.error('Failed to load session:', e);
+  }
+  return { ...DEFAULT_SESSION };
+};
+
+// Save session to localStorage
+const saveSession = (session) => {
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  } catch (e) {
+    console.error('Failed to save session:', e);
+  }
+};
+
 export const useGameStats = (onError) => {
   const [stats, setStats] = useState(() => loadStats(onError));
+  const [session, setSession] = useState(() => loadSession());
   const gameStartTimeRef = useRef(null);
   const [currentGameTime, setCurrentGameTime] = useState(0);
   const timerIntervalRef = useRef(null);
-  const pausedTimeRef = useRef(0); // Accumulated time before current pause
+  const pausedTimeRef = useRef(0);
   const [isPaused, setIsPaused] = useState(false);
+  
+  // Per-game tracking (reset each game)
+  const gameTrackingRef = useRef({
+    cardsMoved: 0,
+    undosUsed: 0,
+    foundationsCompleted: 0
+  });
 
   // Start tracking a new game
   const recordGameStart = useCallback(() => {
@@ -113,6 +166,13 @@ export const useGameStats = (onError) => {
     pausedTimeRef.current = 0;
     setCurrentGameTime(0);
     setIsPaused(false);
+    
+    // Reset per-game tracking
+    gameTrackingRef.current = {
+      cardsMoved: 0,
+      undosUsed: 0,
+      foundationsCompleted: 0
+    };
 
     // Start timer interval for live display
     if (timerIntervalRef.current) {
@@ -176,10 +236,35 @@ export const useGameStats = (onError) => {
     return pausedTimeRef.current + Math.floor((Date.now() - gameStartTimeRef.current) / 1000);
   }, [isPaused]);
 
+  // Track card movement
+  const recordCardsMoved = useCallback((count = 1) => {
+    gameTrackingRef.current.cardsMoved += count;
+  }, []);
+
+  // Track undo usage
+  const recordUndo = useCallback(() => {
+    gameTrackingRef.current.undosUsed += 1;
+    
+    // Update session undos
+    setSession(prev => {
+      const updated = { ...prev, undosUsed: prev.undosUsed + 1 };
+      saveSession(updated);
+      return updated;
+    });
+  }, []);
+
+  // Track foundation completion
+  const recordFoundationCompleted = useCallback(() => {
+    gameTrackingRef.current.foundationsCompleted += 1;
+  }, []);
+
   // Record game end (win or loss)
   const recordGameEnd = useCallback((won, moves, mode) => {
     const duration = getGameDuration();
     stopTimer();
+    
+    const { cardsMoved, undosUsed, foundationsCompleted } = gameTrackingRef.current;
+    const isPerfectGame = won && undosUsed === 0;
 
     setStats(prevStats => {
       const newStats = { ...prevStats };
@@ -188,11 +273,20 @@ export const useGameStats = (onError) => {
       newStats.totalGames += 1;
       newStats.totalMoves += moves;
       newStats.totalPlayTime += duration;
+      // Enhanced metrics
+      newStats.totalCardsMoved += cardsMoved;
+      newStats.totalUndosUsed += undosUsed;
+      newStats.foundationsCompleted += foundationsCompleted;
       newStats.lastPlayed = Date.now();
 
       if (won) {
         newStats.wins += 1;
         newStats.currentStreak += 1;
+        
+        // Perfect game tracking
+        if (isPerfectGame) {
+          newStats.perfectGames += 1;
+        }
 
         // Update best streak
         if (newStats.currentStreak > newStats.bestStreak) {
@@ -218,6 +312,11 @@ export const useGameStats = (onError) => {
         newStats.byMode[mode].games += 1;
         if (won) {
           newStats.byMode[mode].wins += 1;
+          
+          // Perfect games by mode
+          if (isPerfectGame) {
+            newStats.byMode[mode].perfectGames = (newStats.byMode[mode].perfectGames || 0) + 1;
+          }
 
           // Update mode best moves
           if (newStats.byMode[mode].bestMoves === null || moves < newStats.byMode[mode].bestMoves) {
@@ -236,12 +335,30 @@ export const useGameStats = (onError) => {
 
       return newStats;
     });
+    
+    // Update session stats
+    setSession(prev => {
+      const updated = {
+        ...prev,
+        gamesPlayed: prev.gamesPlayed + 1,
+        gamesWon: prev.gamesWon + (won ? 1 : 0),
+        totalMoves: prev.totalMoves + moves,
+        totalTime: prev.totalTime + duration,
+        cardsMoved: prev.cardsMoved + cardsMoved
+      };
+      saveSession(updated);
+      return updated;
+    });
 
     // Return game stats for display
     return {
       duration,
       moves,
-      won
+      won,
+      cardsMoved,
+      undosUsed,
+      foundationsCompleted,
+      isPerfectGame
     };
   }, [getGameDuration, stopTimer, onError]);
 
@@ -249,6 +366,8 @@ export const useGameStats = (onError) => {
   const recordForfeit = useCallback((moves, mode) => {
     const duration = getGameDuration();
     stopTimer();
+    
+    const { cardsMoved, undosUsed, foundationsCompleted } = gameTrackingRef.current;
 
     setStats(prevStats => {
       const newStats = { ...prevStats };
@@ -258,6 +377,10 @@ export const useGameStats = (onError) => {
       newStats.forfeits += 1;
       newStats.totalMoves += moves;
       newStats.totalPlayTime += duration;
+      // Enhanced metrics
+      newStats.totalCardsMoved += cardsMoved;
+      newStats.totalUndosUsed += undosUsed;
+      newStats.foundationsCompleted += foundationsCompleted;
       newStats.lastPlayed = Date.now();
 
       // Forfeits break the win streak
@@ -274,6 +397,20 @@ export const useGameStats = (onError) => {
 
       return newStats;
     });
+    
+    // Update session stats
+    setSession(prev => {
+      const updated = {
+        ...prev,
+        gamesPlayed: prev.gamesPlayed + 1,
+        totalMoves: prev.totalMoves + moves,
+        totalTime: prev.totalTime + duration,
+        cardsMoved: prev.cardsMoved + cardsMoved,
+        undosUsed: prev.undosUsed + undosUsed
+      };
+      saveSession(updated);
+      return updated;
+    });
 
     return { duration, moves, forfeited: true };
   }, [getGameDuration, stopTimer, onError]);
@@ -281,8 +418,11 @@ export const useGameStats = (onError) => {
   // Reset all stats
   const resetStats = useCallback(() => {
     const freshStats = { ...DEFAULT_STATS };
+    const freshSession = { ...DEFAULT_SESSION, date: new Date().toDateString() };
     setStats(freshStats);
+    setSession(freshSession);
     saveStats(freshStats, onError);
+    saveSession(freshSession);
     gameStartTimeRef.current = null;
     setCurrentGameTime(0);
     stopTimer();
@@ -300,6 +440,18 @@ export const useGameStats = (onError) => {
     // For accuracy, we'd need to track moves per win separately
     return null; // Not tracking this granularly
   }, [stats.wins]);
+  
+  // Get perfect game rate
+  const getPerfectGameRate = useCallback(() => {
+    if (stats.wins === 0) return 0;
+    return Math.round((stats.perfectGames / stats.wins) * 100);
+  }, [stats.wins, stats.perfectGames]);
+  
+  // Get session win rate
+  const getSessionWinRate = useCallback(() => {
+    if (session.gamesPlayed === 0) return 0;
+    return Math.round((session.gamesWon / session.gamesPlayed) * 100);
+  }, [session]);
 
   // Format time for display (seconds to MM:SS or HH:MM:SS)
   const formatTime = useCallback((seconds) => {
@@ -313,6 +465,14 @@ export const useGameStats = (onError) => {
     }
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }, []);
+  
+  // Format large numbers (e.g., 1234 → 1.2K)
+  const formatNumber = useCallback((num) => {
+    if (num === null || num === undefined) return '--';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+  }, []);
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -325,16 +485,23 @@ export const useGameStats = (onError) => {
 
   return {
     stats,
+    session,
     currentGameTime,
     isPaused,
     recordGameStart,
     recordGameEnd,
     recordForfeit,
+    recordCardsMoved,
+    recordUndo,
+    recordFoundationCompleted,
     resetStats,
     pauseTimer,
     resumeTimer,
     getGameDuration,
     getWinRate,
-    formatTime
+    getPerfectGameRate,
+    getSessionWinRate,
+    formatTime,
+    formatNumber
   };
 };

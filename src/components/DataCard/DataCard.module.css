@@ -7,7 +7,7 @@
 .card {
   padding: var(--spacing-6);
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  border: none;
   border-radius: var(--border-radius-lg);
   text-align: center;
   display: flex;
@@ -16,7 +16,7 @@
   justify-content: center;
   gap: var(--spacing-2);
   transition: all var(--transition-fast);
-  min-height: var(--card-data-min-height);
+  min-height: 80px;
 }
 
 .card:hover {

@@ -1,6 +1,23 @@
 import React, { useEffect, useCallback } from 'react';
 import styles from './ConfirmDialog.module.css';
+import PrimaryButton from '../PrimaryButton';
+import TertiaryButton from '../TertiaryButton';
 
+/**
+ * ConfirmDialog Component (Redesigned)
+ *
+ * Simple confirmation dialog with unified component styling.
+ * Uses TertiaryButton for cancel and PrimaryButton for confirm.
+ *
+ * @param {boolean} isOpen - Whether dialog is visible
+ * @param {string} title - Dialog title
+ * @param {string} message - Dialog message
+ * @param {string} confirmText - Confirm button text (default 'Confirm')
+ * @param {string} cancelText - Cancel button text (default 'Cancel')
+ * @param {function} onConfirm - Handler for confirm action
+ * @param {function} onCancel - Handler for cancel action
+ * @param {string} variant - Button variant ('default', 'danger')
+ */
 const ConfirmDialog = ({
   isOpen,
   title,
@@ -9,7 +26,7 @@ const ConfirmDialog = ({
   cancelText = 'Cancel',
   onConfirm,
   onCancel,
-  variant = 'default'
+  variant = 'default',
 }) => {
   // Handle escape key to close
   const handleKeyDown = useCallback((e) => {
@@ -29,6 +46,8 @@ const ConfirmDialog = ({
 
   if (!isOpen) return null;
 
+  const confirmVariant = variant === 'danger' ? 'danger' : 'default';
+
   return (
     <div
       className={styles.overlay}
@@ -47,19 +66,16 @@ const ConfirmDialog = ({
         </p>
 
         <div className={styles.buttonRow}>
-          <button
-            className={styles.cancelButton}
-            onClick={onCancel}
-          >
+          <TertiaryButton onClick={onCancel}>
             {cancelText}
-          </button>
+          </TertiaryButton>
 
-          <button
-            className={`${styles.confirmButton} ${styles[variant]}`}
+          <PrimaryButton 
             onClick={onConfirm}
+            variant={confirmVariant}
           >
             {confirmText}
-          </button>
+          </PrimaryButton>
         </div>
       </div>
     </div>

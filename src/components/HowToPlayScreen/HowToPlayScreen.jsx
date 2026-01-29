@@ -7,12 +7,8 @@ import DataCard from '../DataCard';
 
 /**
  * HowToPlayScreen Component
- *
- * Full-bleed screen displaying game rules and instructions.
- * Replaces RulesModal with unified design.
- *
- * @param {boolean} isOpen - Whether screen is visible
- * @param {function} onClose - Close handler
+ * 
+ * Rules and instructions with back button
  */
 const HowToPlayScreen = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState('goal');
@@ -25,7 +21,6 @@ const HowToPlayScreen = ({ isOpen, onClose }) => {
     { id: 'tips', label: 'Tips' },
   ];
 
-  // Goal Tab Content
   const GoalContent = () => (
     <div className={styles.tabContent}>
       <div className={styles.goalHighlight}>
@@ -33,148 +28,83 @@ const HowToPlayScreen = ({ isOpen, onClose }) => {
         <h3>Fill all 8 foundations to win</h3>
       </div>
       <div className={styles.cardsGrid}>
-        <DataCard
-          value="7 → K"
-          label="UP Foundations (4)"
-        />
-        <DataCard
-          value="6 → A"
-          label="DOWN Foundations (4)"
-        />
+        <DataCard value="7 → K" label="UP Foundations (4)" />
+        <DataCard value="6 → A" label="DOWN Foundations (4)" />
       </div>
     </div>
   );
 
-  // Columns Tab Content
   const ColumnsContent = () => (
     <div className={styles.tabContent}>
       <div className={styles.cardsGrid}>
-        <InfoCard
-          icon={<span className={styles.aceIcon}>A</span>}
-          title="Ace Columns"
-        >
+        <InfoCard icon={<span className={styles.aceIcon}>A</span>} title="Ace Columns">
           Build ascending A→6 with alternating colors.
-          Gold highlight indicates ace column.
         </InfoCard>
-        <InfoCard
-          icon={<span className={styles.kingIcon}>K</span>}
-          title="King Columns"
-        >
+        <InfoCard icon={<span className={styles.kingIcon}>K</span>} title="King Columns">
           Build descending K→7 with alternating colors.
-          Silver highlight indicates king column.
         </InfoCard>
-        <InfoCard
-          icon={<span className={styles.emptyIcon}>?</span>}
-          title="Empty Columns"
-        >
-          Only Kings or Aces can start a new column.
-          First card determines the column type.
+        <InfoCard icon={<span className={styles.emptyIcon}>□</span>} title="Empty Columns">
+          Only Kings or Aces can start an empty column.
         </InfoCard>
       </div>
     </div>
   );
 
-  // Controls Tab Content
   const ControlsContent = () => (
     <div className={styles.tabContent}>
       <div className={styles.cardsGrid}>
-        <InfoCard
-          icon={<span className={styles.controlIcon}>🖱</span>}
-          title="Drag & Drop"
-        >
-          Click and drag cards to move them between columns and foundations.
+        <InfoCard icon={<span className={styles.controlIcon}>🖱️</span>} title="Drag & Drop">
+          Click and drag cards to move them.
         </InfoCard>
-        <InfoCard
-          icon={<span className={styles.controlIcon}>⚡</span>}
-          title="Double Click"
-        >
-          Double-click a card to auto-move it to the best available foundation.
+        <InfoCard icon={<span className={styles.controlIcon}>👆</span>} title="Double Click">
+          Double-click a card to auto-move to foundation.
         </InfoCard>
-        <InfoCard
-          icon={<span className={styles.controlIcon}>↶</span>}
-          title="Undo / Redo"
-        >
-          Use Ctrl+Z to undo and Ctrl+Y to redo moves. Limited to last 100 moves.
+        <InfoCard icon={<span className={styles.controlIcon}>📱</span>} title="Touch">
+          Touch to select, touch destination to move.
         </InfoCard>
-        <InfoCard
-          icon={<span className={styles.controlIcon}>👆</span>}
-          title="Touch Controls"
-        >
-          Long-press to drag on touch devices. Tap to select, tap destination to move.
+        <InfoCard icon={<span className={styles.controlIcon}>⌨️</span>} title="Keyboard">
+          Ctrl+Z to undo, Escape to pause.
         </InfoCard>
       </div>
     </div>
   );
 
-  // Modes Tab Content
   const ModesContent = () => (
     <div className={styles.tabContent}>
       <div className={styles.cardsGrid}>
-        <InfoCard
-          icon={<span className={styles.modeIcon}>1</span>}
-          title="Classic"
-        >
-          <strong>1 Pocket</strong> — All cards face-up.
-          Traditional gameplay with complete visibility.
+        <InfoCard icon={<span className={styles.modeIcon}>📘</span>} title="Classic">
+          Standard rules with one pocket. Most balanced.
         </InfoCard>
-        <InfoCard
-          icon={<span className={styles.modeIcon}>2</span>}
-          title="Classic Double"
-        >
-          <strong>2 Pockets</strong> — All cards face-up.
-          More storage space for strategic play.
+        <InfoCard icon={<span className={styles.modeIcon}>📗</span>} title="Classic Double">
+          Two pockets for easier card management.
         </InfoCard>
-        <InfoCard
-          icon={<span className={styles.modeIcon}>🔒</span>}
-          title="Hidden"
-        >
-          <strong>1 Pocket</strong> — Face-down cards.
-          Challenge mode with concealed tableau cards.
+        <InfoCard icon={<span className={styles.modeIcon}>🎴</span>} title="Hidden">
+          Face-down cards in columns. More challenging.
         </InfoCard>
-        <InfoCard
-          icon={<span className={styles.modeIcon}>🔒🔒</span>}
-          title="Hidden Double"
-        >
-          <strong>2 Pockets</strong> — Face-down cards.
-          Maximum challenge with limited information.
+        <InfoCard icon={<span className={styles.modeIcon}>🃏</span>} title="Hidden Double">
+          Hidden cards with two pockets. Expert mode.
         </InfoCard>
       </div>
     </div>
   );
 
-  // Tips Tab Content
   const TipsContent = () => (
     <div className={styles.tabContent}>
-      <div className={styles.tipsList}>
-        <InfoCard
-          icon={<span className={styles.tipNumber}>1</span>}
-          title="Manage Empty Columns"
-        >
-          Keep empty columns available for Kings and Aces to maximize flexibility.
+      <div className={styles.tipsGrid}>
+        <InfoCard icon={<span className={styles.tipNumber}>1</span>} title="Empty Columns">
+          Keep empty columns for Kings and Aces.
         </InfoCard>
-        <InfoCard
-          icon={<span className={styles.tipNumber}>2</span>}
-          title="Uncover Hidden Cards"
-        >
-          In Hidden modes, prioritize revealing face-down cards early in the game.
+        <InfoCard icon={<span className={styles.tipNumber}>2</span>} title="Hidden Cards">
+          Prioritize revealing face-down cards early.
         </InfoCard>
-        <InfoCard
-          icon={<span className={styles.tipNumber}>3</span>}
-          title="Use Pockets Wisely"
-        >
-          The pocket can temporarily hold any card — use it strategically to free up moves.
+        <InfoCard icon={<span className={styles.tipNumber}>3</span>} title="Pocket Usage">
+          Use pocket strategically to free up moves.
         </InfoCard>
-        <InfoCard
-          icon={<span className={styles.tipNumber}>4</span>}
-          title="Plan Ahead"
-        >
-          Remember: some cards need to go UP (7→K), others DOWN (6→A) to foundations.
+        <InfoCard icon={<span className={styles.tipNumber}>4</span>} title="Plan Ahead">
+          Cards go UP (7→K) or DOWN (6→A).
         </InfoCard>
-        <InfoCard
-          icon={<span className={styles.tipNumber}>5</span>}
-          title="Foundation Priority"
-        >
-          Move cards to foundations when possible to free up tableau space.
+        <InfoCard icon={<span className={styles.tipNumber}>5</span>} title="Foundations">
+          Move to foundations to free tableau space.
         </InfoCard>
       </div>
     </div>
@@ -192,18 +122,10 @@ const HowToPlayScreen = ({ isOpen, onClose }) => {
   };
 
   return (
-    <FullBleedScreen
-      isOpen={isOpen}
-      onClose={onClose}
-      title="How to Play"
-    >
-      <div className={styles.container}>
-        <TabBar
-          tabs={tabs}
-          activeTab={activeTab}
-          onChange={setActiveTab}
-          className={styles.tabBar}
-        />
+    <FullBleedScreen isOpen={isOpen}>
+      <div className={styles.screen}>
+        <button className={styles.backButton} onClick={onClose}>←</button>
+        <TabBar tabs={tabs} activeTab={activeTab} onChange={setActiveTab} className={styles.tabBar} />
         <div className={styles.content}>
           {renderContent()}
         </div>
