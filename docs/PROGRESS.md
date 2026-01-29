@@ -67,6 +67,30 @@ Actual (bug): Column reads column[0] (face-down card) and sets wrong type
 
 ---
 
+### v2.2.3 - Code Audit Phase 2 Completion - IN PROGRESS 🔧
+
+**Objective:** Complete remaining Code Audit Phase 2 items: console.log cleanup and z-index consolidation.
+
+**Task 1: Console.log Cleanup**
+| File | Action | Reason |
+|------|--------|--------|
+| `validateSnapshots.js` | Remove ~15 console.log | Dev utility only, not production |
+| `useHighDPIAssets.js` | Remove debug log | Development artifact |
+| `useDragDrop.js` | Keep warn logs | Useful for debugging drag issues |
+| Error handlers | Keep all | Required for debugging |
+
+**Task 2: Z-Index Consolidation**
+| Current | Target | Token |
+|---------|--------|-------|
+| `z-index: 110` | `var(--z-cards)` | Use token |
+| `z-index: 2000` | `var(--z-header)` or similar | Create if needed |
+| `z-index: 9999` | `var(--z-overlay)` | Map to existing |
+| `z-index: 10000` | `var(--z-notification)` | Map to existing |
+
+**Goal:** All z-index values use CSS custom properties from tokens.css
+
+---
+
 ### v2.2.0 - Deep Blue Casino Theme - 2026-01-28 - COMPLETE ✅
 
 **Objective:** Implement new Blue Casino theme with multi-theme architecture.

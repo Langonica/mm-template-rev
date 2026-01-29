@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.3] - 2026-01-28
+
+### Code Audit Phase 2: Debug Cleanup & Z-Index Consolidation
+
+Completed remaining Code Audit Phase 2 tasks: removed development console.log statements and consolidated z-index usage to use design tokens consistently.
+
+#### Changed
+
+- **Console.log Cleanup**
+  - Removed debug logs from `validateSnapshots.js` (dev utility)
+  - Removed debug log from `useHighDPIAssets.js`
+  - Kept error handling logs (cardUtils, storage hooks, etc.)
+  - Production code now clean of development artifacts
+
+- **Z-Index Consolidation**
+  - Standardized all z-index values to use CSS custom properties
+  - Replaced hardcoded `110` → `var(--z-cards)`
+  - Replaced hardcoded `2000` → `var(--z-controls)`
+  - Replaced hardcoded `9999, 10000` → `var(--z-overlay)`, `var(--z-notification)`
+  - Eliminated calculated values like `calc(var(--z-cards) + 10)`
+  - Single source of truth in `tokens.css`
+
+#### Technical
+
+- No functional changes
+- Improved maintainability through token consistency
+- Easier to debug layering issues with semantic token names
+
+---
+
 ## [2.2.2] - 2026-01-28
 
 ### Extended Autoplay System

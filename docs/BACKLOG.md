@@ -6,16 +6,27 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ## In Progress
 
-### Code Audit - Phase 2: Debug Cleanup & Component Refactoring
+### Code Audit - Phase 2: Debug Cleanup & Component Refactoring - IN PROGRESS
 **Priority:** 🟡 High | **Complexity:** Low-Medium | **Added:** 2026-01-28 | **Started:** 2026-01-28
 
-See `docs/CODE_AUDIT.md` for full details.
+**Status Update:** Partially completed organically. Remaining tasks:
 
-**Tasks:**
-1. Remove ~30 console.log statements (keep error handling)
-2. Create reusable `CountBadge` component (dedupe stock/waste badges)
-3. Delete duplicate `useNotification.js` file (keep `.jsx`)
-4. Audit and consolidate z-index scale (currently 110-15000 chaos)
+**Task 1: Console.log Cleanup - IN PROGRESS**
+- ✅ Error handling logs kept (cardUtils, useCampaignProgress, useGameStats, etc.)
+- ✅ useNotification duplicate removed
+- ✅ CountBadge component created
+- 🔄 Remove debug logs from:
+  - `validateSnapshots.js` (dev utility - 15+ console.log calls)
+  - `useHighDPIAssets.js` (1 debug log)
+  - `useDragDrop.js` (warn logs for missing state - may keep)
+
+**Task 2: Z-Index Scale Consolidation - PENDING**
+Current chaos:
+- Hardcoded: `z-index: 110, 2000, 9999, 10000`
+- CSS vars: `var(--z-cards), var(--z-overlay)`
+- Calculated: `calc(var(--z-cards) + 10)`
+
+Goal: Standardize all z-index usage to token system in tokens.css
 
 ---
 
