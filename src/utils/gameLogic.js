@@ -162,18 +162,19 @@ export function executeMove(cardStr, target, gameState) {
   // Add to target
   addToTarget(movingCards, target, newState);
   
-  // Update column types if necessary
+  // Flip face-down card if revealed BEFORE updating column types
+  // This ensures faceDownCount is current when type is calculated
+  let animationInfo = null;
+  if (source.type === 'tableau') {
+    animationInfo = flipRevealedCard(source.column, newState);
+  }
+  
+  // Update column types after flip (so faceDownCount is current)
   if (source.type === 'tableau') {
     updateColumnType(source.column, newState);
   }
   if (target.type === 'tableau') {
     updateColumnType(target.column, newState);
-  }
-  
-  // Flip face-down card if revealed (may return animation info for Ace reveals)
-  let animationInfo = null;
-  if (source.type === 'tableau') {
-    animationInfo = flipRevealedCard(source.column, newState);
   }
 
   // Attach animation info to state if present (for Ace reveal animations)
@@ -240,6 +241,12 @@ function addToTarget(cards, target, state) {
 
 /**
  * Update column type after move
+ * 
+ * Column type is determined by the first face-up card (at index faceDownCount).
+ * - Empty column: type = 'empty'
+ * - 1 face-up card that is Ace: type = 'ace'
+ * - 1 face-up card that is King: type = 'king'
+ * - Otherwise: type = 'traditional'
  */
 function updateColumnType(columnIndex, state) {
   const column = state.tableau[columnIndex.toString()] || [];
@@ -248,28 +255,47 @@ function updateColumnType(columnIndex, state) {
     state.columnState = { types: [], faceDownCounts: [] };
   }
   
+  // Case 1: Empty column
   if (column.length === 0) {
     state.columnState.types[columnIndex] = 'empty';
     return;
   }
   
-  if (column.length === 1) {
-    const card = parseCard(column[0]);
+  // Get face-down count (defaults to 0 for classic modes)
+  const faceDownCount = state.columnState.faceDownCounts?.[columnIndex] || 0;
+  
+  // Calculate face-up card count
+  const faceUpCount = column.length - faceDownCount;
+  
+  // Case 2: Has face-up cards - type determined by first face-up card
+  if (faceUpCount > 0) {
+    // First face-up card is at index faceDownCount
+    const firstFaceUpIndex = faceDownCount;
+    const card = parseCard(column[firstFaceUpIndex]);
+    
     if (card) {
-      if (card.value === 'A') {
+      // Type is 'ace' or 'king' only if exactly 1 face-up card AND it's A/K
+      if (faceUpCount === 1 && card.value === 'A') {
         state.columnState.types[columnIndex] = 'ace';
-      } else if (card.value === 'K') {
+      } else if (faceUpCount === 1 && card.value === 'K') {
         state.columnState.types[columnIndex] = 'king';
       } else {
         state.columnState.types[columnIndex] = 'traditional';
       }
     }
   }
+  // Note: faceUpCount === 0 should never happen in valid game state
+  // (non-empty columns always have at least 1 face-up card)
 }
 
 /**
  * Flip top face-down card if revealed after removing cards
  * Also updates column type if the revealed card is an Ace or King
+ * 
+ * In hidden modes, after removing the last face-up card, we flip the
+ * top face-down card to face-up. The revealed card becomes the new
+ * first face-up card at index (faceDownCount - 1).
+ * 
  * @returns {object|null} Animation info if Ace was revealed, null otherwise
  */
 function flipRevealedCard(columnIndex, state) {
@@ -281,29 +307,36 @@ function flipRevealedCard(columnIndex, state) {
   }
 
   const faceDownCount = state.columnState.faceDownCounts?.[columnIndex] || 0;
+  
+  // Check if all remaining cards were face-down before this flip
+  // This happens when: faceDownCount == column.length (all cards face-down)
+  // After removing face-up cards, we need to reveal one face-down card
   if (faceDownCount > 0 && faceDownCount >= column.length) {
-    // Top card should now be face-up
-    const newFaceDownCount = Math.max(0, column.length - 1);
+    // Decrement faceDownCount to reveal the top face-down card
+    const newFaceDownCount = faceDownCount - 1;
     state.columnState.faceDownCounts[columnIndex] = newFaceDownCount;
 
-    // Update column type based on newly revealed card (the new bottom face-up card)
-    if (newFaceDownCount < column.length) {
-      const revealedCardStr = column[newFaceDownCount];
-      const bottomFaceUpCard = parseCard(revealedCardStr);
-      if (bottomFaceUpCard) {
-        if (bottomFaceUpCard.value === 'A') {
-          state.columnState.types[columnIndex] = 'ace';
-          // Return animation info for Ace reveal
-          return {
-            type: 'ace-reveal',
-            cardStr: revealedCardStr,
-            columnIndex: columnIndex
-          };
-        } else if (bottomFaceUpCard.value === 'K') {
-          state.columnState.types[columnIndex] = 'king';
-        } else {
-          state.columnState.types[columnIndex] = 'traditional';
-        }
+    // The revealed card is now at index newFaceDownCount
+    // (it was face-down, now it's face-up)
+    const revealedCardStr = column[newFaceDownCount];
+    const revealedCard = parseCard(revealedCardStr);
+    
+    if (revealedCard) {
+      // Type is 'ace' or 'king' only if this is now the ONLY face-up card
+      const faceUpCount = column.length - newFaceDownCount;
+      
+      if (faceUpCount === 1 && revealedCard.value === 'A') {
+        state.columnState.types[columnIndex] = 'ace';
+        // Return animation info for Ace reveal
+        return {
+          type: 'ace-reveal',
+          cardStr: revealedCardStr,
+          columnIndex: columnIndex
+        };
+      } else if (faceUpCount === 1 && revealedCard.value === 'K') {
+        state.columnState.types[columnIndex] = 'king';
+      } else {
+        state.columnState.types[columnIndex] = 'traditional';
       }
     }
   }
