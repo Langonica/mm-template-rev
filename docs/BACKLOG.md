@@ -6,26 +6,6 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ## In Progress
 
-### Critical Bug Fix: Column Typing in Hidden Modes
-**Priority:** 🔴 Critical | **Complexity:** Medium | **Added:** 2026-01-28 | **Started:** 2026-01-28
-
-**Issue:** In `hidden` and `hidden_double` modes, column type is calculated incorrectly.
-
-**Bug:** `updateColumnType()` uses `column[0]` (physical bottom) instead of `column[faceDownCount]` (first face-up).
-
-**Impact:** Columns prematurely switch type based on face-down cards.
-
-**Fix:**
-- Calculate `firstFaceUpIndex = faceDownCount`
-- Read type-determining card from `column[firstFaceUpIndex]`
-- Type = 'ace'/'king' only when exactly 1 face-up card AND that card is A/K
-- Otherwise type = 'traditional'
-
-**Files:** `src/utils/gameLogic.js`
-**Functions:** `updateColumnType()`, execution order in `executeMove()`
-
----
-
 ### Code Audit - Phase 2: Debug Cleanup & Component Refactoring
 **Priority:** 🟡 High | **Complexity:** Low-Medium | **Added:** 2026-01-28 | **Started:** 2026-01-28
 
@@ -109,6 +89,9 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 ## Completed Items
 
 *Move items here when resolved, with date and brief note:*
+
+### ~~Critical Bug Fix: Column Typing in Hidden Modes~~
+**Resolved:** 2026-01-28 | Fixed column type calculation bug in `hidden` and `hidden_double` modes. `updateColumnType()` was using `column[0]` (physical bottom card) instead of `column[faceDownCount]` (first face-up card). In hidden modes, the bottom card is often face-down, causing incorrect type assignment. Fix: Calculate `firstFaceUpIndex = faceDownCount`, determine type from that card. Type is 'ace'/'king' only when exactly 1 face-up card AND it's A/K. Also fixed `flipRevealedCard()` logic and reordered operations in `executeMove()` to ensure flip happens before type update.
 
 ### ~~Code Audit - Phase 1: Critical Performance & Error Handling~~
 **Resolved:** 2026-01-28 | Fixed 4 critical issues: (1) Removed `getComputedStyle` from Column.jsx render loop - eliminated layout thrashing, (2) Created `deepClone()` utility using native `structuredClone()` with JSON fallback - ~2-3x faster deep cloning, (3) Reduced useEffect dependencies in App.jsx from 10 → 6 using statsRef pattern, (4) Added user-facing error notifications for localStorage failures via onError callbacks. All changes maintain backward compatibility.

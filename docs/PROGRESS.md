@@ -8,9 +8,11 @@ Meridian Solitaire is a unique card game implementation with dual foundation sys
 
 ## Current Work
 
-### v2.2.1 - Column Typing Bug Fix - IN PROGRESS 🐛
+### v2.2.1 - Column Typing Bug Fix - COMPLETE ✅
 
 **Objective:** Fix critical bug in hidden game modes where columns prematurely switch type based on face-down cards instead of face-up cards.
+
+**Status:** ✅ Fixed and tested
 
 **Bug Summary:**
 In `hidden` and `hidden_double` modes, the `updateColumnType()` function in `gameLogic.js` incorrectly used `column[0]` (physical bottom card) to determine column type. In hidden modes, `column[0]` is often a face-down card, causing columns to adopt wrong types.
@@ -23,30 +25,17 @@ Expected: Column stays 'traditional' (or reveals next card)
 Actual (bug): Column reads column[0] (face-down card) and sets wrong type
 ```
 
-**Root Cause:**
-- `updateColumnType()` hardcoded `column[0]` instead of `column[faceDownCount]`
-- Only checked `column.length === 1` instead of calculating face-up count
-- No awareness of hidden mode card visibility
+**Fix Applied (2026-01-28):**
+- `updateColumnType()`: Now uses `column[faceDownCount]` to find first face-up card
+- `updateColumnType()`: Calculates `faceUpCount = column.length - faceDownCount`
+- `updateColumnType()`: Type = 'ace'/'king' only when exactly 1 face-up AND it's A/K
+- `flipRevealedCard()`: Fixed flip condition and type calculation
+- `executeMove()`: Reordered so flip runs before type update
 
-**Fix Strategy:**
-1. Read `faceDownCount` from column state
-2. Calculate `firstFaceUpIndex = faceDownCount`
-3. Use `column[firstFaceUpIndex]` to determine type
-4. Type = 'ace' if 1 face-up card is Ace
-5. Type = 'king' if 1 face-up card is King  
-6. Type = 'traditional' otherwise
-
-**Files to Modify:**
+**Files Modified:**
 - `src/utils/gameLogic.js` - `updateColumnType()` function
+- `src/utils/gameLogic.js` - `flipRevealedCard()` function
 - `src/utils/gameLogic.js` - Execution order in `executeMove()`
-
-**Verification Scenarios:**
-| Scenario | Mode | Expected Result |
-|----------|------|-----------------|
-| Move Ace from column | hidden | Column becomes 'traditional' |
-| Move King from column | hidden_double | Column becomes 'traditional' |
-| Reveal Ace from face-down | hidden | Column becomes 'ace' |
-| Classic mode column 0 | classic | Unchanged (faceDownCount=0) |
 
 ---
 
