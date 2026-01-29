@@ -16,6 +16,7 @@ import {
   detectUnwinnableState
 } from '../utils/gameLogic';
 import { findCardLocation, parseCard, canPlaceOnFoundation, deepClone } from '../utils/cardUtils';
+import { loadThresholds } from '../utils/notificationConfig';
 
 export const useCardGame = (callbacks = {}) => {
   const { onCardsMoved, onFoundationCompleted } = callbacks;
@@ -59,8 +60,11 @@ export const useCardGame = (callbacks = {}) => {
   // Initialize game state tracker (for circular play detection)
   const [stateTracker] = useState(() => new GameStateTracker());
 
+  // Load configurable thresholds (memoized to avoid reloading on every render)
+  const thresholds = useMemo(() => loadThresholds(), []);
+
   // Helper: Calculate notification tier based on tracker state
-  // Conservative thresholds to reduce false positives
+  // Uses configurable thresholds (loaded once on mount)
   const calculateNotificationTier = useCallback((trackerResult, unwinnableCheck = null) => {
     const { 
       unproductiveCycleCount
@@ -72,39 +76,40 @@ export const useCardGame = (callbacks = {}) => {
       return { tier: 'confirmed', reason: 'solver', confidence: unwinnableCheck.confidence };
     }
     
-    // Tier 3: Warning (6+ unproductive cycles - high confidence proxy)
-    if (unproductiveCycleCount >= 6) {
+    // Tier 3: Warning (configurable threshold)
+    if (unproductiveCycleCount >= thresholds.warning) {
       return { tier: 'warning', reason: 'cycles', value: unproductiveCycleCount };
     }
     
-    // Tier 2: Concern (4 unproductive cycles)
-    if (unproductiveCycleCount >= 4) {
+    // Tier 2: Concern (configurable threshold)
+    if (unproductiveCycleCount >= thresholds.concern) {
       return { tier: 'concern', reason: 'cycles', value: unproductiveCycleCount };
     }
     
-    // Tier 1: Hint (3 unproductive cycles - subtle indicator)
-    if (unproductiveCycleCount >= 3) {
+    // Tier 1: Hint (configurable threshold)
+    if (unproductiveCycleCount >= thresholds.hint) {
       return { tier: 'hint', reason: 'cycles', value: unproductiveCycleCount };
     }
     
     return { tier: 'none' };
-  }, []);
+  }, [thresholds]);
 
   // Helper: Run unwinnable detection when appropriate
   // Returns cached result or runs new check if conditions met
   const runUnwinnableCheck = useCallback((currentState, trackerResult) => {
     // Only check if we have enough unproductive cycles to warrant it
-    if (trackerResult.unproductiveCycleCount < 4) {
+    // Use concern threshold as the minimum to start checking
+    if (trackerResult.unproductiveCycleCount < thresholds.concern) {
       return null;
     }
     
-    // Use deeper check for higher cycle counts
-    const useDeepCheck = trackerResult.unproductiveCycleCount >= 6;
+    // Use deeper check for higher cycle counts (at warning threshold)
+    const useDeepCheck = trackerResult.unproductiveCycleCount >= thresholds.warning;
     const maxNodes = useDeepCheck ? 8000 : 3000;
     const maxDepth = useDeepCheck ? 15 : 10;
     
     return detectUnwinnableState(currentState, { maxNodes, maxDepth });
-  }, []);
+  }, [thresholds]);
 
   // Helper: Update game state notification after move
   const updateGameStateNotification = useCallback((trackerResult, currentState) => {

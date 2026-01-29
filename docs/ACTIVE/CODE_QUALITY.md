@@ -90,7 +90,21 @@ src/
 
 ---
 
-## Recent Improvements (v2.3.0)
+## Recent Improvements (v2.3.2)
+
+### Phase 2a - Game State Detection Tuning
+- **Telemetry System:** New `useGSTelemetry` hook tracks false positives/negatives
+- **Configurable Thresholds:** New `notificationConfig.js` utility for tuning
+- **Integration:** Telemetry wired throughout game lifecycle in App.jsx
+- **Debug APIs:** `window.__GS_TELEMETRY__` and `window.__NOTIFICATION_CONFIG__`
+
+### Phase 1 - App.jsx Architectural Hardening
+- **ESLint errors in App.jsx:** Eliminated (0 errors)
+- **setState-in-effect violations:** Fixed with queueMicrotask pattern
+- **Missing dependencies:** Resolved with useCallback wrappers
+- **Result:** App.jsx is now ESLint-clean and architectural-debt-free
+
+## Historical Improvements (v2.3.0)
 
 ### Phase 5 - Code Quality Cleanup
 - **ESLint errors reduced:** 80 → 20 (75% reduction)

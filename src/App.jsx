@@ -21,6 +21,7 @@ import { useViewportScale } from './hooks/useViewportScale'
 import { useHighDPIAssets } from './hooks/useHighDPIAssets'
 import { useNotification, Notification, NOTIFICATION_MESSAGES } from './hooks/useNotification.jsx'
 import { useNotificationSettings } from './contexts/NotificationSettingsContext'
+import { useGSTelemetry } from './hooks/useGSTelemetry'
 import { generateRandomDeal, getGameModes } from './utils/dealGenerator'
 import './styles/App.css'
 
@@ -109,6 +110,17 @@ function App() {
     getTierProgress,
     getCampaignProgress,
   } = useCampaignProgress(showError)
+
+  // Game state telemetry for tuning notification thresholds
+  const {
+    startGame: startTelemetry,
+    endGame: endTelemetry,
+    recordTier,
+    recordDismissal,
+    recordIgnoredWarning,
+    recordSolverCheck,
+    recordCycleCount,
+  } = useGSTelemetry()
 
   // Dynamic viewport scaling - ensures game fits without cropping
   // Now supports scaling up to 2× for larger viewports (requires 2× assets)
@@ -390,13 +402,14 @@ function App() {
   useEffect(() => {
     if (currentSnapshot && moveCount === 0) {
       recordGameStart()
+      startTelemetry(selectedMode) // Telemetry: track game start
       gameEndedRef.current = false
       // Defer state update to avoid synchronous setState in effect
       queueMicrotask(() => {
         setLastGameResult(null)
       })
     }
-  }, [currentSnapshot, moveCount, recordGameStart])
+  }, [currentSnapshot, moveCount, recordGameStart, selectedMode, startTelemetry])
 
   // Record game end when status changes to won or stalemate
   // Uses statsRef to avoid excessive dependencies (Performance fix - Phase 1)
@@ -404,6 +417,7 @@ function App() {
     if (gameStatus?.isGameOver && !gameEndedRef.current) {
       gameEndedRef.current = true
       const won = gameStatus.status === 'won'
+      endTelemetry(gameStatus.status, moveCount) // Telemetry: track game end
       const result = recordGameEnd(won, moveCount, selectedMode)
 
       // Record campaign completion if this was a campaign level
@@ -428,7 +442,7 @@ function App() {
         })
       })
     }
-  }, [gameStatus, moveCount, selectedMode, recordGameEnd, currentCampaignLevel, recordCampaignCompletion])
+  }, [gameStatus, moveCount, selectedMode, recordGameEnd, currentCampaignLevel, recordCampaignCompletion, endTelemetry])
 
   // Show stalemate modal when game is in stalemate
   useEffect(() => {
@@ -451,7 +465,11 @@ function App() {
   useEffect(() => {
     if (!circularPlayState || showHomeScreen || gameStatus?.isGameOver) return
 
-    const { tier } = circularPlayState
+    const { tier, cycleCount, movesSinceProgress } = circularPlayState
+    
+    // Telemetry: record tier changes and cycle counts
+    recordTier(tier)
+    recordCycleCount(cycleCount || 0)
 
     // Don't show notifications if game is over or paused
     if (isPaused) return
@@ -520,7 +538,7 @@ function App() {
         })
         break
     }
-  }, [circularPlayState, showHomeScreen, gameStatus, isPaused, gameStateToastOpen, gameStateOverlayOpen, stalemateModalOpen, isTierEnabled, dismissedNotificationTier, tierIsHigherThan])
+  }, [circularPlayState, showHomeScreen, gameStatus, isPaused, gameStateToastOpen, gameStateOverlayOpen, stalemateModalOpen, isTierEnabled, dismissedNotificationTier, tierIsHigherThan, recordTier, recordCycleCount])
 
   // Calculate foundation cards for stalemate modal stats
   const getFoundationCardCount = useCallback(() => {
@@ -567,11 +585,15 @@ function App() {
     setGameStateToastOpen(false)
     // Remember which tier was dismissed to prevent re-triggering
     setDismissedNotificationTier(circularPlayState?.tier || null)
-  }, [circularPlayState?.tier])
+    // Telemetry: record user dismissal
+    recordDismissal()
+  }, [circularPlayState?.tier, recordDismissal])
 
   const handleOverlayDismiss = useCallback(() => {
     setGameStateOverlayOpen(false)
-  }, [])
+    // Telemetry: record user chose to keep playing (ignore warning)
+    recordIgnoredWarning()
+  }, [recordIgnoredWarning])
 
   const handleOverlayUndo = useCallback(() => {
     setGameStateOverlayOpen(false)

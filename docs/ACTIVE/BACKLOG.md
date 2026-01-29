@@ -12,20 +12,17 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ---
 
-### Stabilization & Hardening - Phase 2a/2b (v2.3.2)
+### Stabilization & Hardening - Phase 2b (v2.3.2)
 **Priority:** 🟡 High | **Complexity:** Medium | **Added:** 2026-01-29
 
-**Phase 2a: Game State Detection Tuning**
-- Add telemetry hook to track false positive/negative rates
-- Make notification thresholds configurable via localStorage
-- Add user feedback mechanism ("I can still win this" button)
+**Phase 2a:** ✅ COMPLETE - Telemetry and configurable thresholds implemented
 
 **Phase 2b: Game State Detection Hardening**
 - Add "ignore this game" option for edge cases
 - Harden solver against timeout edge cases
 - Add detection failure recovery (don't crash game)
 
-**Status:** Ready to implement when testing reveals threshold issues
+**Status:** Ready to implement when testing reveals edge cases
 
 ---
 

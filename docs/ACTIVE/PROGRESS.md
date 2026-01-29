@@ -8,6 +8,40 @@ Meridian Solitaire is a unique card game implementation with dual foundation sys
 
 ## Current Work
 
+### Phase 2a: Game State Detection Tuning (Telemetry) - COMPLETE ✅
+
+**Objective:** Add telemetry tracking and configurable thresholds for the game state notification system.
+
+**Part of:** Stabilization & Hardening v2.3.2
+
+**Implementation:**
+
+| Feature | Files | Description |
+|---------|-------|-------------|
+| Telemetry Hook | `hooks/useGSTelemetry.js` | New - tracks game outcomes vs notification tiers |
+| Threshold Config | `utils/notificationConfig.js` | New - configurable thresholds via localStorage |
+| App Integration | `App.jsx` | Integrated telemetry throughout game lifecycle |
+| useCardGame Update | `hooks/useCardGame.js` | Now uses configurable thresholds |
+
+**Telemetry Tracks:**
+- Game start/end with outcomes
+- Highest notification tier reached
+- User dismissals and ignored warnings
+- False positives (warning shown → user won)
+- False negatives (no warning → game unwinnable)
+
+**Configurable Thresholds:**
+- `hint` (default: 3 cycles)
+- `concern` (default: 4 cycles)
+- `warning` (default: 6 cycles)
+- `confirmed` (default: 8 cycles)
+
+**Debug APIs:**
+- `window.__GS_TELEMETRY__` - View telemetry data
+- `window.__NOTIFICATION_CONFIG__` - Adjust thresholds
+
+---
+
 ### Phase 1: App.jsx Architectural Hardening - COMPLETE ✅
 
 **Objective:** Eliminate setState-in-effect violations and fix architectural patterns that cause cascading renders.
