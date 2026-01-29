@@ -1,5 +1,8 @@
 .card {
   background-image: var(--sprite-url);
+  /* Fixed background size ensures @2x sprites render at correct logical size */
+  /* 1040x560 = 13 columns × 80px × 5 rows × 112px (1× logical grid) */
+  background-size: 1040px 560px;
   width: 80px;
   height: 112px;
   position: absolute;

@@ -169,6 +169,7 @@ const StockWaste = ({
                 zIndex: 'calc(var(--z-stock-waste) - 190)',
                 cursor: 'pointer',
                 backgroundImage: 'var(--sprite-url)',
+                backgroundSize: '1040px 560px',
                 backgroundPosition: '-480px -448px',
                 borderRadius: '6px',
                 boxShadow: '0 4px 10px rgba(0, 0, 0, 0.5)',

@@ -237,6 +237,7 @@ const Column = ({
               width: 'var(--card-w)',
               height: 'var(--card-h)',
               backgroundImage: 'var(--sprite-url)',
+              backgroundSize: '1040px 560px',
               backgroundPosition: `-${slurpingCard.cardData.v * 80}px -${slurpingCard.cardData.s * 112}px`,
               borderRadius: '6px',
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.8)',
