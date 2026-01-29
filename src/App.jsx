@@ -812,6 +812,7 @@ function App() {
             onCancelAutoComplete={cancelAutoComplete}
             hintsRemaining={hintsRemaining}
             onShowHint={showHint}
+            autoCompleteAnimation={autoCompleteAnimation}
           />
 
           {/* Gear Button - fixed top-right, triggers settings menu */}

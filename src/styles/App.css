@@ -2197,3 +2197,185 @@ header select {
   text-align: center;
 }
 
+
+/* ===== AUTO-COMPLETE ANIMATIONS ===== */
+
+/* Foundation glow when receiving auto-complete card */
+.foundation-slot.autocomplete-target {
+  animation: autocomplete-glow-pulse 700ms ease-in-out infinite;
+}
+
+.foundation-slot.autocomplete-arriving {
+  animation: autocomplete-glow-bright 200ms ease-out;
+}
+
+@keyframes autocomplete-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(255, 215, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 215, 0, 0.2);
+  }
+}
+
+@keyframes autocomplete-glow-bright {
+  0% {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8), inset 0 0 20px rgba(255, 215, 0, 0.3);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    transform: scale(1);
+  }
+}
+
+/* Lane track glow when card is departing */
+.lane-track.autocomplete-source {
+  animation: autocomplete-source-pulse 700ms ease-in-out infinite;
+}
+
+.lane-track.autocomplete-departing {
+  animation: autocomplete-source-depart 200ms ease-out;
+}
+
+@keyframes autocomplete-source-pulse {
+  0%, 100% {
+    box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.2);
+  }
+  50% {
+    box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.4);
+  }
+}
+
+@keyframes autocomplete-source-depart {
+  0% {
+    box-shadow: inset 0 0 30px rgba(255, 215, 0, 0.5);
+  }
+  100% {
+    box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.2);
+  }
+}
+
+/* Departing card lift animation */
+@keyframes autocomplete-lift {
+  0% {
+    transform: scale(1) translateY(0);
+    filter: brightness(1);
+  }
+  100% {
+    transform: scale(1.15) translateY(-20px);
+    filter: brightness(1.3) drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+  }
+}
+
+/* Card flying to foundation animation */
+@keyframes autocomplete-fly {
+  0% {
+    transform: scale(1.15) translateY(-20px);
+    filter: brightness(1.3) drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+  }
+  100% {
+    transform: scale(1.1) translateY(-100px) translateX(50px);
+    filter: brightness(1.2) drop-shadow(0 15px 40px rgba(0, 0, 0, 0.4));
+  }
+}
+
+/* Card landing at foundation animation */
+@keyframes autocomplete-land {
+  0% {
+    transform: scale(1.1) translateY(-100px) translateX(50px);
+    filter: brightness(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2) translateY(-50px) translateX(25px);
+    filter: brightness(1.5);
+  }
+  100% {
+    transform: scale(0) translateY(0) translateX(0);
+    filter: brightness(1);
+    opacity: 0;
+  }
+}
+
+/* Card classes for auto-complete animations */
+.card.autocomplete-departing {
+  animation: autocomplete-card-lift 200ms ease-out forwards;
+  z-index: calc(var(--z-card-hover) + 100) !important;
+}
+
+.card.autocomplete-moving {
+  animation: autocomplete-card-fly 300ms ease-out forwards;
+  z-index: calc(var(--z-card-hover) + 100) !important;
+}
+
+@keyframes autocomplete-card-lift {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  100% {
+    transform: scale(1.1) translateY(-10px);
+    filter: brightness(1.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+}
+
+@keyframes autocomplete-card-fly {
+  0% {
+    transform: scale(1.1) translateY(-10px);
+    filter: brightness(1.2);
+  }
+  100% {
+    transform: scale(0.9) translateY(-50px);
+    filter: brightness(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* Auto-complete progress indicator overlay */
+.autocomplete-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.autocomplete-progress {
+  background: linear-gradient(135deg, var(--bg-elevated), var(--bg-deep));
+  border: 2px solid var(--color-accent-gold);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4) var(--spacing-6);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  text-align: center;
+}
+
+.autocomplete-progress-text {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent-gold);
+  margin-bottom: var(--spacing-2);
+}
+
+.autocomplete-progress-bar {
+  width: 200px;
+  height: 6px;
+  background: var(--bg-overlay-medium);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.autocomplete-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent-gold), #fff);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}

@@ -28,7 +28,8 @@ const Column = ({
   onTouchEnd,
   onTouchCancel,
   animatingCard = null,
-  autoMoveAnimation = null
+  autoMoveAnimation = null,
+  autoCompleteAnimation = null
 }) => {
   // Track animation states
   const [portalFlash, setPortalFlash] = useState(false);
@@ -94,6 +95,18 @@ const Column = ({
   
   // Check if this column is a valid drop target
   const isValid = isValidTarget({ type: 'tableau', column: columnIndex });
+
+  // Check if auto-complete is moving a card from this column
+  const isAutoCompleteSource = autoCompleteAnimation?.isActive &&
+                               autoCompleteAnimation?.currentMove?.from?.type === 'tableau' &&
+                               autoCompleteAnimation?.currentMove?.from?.column === columnIndex;
+  
+  const autoCompletePhase = isAutoCompleteSource ? autoCompleteAnimation?.currentMove?.phase : null;
+  const isAutoCompleteDeparting = autoCompletePhase === 'departing';
+  const isAutoCompleteMoving = autoCompletePhase === 'moving';
+  
+  // Get the card being moved in auto-complete
+  const departingCard = isAutoCompleteSource ? autoCompleteAnimation?.currentMove?.card : null;
   
   // Handle drag over
   const handleDragOver = (e) => {
@@ -129,12 +142,20 @@ const Column = ({
   return (
     <>
       <div
-        className={`lane-track lane-${columnType} ${isValid ? 'valid-drop-target' : ''}`}
+        className={`lane-track lane-${columnType} ${isValid ? 'valid-drop-target' : ''} ${isAutoCompleteSource ? 'autocomplete-source' : ''} ${isAutoCompleteDeparting ? 'autocomplete-departing' : ''}`}
         style={{
           left: `${left}px`,
           top: 'var(--theater-top)',
-          border: isValid ? '2px solid rgba(76, 175, 80, 0.8)' : undefined,
-          boxShadow: isValid ? '0 0 20px rgba(76, 175, 80, 0.4)' : undefined,
+          border: isValid 
+            ? '2px solid rgba(76, 175, 80, 0.8)' 
+            : isAutoCompleteSource
+              ? '2px solid rgba(255, 215, 0, 0.6)'
+              : undefined,
+          boxShadow: isValid 
+            ? '0 0 20px rgba(76, 175, 80, 0.4)' 
+            : isAutoCompleteSource
+              ? '0 0 15px rgba(255, 215, 0, 0.3)'
+              : undefined,
           transition: 'all 0.3s ease'
         }}
         onDragOver={handleDragOver}
@@ -314,6 +335,11 @@ const Column = ({
         const isAutoMoveSlurping = autoMoveAnimation?.cardStr === cardStr &&
                                    autoMoveAnimation?.phase === 'slurp';
 
+        // Check if this card is being auto-completed to foundation
+        const isAutoCompleteCard = departingCard === cardStr;
+        const isAutoCompleteDepartingCard = isAutoCompleteCard && isAutoCompleteDeparting;
+        const isAutoCompleteMovingCard = isAutoCompleteCard && isAutoCompleteMoving;
+
         // Hide card during slurp phase (card is slurping but not yet popping)
         const isSlurping = slurpingCard?.cardStr === cardStr && !isPopping;
 
@@ -322,9 +348,11 @@ const Column = ({
         else if (isAceRelocating) animationClass = 'ace-relocating';
         else if (isAcePopping) animationClass = 'ace-popping';
         else if (isAutoMoveSlurping) animationClass = 'auto-move-slurping';
+        else if (isAutoCompleteDepartingCard) animationClass = 'autocomplete-departing';
+        else if (isAutoCompleteMovingCard) animationClass = 'autocomplete-moving';
 
-        // If card is being slurped (hidden during slurp animation), don't render it yet
-        if (isSlurping) {
+        // If card is being slurped or auto-completed, hide the original card
+        if (isSlurping || isAutoCompleteDepartingCard || isAutoCompleteMovingCard) {
           return null;
         }
 
@@ -352,7 +380,77 @@ const Column = ({
           />
         );
       })}
+
+      {/* Auto-complete departing card overlay */}
+      {isAutoCompleteSource && departingCard && (
+        <AutoCompleteDepartingCard
+          cardStr={departingCard}
+          columnIndex={columnIndex}
+          columnType={columnType}
+          cards={cards}
+          positioning={positioning}
+          phase={autoCompletePhase}
+        />
+      )}
     </>
+  );
+};
+
+/**
+ * Auto-complete departing card overlay component
+ * Shows the card animating from column to foundation
+ */
+const AutoCompleteDepartingCard = ({ cardStr, columnIndex, columnType, cards, positioning, phase }) => {
+  const cardData = parseCard(cardStr);
+  if (!cardData) return null;
+
+  // Find card position in column
+  const cardIndex = cards.indexOf(cardStr);
+  if (cardIndex === -1) return null;
+
+  // Calculate position
+  const left = START_X + (columnIndex * (CARD_WIDTH + GAP));
+  let cardTop;
+  if (columnType === 'ace') {
+    const positionFromBottom = cardIndex;
+    cardTop = positioning.trackBottom - CARD_HEIGHT - (positionFromBottom * OVERLAP);
+    if (cardTop < positioning.minTop) {
+      cardTop = positioning.minTop;
+    }
+  } else {
+    cardTop = positioning.theaterTop + (cardIndex * OVERLAP);
+  }
+
+  // Animation based on phase
+  let animationName = 'autocomplete-lift';
+  let animationDuration = '200ms';
+  
+  if (phase === 'moving') {
+    animationName = 'autocomplete-fly';
+    animationDuration = '300ms';
+  } else if (phase === 'arriving') {
+    animationName = 'autocomplete-land';
+    animationDuration = '200ms';
+  }
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: `${left}px`,
+        top: `${cardTop}px`,
+        width: 'var(--card-w)',
+        height: 'var(--card-h)',
+        backgroundImage: 'var(--sprite-url)',
+        backgroundSize: '1040px 560px',
+        backgroundPosition: `-${cardData.v * 80}px -${cardData.s * 112}px`,
+        borderRadius: '6px',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.4)',
+        zIndex: 'var(--z-portal)',
+        pointerEvents: 'none',
+        animation: `${animationName} ${animationDuration} ease-out forwards`
+      }}
+    />
   );
 };
 

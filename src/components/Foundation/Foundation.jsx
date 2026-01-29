@@ -18,7 +18,8 @@ const Foundation = ({
   onTouchMove,
   onTouchEnd,
   onTouchCancel,
-  autoMoveAnimation
+  autoMoveAnimation,
+  autoCompleteAnimation
 }) => {
   const suits = ['h', 'd', 'c', 's'];
   
@@ -67,27 +68,43 @@ const Foundation = ({
                            autoMoveAnimation?.source?.type === 'foundation' &&
                            autoMoveAnimation?.source?.suit === suit &&
                            autoMoveAnimation?.cardStr === topCard;
+
+        // Check if auto-complete is moving a card to this foundation
+        const isAutoCompleteTarget = autoCompleteAnimation?.isActive &&
+                                     autoCompleteAnimation?.currentMove?.to?.zone === zone &&
+                                     autoCompleteAnimation?.currentMove?.to?.suit === suit;
+        
+        // Check auto-complete phase for animation
+        const autoCompletePhase = isAutoCompleteTarget ? autoCompleteAnimation?.currentMove?.phase : null;
+        const isAutoCompleteArriving = autoCompletePhase === 'arriving';
+        const isAutoCompleteMoving = autoCompletePhase === 'moving';
         
         return (
           <div
             key={`${zone}-foundation-${suit}`}
-            className={`slot foundation-slot ${isValid ? 'valid-drop-target' : ''}`}
+            className={`slot foundation-slot ${isValid ? 'valid-drop-target' : ''} ${isAutoCompleteTarget ? 'autocomplete-target' : ''} ${isAutoCompleteArriving ? 'autocomplete-arriving' : ''}`}
             style={{
               width: 'var(--fnd-card-w)',
               height: 'var(--fnd-card-h)',
               position: 'relative',
               borderColor: isValid
                 ? 'rgba(76, 175, 80, 0.8)'
-                : isDownFoundation
-                  ? 'var(--temp-silver)'
-                  : 'var(--temp-gold)',
+                : isAutoCompleteTarget
+                  ? 'rgba(255, 215, 0, 0.8)' // Gold glow for auto-complete target
+                  : isDownFoundation
+                    ? 'var(--temp-silver)'
+                    : 'var(--temp-gold)',
               borderRadius: '4px',
               background: isValid
                 ? 'rgba(76, 175, 80, 0.1)'
-                : 'rgba(255, 255, 255, 0.02)',
+                : isAutoCompleteTarget
+                  ? 'rgba(255, 215, 0, 0.15)' // Gold background for auto-complete target
+                  : 'rgba(255, 255, 255, 0.02)',
               border: isValid
                 ? '2px solid rgba(76, 175, 80, 0.8)'
-                : '1px solid rgba(255, 255, 255, 0.1)',
+                : isAutoCompleteTarget
+                  ? '2px solid rgba(255, 215, 0, 0.8)'
+                  : '1px solid rgba(255, 255, 255, 0.1)',
               boxSizing: 'border-box',
               transition: 'all 0.3s ease',
               boxShadow: isValid

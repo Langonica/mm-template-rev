@@ -39,7 +39,8 @@ const GameStage = ({
   onAutoComplete,
   onCancelAutoComplete,
   hintsRemaining,
-  onShowHint
+  onShowHint,
+  autoCompleteAnimation
 }) => {
   if (!snapshot) {
     return (
@@ -80,6 +81,7 @@ const GameStage = ({
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchCancel}
           autoMoveAnimation={autoMoveAnimation?.target?.zone === 'down' ? autoMoveAnimation : null}
+          autoCompleteAnimation={autoCompleteAnimation}
         />
 
         {/* Up Foundations (7→K) on RIGHT */}
@@ -99,6 +101,7 @@ const GameStage = ({
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchCancel}
           autoMoveAnimation={autoMoveAnimation?.target?.zone === 'up' ? autoMoveAnimation : null}
+          autoCompleteAnimation={autoCompleteAnimation}
         />
       </div>
       
@@ -110,6 +113,10 @@ const GameStage = ({
         // Pass autoMoveAnimation if source is this column
         const columnAutoMove = autoMoveAnimation?.source?.type === 'tableau' &&
                                autoMoveAnimation?.source?.column === columnIndex ? autoMoveAnimation : null;
+        // Pass autoCompleteAnimation if this column is the source
+        const columnAutoComplete = autoCompleteAnimation?.currentMove?.from?.type === 'tableau' &&
+                                   autoCompleteAnimation?.currentMove?.from?.column === columnIndex
+                                   ? autoCompleteAnimation : null;
         return (
           <Column
             key={`column-${columnIndex}`}
@@ -129,6 +136,7 @@ const GameStage = ({
             onTouchCancel={handleTouchCancel}
             animatingCard={columnAnimatingCard}
             autoMoveAnimation={columnAutoMove}
+            autoCompleteAnimation={columnAutoComplete}
           />
         );
       })}
@@ -154,6 +162,7 @@ const GameStage = ({
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchCancel}
           autoMoveAnimation={autoMoveAnimation}
+          autoCompleteAnimation={autoCompleteAnimation}
         />
       </div>
 

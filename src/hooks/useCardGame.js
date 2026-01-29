@@ -45,6 +45,13 @@ export const useCardGame = (callbacks = {}) => {
   // Auto-complete detection state (Phase 4)
   const [autoCompleteAvailable, setAutoCompleteAvailable] = useState(false);
 
+  // Auto-complete animation state (Phase 1 Animation Improvements)
+  const [autoCompleteAnimation, setAutoCompleteAnimation] = useState({
+    isActive: false,
+    currentMove: null, // { card, from, to, phase }
+    progress: { completed: 0, total: 0 }
+  });
+
   // Initialize undo system
   const undoSystem = useUndo();
 
@@ -172,56 +179,117 @@ export const useCardGame = (callbacks = {}) => {
   const autoCompleteAbortRef = useRef(false);
   
   // Execute auto-complete: Play all available cards to foundations
+  // Phase 1 Animation Improvements: Sequential visual animation before state updates
   const executeAutoComplete = useCallback(async () => {
     if (!gameState || isAutoCompleting) return;
     
     // Verify auto-complete is still available
     if (!canAutoComplete(gameState)) return;
     
+    // Collect all moves first
+    const allMoves = [];
+    let tempState = gameState;
+    const maxMoves = 52; // Safety limit
+    
+    while (allMoves.length < maxMoves) {
+      const moves = getAllFoundationMoves(tempState);
+      if (moves.length === 0) break;
+      
+      const move = moves[0];
+      const newState = executeFoundationMove(tempState, move);
+      if (!newState) break;
+      
+      allMoves.push(move);
+      tempState = newState;
+    }
+    
+    if (allMoves.length === 0) return;
+    
+    // Start auto-complete animation sequence
     setIsAutoCompleting(true);
     autoCompleteAbortRef.current = false;
+    
+    // Initialize animation state
+    setAutoCompleteAnimation({
+      isActive: true,
+      currentMove: null,
+      progress: { completed: 0, total: allMoves.length }
+    });
     
     // Record initial state for undo
     const initialState = deepClone(gameState);
     
     let currentState = gameState;
     let movesMade = 0;
-    const maxMoves = 52; // Safety limit
     
-    // Find and execute foundation moves until no more available
-    while (movesMade < maxMoves && !autoCompleteAbortRef.current) {
-      const moves = getAllFoundationMoves(currentState);
+    // Animate each move sequentially
+    for (const move of allMoves) {
+      if (autoCompleteAbortRef.current) break;
       
-      if (moves.length === 0) break;
-      
-      // Execute the first available move
-      const move = moves[0];
-      const newState = executeFoundationMove(currentState, move);
-      
-      if (!newState) break;
-      
-      // Animate the move
-      setAnimatingCard({
-        card: move.card,
-        from: move.from,
-        to: move.to,
-        isAutoMove: true
+      // Phase 1: Show card "lifting" from source (200ms)
+      setAutoCompleteAnimation({
+        isActive: true,
+        currentMove: { ...move, phase: 'departing' },
+        progress: { completed: movesMade, total: allMoves.length }
       });
       
-      // Wait for animation
       await new Promise(resolve => setTimeout(resolve, 200));
       
-      // Update state
+      // Phase 2: Card in transit to foundation (300ms)
+      setAutoCompleteAnimation({
+        isActive: true,
+        currentMove: { ...move, phase: 'moving' },
+        progress: { completed: movesMade, total: allMoves.length }
+      });
+      
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Execute the move
+      const newState = executeFoundationMove(currentState, move);
+      if (!newState) break;
+      
       currentState = newState;
       setGameState(newState);
+      setCurrentStockCards(newState.stock || []);
+      setCurrentWasteCards(newState.waste || []);
+      
+      setCurrentSnapshot(prev => ({
+        ...prev,
+        stock: newState.stock,
+        waste: newState.waste,
+        pocket1: newState.pocket1,
+        pocket2: newState.pocket2,
+        tableau: newState.tableau,
+        foundations: newState.foundations,
+        columnState: newState.columnState
+      }));
+      
       movesMade++;
       
-      // Clear animation
-      setAnimatingCard(null);
+      // Phase 3: Card "arriving" at foundation (200ms)
+      setAutoCompleteAnimation({
+        isActive: true,
+        currentMove: { ...move, phase: 'arriving' },
+        progress: { completed: movesMade, total: allMoves.length }
+      });
       
-      // Small delay between moves
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Track foundation completion
+      if (onFoundationCompleted && move.to.type === 'foundation') {
+        const foundationPile = currentState.foundations[move.to.zone]?.[move.to.suit] || [];
+        if (foundationPile.length === 13) {
+          onFoundationCompleted();
+        }
+      }
     }
+    
+    // Clear animation state
+    setAutoCompleteAnimation({
+      isActive: false,
+      currentMove: null,
+      progress: { completed: movesMade, total: allMoves.length }
+    });
     
     // Record as single undo entry if moves were made
     if (movesMade > 0) {
@@ -230,23 +298,24 @@ export const useCardGame = (callbacks = {}) => {
         movesCount: movesMade
       }, initialState);
       
-      setMoveCount(prev => prev + 1);
+      setMoveCount(prev => prev + movesMade);
       
       // Update tracking
       const trackingResult = stateTracker.recordMove(currentState);
       updateCircularPlayState(trackingResult);
       
-      // Check win condition
+      // Check win condition - but DON'T trigger win screen yet
       const status = getGameStatus(currentState);
       if (status.status === 'won') {
-        // Game won - let the win handler take over
+        // Delay win screen to show final state
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
     
     setIsAutoCompleting(false);
     setAutoCompleteAvailable(false);
-    clearHint(); // Clear any hints
-  }, [gameState, isAutoCompleting, undoSystem, stateTracker, updateCircularPlayState, clearHint]);
+    clearHint();
+  }, [gameState, isAutoCompleting, undoSystem, stateTracker, updateCircularPlayState, clearHint, onFoundationCompleted]);
   
   // Cancel auto-complete execution
   const cancelAutoComplete = useCallback(() => {
@@ -794,6 +863,7 @@ export const useCardGame = (callbacks = {}) => {
     isAutoCompleting,
     executeAutoComplete,
     cancelAutoComplete,
+    autoCompleteAnimation,
     // Hint system (Phase 6)
     currentHint,
     hintsRemaining,
