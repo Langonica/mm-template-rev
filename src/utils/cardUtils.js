@@ -319,6 +319,100 @@ export function getMovingCards(cardStr, location, gameState) {
 
 
 // ============================================================================
+// STATE FINGERPRINTING (Game State Analyzer - Phase 1)
+// ============================================================================
+
+/**
+ * Generate a deterministic hash/fingerprint of the current game state
+ * Used to detect circular play and track game progression
+ * 
+ * @param {object} gameState - Current game state
+ * @returns {object} Fingerprint object with hashable properties
+ */
+export function getStateFingerprint(gameState) {
+  if (!gameState) return null;
+
+  // Hash tableau columns (order matters for detection)
+  const tableauHash = hashTableau(gameState.tableau);
+
+  // Get top cards from stock and waste
+  const stockTop = gameState.stock?.[0] || null;
+  const wasteTop = gameState.waste?.[gameState.waste.length - 1] || null;
+
+  // Count foundation cards (progress metric)
+  const foundationCounts = countFoundationCards(gameState.foundations);
+  const totalFoundationCards = Object.values(foundationCounts).reduce((a, b) => a + b, 0);
+
+  // Pocket contents
+  const pockets = [gameState.pocket1, gameState.pocket2];
+
+  return {
+    tableauHash,
+    stockTop,
+    wasteTop,
+    foundationCounts,
+    pockets,
+    totalFoundationCards
+  };
+}
+
+/**
+ * Create a string hash of the tableau for comparison
+ * @param {object} tableau - Tableau columns object
+ * @returns {string} Deterministic hash string
+ */
+function hashTableau(tableau) {
+  if (!tableau) return '';
+  
+  const columnHashes = [];
+  
+  for (let col = 0; col < 7; col++) {
+    const column = tableau[col.toString()] || [];
+    // Join cards with separator, empty columns marked as "E"
+    columnHashes.push(column.length > 0 ? column.join(',') : 'E');
+  }
+  
+  // Join columns with semicolon
+  return columnHashes.join(';');
+}
+
+/**
+ * Count cards on foundations by zone and suit
+ * @param {object} foundations - Foundations object {up: {...}, down: {...}}
+ * @returns {object} Counts by zone and suit
+ */
+function countFoundationCards(foundations) {
+  const counts = { up: {}, down: {}, total: 0 };
+  
+  if (!foundations) return counts;
+  
+  const suits = ['h', 'd', 'c', 's'];
+  
+  for (const zone of ['up', 'down']) {
+    counts[zone] = {};
+    for (const suit of suits) {
+      const count = foundations[zone]?.[suit]?.length || 0;
+      counts[zone][suit] = count;
+      counts.total += count;
+    }
+  }
+  
+  return counts;
+}
+
+/**
+ * Get a compact string key from a fingerprint for Map storage
+ * @param {object} fingerprint - State fingerprint from getStateFingerprint
+ * @returns {string} Compact key for storage
+ */
+export function fingerprintToKey(fingerprint) {
+  if (!fingerprint) return '';
+  
+  // Create a compact representation
+  return `${fingerprint.tableauHash}|${fingerprint.stockTop || '-'}|${fingerprint.wasteTop || '-'}|${fingerprint.pockets.join(',')}`;
+}
+
+// ============================================================================
 // DEEP CLONE UTILITY (Performance Optimization - Phase 1)
 // ============================================================================
 

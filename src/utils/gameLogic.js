@@ -5,7 +5,9 @@ import {
   findCardLocation,
   isCardAccessible,
   getMovingCards,
-  isValidSequence
+  isValidSequence,
+  getStateFingerprint,
+  fingerprintToKey
 } from './cardUtils';
 
 // ============================================================================
@@ -792,4 +794,129 @@ export function getGameStatus(gameState) {
     availableMoves: realMoves.length,
     isGameOver: false
   };
+}
+
+// ============================================================================
+// GAME STATE TRACKER (Game State Analyzer - Phase 1)
+// ============================================================================
+
+/**
+ * GameStateTracker - Tracks game state history to detect circular play
+ * and monitor progression toward win condition
+ */
+export class GameStateTracker {
+  constructor() {
+    this.stateHistory = new Map(); // fingerprintKey -> visitCount
+    this.moveNumber = 0;
+    this.lastProgressMove = 0; // Move number when last foundation card was added
+    this.cycleCount = 0; // Consecutive cycles without new state
+    this.currentFingerprint = null;
+    this.maxFoundationCount = 0; // Highest foundation count seen
+  }
+
+  /**
+   * Record a move and update tracking state
+   * @param {object} gameState - Current game state after move
+   * @returns {object} Analysis result: { isNewState, visitCount, circular, noProgress }
+   */
+  recordMove(gameState) {
+    const fingerprint = getStateFingerprint(gameState);
+    const key = fingerprintToKey(fingerprint);
+    
+    this.currentFingerprint = fingerprint;
+    this.moveNumber++;
+
+    // Check if this is a new state or a repeat
+    const visitCount = this.stateHistory.get(key) || 0;
+    const isNewState = visitCount === 0;
+    
+    if (isNewState) {
+      // Reset cycle count on new state
+      this.cycleCount = 0;
+    } else {
+      // Increment cycle count on repeat
+      this.cycleCount++;
+    }
+
+    // Update visit count
+    this.stateHistory.set(key, visitCount + 1);
+
+    // Check for progress (foundation cards increased)
+    if (fingerprint.totalFoundationCards > this.maxFoundationCount) {
+      this.maxFoundationCount = fingerprint.totalFoundationCards;
+      this.lastProgressMove = this.moveNumber;
+    }
+
+    // Determine status
+    const circular = this.isCircularPlay();
+    const noProgress = this.isNoProgress();
+
+    return {
+      isNewState,
+      visitCount: visitCount + 1,
+      circular,
+      noProgress,
+      cycleCount: this.cycleCount,
+      movesSinceProgress: this.moveNumber - this.lastProgressMove,
+      totalFoundationCards: fingerprint.totalFoundationCards
+    };
+  }
+
+  /**
+   * Check if we're in a circular play pattern (3+ repeats)
+   * @returns {boolean}
+   */
+  isCircularPlay() {
+    // 3+ cycles without a new state = circular play
+    return this.cycleCount >= 3;
+  }
+
+  /**
+   * Check if we've gone too long without progress
+   * @returns {boolean}
+   */
+  isNoProgress() {
+    // 20+ moves without foundation progress = no progress
+    return (this.moveNumber - this.lastProgressMove) > 20;
+  }
+
+  /**
+   * Get current tracker statistics
+   * @returns {object}
+   */
+  getStats() {
+    return {
+      moveNumber: this.moveNumber,
+      uniqueStates: this.stateHistory.size,
+      totalVisits: Array.from(this.stateHistory.values()).reduce((a, b) => a + b, 0),
+      cycleCount: this.cycleCount,
+      lastProgressMove: this.lastProgressMove,
+      movesSinceProgress: this.moveNumber - this.lastProgressMove,
+      maxFoundationCount: this.maxFoundationCount,
+      isCircular: this.isCircularPlay(),
+      isNoProgress: this.isNoProgress()
+    };
+  }
+
+  /**
+   * Reset tracker for new game
+   */
+  reset() {
+    this.stateHistory.clear();
+    this.moveNumber = 0;
+    this.lastProgressMove = 0;
+    this.cycleCount = 0;
+    this.currentFingerprint = null;
+    this.maxFoundationCount = 0;
+  }
+
+  /**
+   * Check if current state has been seen before
+   * @returns {number} Visit count (0 if never seen)
+   */
+  getCurrentStateVisitCount() {
+    if (!this.currentFingerprint) return 0;
+    const key = fingerprintToKey(this.currentFingerprint);
+    return this.stateHistory.get(key) || 0;
+  }
 }

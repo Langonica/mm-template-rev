@@ -7,7 +7,8 @@ import {
   executeMove,
   tryAutoMove,
   getGameStatus,
-  getAvailableMoves
+  getAvailableMoves,
+  GameStateTracker
 } from '../utils/gameLogic';
 import { findCardLocation, parseCard, canPlaceOnFoundation, deepClone } from '../utils/cardUtils';
 
@@ -30,6 +31,9 @@ export const useCardGame = () => {
 
   // Initialize undo system
   const undoSystem = useUndo();
+
+  // Initialize game state tracker (for circular play detection)
+  const [stateTracker] = useState(() => new GameStateTracker());
 
   // Note: No auto-load on mount. Game loads when user clicks "Play Game" from HomeScreen.
   // This prevents the flash of a dealt game before HomeScreen renders.
@@ -66,13 +70,16 @@ export const useCardGame = () => {
     // Clear undo history when loading new snapshot
     undoSystem.clearHistory();
     
+    // Reset state tracker for new game
+    stateTracker.reset();
+    
     // Update config based on snapshot metadata
     setConfig(prev => ({
       ...prev,
       mode: snapshot.metadata.mode,
       variant: snapshot.metadata.variant,
     }));
-  }, [undoSystem]);
+  }, [undoSystem, stateTracker]);
 
   // Load a game state directly (for random deals)
   const loadGameState = useCallback((gameStateData) => {
@@ -105,13 +112,16 @@ export const useCardGame = () => {
     // Clear undo history when loading new game
     undoSystem.clearHistory();
 
+    // Reset state tracker for new game
+    stateTracker.reset();
+
     // Update config based on metadata
     setConfig(prev => ({
       ...prev,
       mode: gameStateData.metadata?.mode || prev.mode,
       variant: gameStateData.metadata?.variant || prev.variant,
     }));
-  }, [undoSystem]);
+  }, [undoSystem, stateTracker]);
   
   const setMode = useCallback((mode) => {
     const modeSnapshotId = `${mode}_normal`;
@@ -171,6 +181,9 @@ export const useCardGame = () => {
         cardCount: currentWasteCards.length
       }, previousState);
       
+      // Track state for circular play detection (recycle is a significant state change)
+      stateTracker.recordMove(newState);
+      
     } else {
       // Draw a card
       const drawnCard = currentStockCards[currentStockCards.length - 1];
@@ -195,10 +208,13 @@ export const useCardGame = () => {
         from: 'stock',
         to: 'waste'
       }, previousState);
+      
+      // Track state for circular play detection
+      stateTracker.recordMove(newState);
     }
     
     setMoveCount(prev => prev + 1);
-  }, [currentStockCards, currentWasteCards, gameState, undoSystem]);
+  }, [currentStockCards, currentWasteCards, gameState, undoSystem, stateTracker]);
   
   // Handle card move with undo tracking
   const handleMove = useCallback((cardStr, target) => {
@@ -270,13 +286,21 @@ export const useCardGame = () => {
         target: target
       }, previousState);
 
+      // Track state for circular play detection
+      const trackingResult = stateTracker.recordMove(newState);
+      
+      // Log warnings for development (can be removed in production)
+      if (trackingResult.circular) {
+        console.warn('Circular play detected - consider undoing moves');
+      }
+
       setMoveCount(prev => prev + 1);
 
       return true;
     }
 
     return false;
-  }, [gameState, undoSystem]);
+  }, [gameState, undoSystem, stateTracker]);
   
   // Handle double-click auto-move with slurp/pop animation
   // Tries foundation first, then tableau builds, then empty columns
@@ -382,6 +406,9 @@ export const useCardGame = () => {
         to: moveDestination
       }, previousState);
 
+      // Track state for circular play detection
+      stateTracker.recordMove(testState);
+
       setMoveCount(prev => prev + 1);
 
       // Switch to pop animation
@@ -394,7 +421,7 @@ export const useCardGame = () => {
     }, 300);
 
     return true;
-  }, [gameState, undoSystem]);
+  }, [gameState, undoSystem, stateTracker]);
   
   // Undo last move
   const handleUndo = useCallback(() => {
@@ -496,6 +523,8 @@ export const useCardGame = () => {
     canRedo: undoSystem.canRedo,
     gameStatus,
     availableMoves,
+    // State tracker for circular play detection
+    stateTrackerStats: stateTracker ? stateTracker.getStats() : null,
     ...dragDrop,
     ...touchDrag
   };
