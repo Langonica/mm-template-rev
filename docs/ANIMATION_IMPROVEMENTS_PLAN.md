@@ -188,10 +188,16 @@ const executeAutoComplete = useCallback(async () => {
 - [x] Departing card overlay with lift/fly/land animations
 - [x] CSS animations for all effects
 
-### Phase 2 - Pending
-- [ ] Arc motion for regular autoplay (double-click)
-- [ ] Ghost trail effect
-- [ ] Source vacancy flash
+### Phase 2 - COMPLETED ✓
+- [x] Arc motion for regular autoplay (double-click)
+  - 3-phase animation: lifting (100ms) → flying (300ms) → landing (200ms)
+  - Total duration: 600ms (faster than old 700ms slurp/pop)
+- [x] Ghost trail effect
+  - 3 semi-transparent trailing cards with staggered fade
+- [x] Source vacancy flash
+  - Gold highlight on source column/waste/pocket when card departs
+- [x] Updated all components: Column, Foundation, StockWaste
+- [x] CSS animations with reduced-motion support
 
 ### Phase 3 - Future
 - [ ] Sound effects

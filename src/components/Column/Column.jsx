@@ -107,6 +107,17 @@ const Column = ({
   
   // Get the card being moved in auto-complete
   const departingCard = isAutoCompleteSource ? autoCompleteAnimation?.currentMove?.card : null;
+
+  // Phase 2: Check if arc animation (double-click autoplay) is moving a card from this column
+  const isArcSource = autoMoveAnimation?.cardStr && 
+                      autoMoveAnimation?.source?.type === 'tableau' &&
+                      autoMoveAnimation?.source?.column === columnIndex;
+  
+  const arcPhase = isArcSource ? autoMoveAnimation?.phase : null;
+  const isArcLifting = arcPhase === 'lifting';
+  const isArcFlying = arcPhase === 'flying';
+  const isArcLanding = arcPhase === 'landing';
+  const showArcGhosts = autoMoveAnimation?.showGhosts && isArcSource;
   
   // Handle drag over
   const handleDragOver = (e) => {
@@ -142,18 +153,18 @@ const Column = ({
   return (
     <>
       <div
-        className={`lane-track lane-${columnType} ${isValid ? 'valid-drop-target' : ''} ${isAutoCompleteSource ? 'autocomplete-source' : ''} ${isAutoCompleteDeparting ? 'autocomplete-departing' : ''}`}
+        className={`lane-track lane-${columnType} ${isValid ? 'valid-drop-target' : ''} ${isAutoCompleteSource ? 'autocomplete-source' : ''} ${isAutoCompleteDeparting ? 'autocomplete-departing' : ''} ${isArcSource ? 'arc-source' : ''}`}
         style={{
           left: `${left}px`,
           top: 'var(--theater-top)',
           border: isValid 
             ? '2px solid rgba(76, 175, 80, 0.8)' 
-            : isAutoCompleteSource
+            : isAutoCompleteSource || isArcSource
               ? '2px solid rgba(255, 215, 0, 0.6)'
               : undefined,
           boxShadow: isValid 
             ? '0 0 20px rgba(76, 175, 80, 0.4)' 
-            : isAutoCompleteSource
+            : isAutoCompleteSource || isArcSource
               ? '0 0 15px rgba(255, 215, 0, 0.3)'
               : undefined,
           transition: 'all 0.3s ease'
@@ -343,6 +354,12 @@ const Column = ({
         // Hide card during slurp phase (card is slurping but not yet popping)
         const isSlurping = slurpingCard?.cardStr === cardStr && !isPopping;
 
+        // Phase 2: Arc animation classes for double-click autoplay
+        const isArcCard = autoMoveAnimation?.cardStr === cardStr;
+        const isArcLiftingCard = isArcCard && isArcLifting;
+        const isArcFlyingCard = isArcCard && isArcFlying;
+        const isArcLandingCard = isArcCard && isArcLanding;
+
         let animationClass = '';
         if (isPopping) animationClass = 'popping';
         else if (isAceRelocating) animationClass = 'ace-relocating';
@@ -350,9 +367,13 @@ const Column = ({
         else if (isAutoMoveSlurping) animationClass = 'auto-move-slurping';
         else if (isAutoCompleteDepartingCard) animationClass = 'autocomplete-departing';
         else if (isAutoCompleteMovingCard) animationClass = 'autocomplete-moving';
+        else if (isArcLiftingCard) animationClass = 'arc-lifting';
+        else if (isArcFlyingCard) animationClass = 'arc-flying';
+        else if (isArcLandingCard) animationClass = 'arc-landing';
 
-        // If card is being slurped or auto-completed, hide the original card
-        if (isSlurping || isAutoCompleteDepartingCard || isAutoCompleteMovingCard) {
+        // If card is being slurped, auto-completed, or arc-animated, hide the original card
+        if (isSlurping || isAutoCompleteDepartingCard || isAutoCompleteMovingCard || 
+            isArcLiftingCard || isArcFlyingCard) {
           return null;
         }
 
@@ -380,6 +401,18 @@ const Column = ({
           />
         );
       })}
+
+      {/* Phase 2: Ghost trails for arc animation */}
+      {showArcGhosts && autoMoveAnimation?.cardStr && (
+        <GhostTrails
+          cardStr={autoMoveAnimation.cardStr}
+          columnIndex={columnIndex}
+          columnType={columnType}
+          cards={cards}
+          positioning={positioning}
+          phase={arcPhase}
+        />
+      )}
 
       {/* Auto-complete departing card overlay */}
       {isAutoCompleteSource && departingCard && (
@@ -451,6 +484,55 @@ const AutoCompleteDepartingCard = ({ cardStr, columnIndex, columnType, cards, po
         animation: `${animationName} ${animationDuration} ease-out forwards`
       }}
     />
+  );
+};
+
+/**
+ * Ghost trails component for arc animation
+ * Shows semi-transparent trailing cards behind the moving card
+ */
+const GhostTrails = ({ cardStr, columnIndex, columnType, cards, positioning, phase }) => {
+  const cardData = parseCard(cardStr);
+  if (!cardData || phase !== 'flying') return null;
+
+  // Find card position in column
+  const cardIndex = cards.indexOf(cardStr);
+  if (cardIndex === -1) return null;
+
+  // Calculate position
+  const left = START_X + (columnIndex * (CARD_WIDTH + GAP));
+  let cardTop;
+  if (columnType === 'ace') {
+    const positionFromBottom = cardIndex;
+    cardTop = positioning.trackBottom - CARD_HEIGHT - (positionFromBottom * OVERLAP);
+    if (cardTop < positioning.minTop) {
+      cardTop = positioning.minTop;
+    }
+  } else {
+    cardTop = positioning.theaterTop + (cardIndex * OVERLAP);
+  }
+
+  return (
+    <>
+      {[1, 2, 3].map((i) => (
+        <div
+          key={`ghost-${i}`}
+          className={`ghost-trail ghost-trail-${i}`}
+          style={{
+            position: 'absolute',
+            left: `${left}px`,
+            top: `${cardTop}px`,
+            width: 'var(--card-w)',
+            height: 'var(--card-h)',
+            backgroundImage: 'var(--sprite-url)',
+            backgroundSize: '1040px 560px',
+            backgroundPosition: `-${cardData.v * 80}px -${cardData.s * 112}px`,
+            zIndex: `calc(var(--z-cards) + ${10 - i})`,
+            pointerEvents: 'none'
+          }}
+        />
+      ))}
+    </>
   );
 };
 

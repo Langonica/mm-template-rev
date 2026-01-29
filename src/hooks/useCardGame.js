@@ -615,8 +615,9 @@ export const useCardGame = (callbacks = {}) => {
     return false;
   }, [gameState, undoSystem, stateTracker, updateCircularPlayState, checkAutoComplete, clearHint, onCardsMoved, onFoundationCompleted]);
   
-  // Handle double-click auto-move with slurp/pop animation
+  // Handle double-click auto-move with arc animation (Phase 2)
   // Tries foundation first, then tableau builds, then empty columns
+  // Animation phases: lifting (100ms) → flying (300ms) → landing (200ms)
   const handleAutoMove = useCallback((cardStr) => {
     if (!gameState) return false;
 
@@ -686,17 +687,20 @@ export const useCardGame = (callbacks = {}) => {
       }
     }
 
-    // Start slurp animation at source
+    // Phase 2 Animation: Arc trajectory with ghost trails
+    // Start lifting animation at source
     setAutoMoveAnimation({
       cardStr,
       cardData: card,
       source: sourceLocation,
       target: actualTarget,
-      phase: 'slurp'
+      phase: 'lifting',
+      showGhosts: true
     });
 
-    // After slurp completes (300ms), apply the state and show pop
+    // Phase 1: Lifting (100ms)
     setTimeout(() => {
+      // Apply state update while card is "in flight"
       setGameState(testState);
       setCurrentStockCards(testState.stock || []);
       setCurrentWasteCards(testState.waste || []);
@@ -725,13 +729,13 @@ export const useCardGame = (callbacks = {}) => {
       
       // Check auto-complete availability (Phase 4)
       checkAutoComplete(testState);
-      clearHint(); // Clear hints after move
+      clearHint();
 
       setMoveCount(prev => prev + 1);
       
       // Track card movement for statistics
       if (onCardsMoved) {
-        onCardsMoved(1); // Single card moved
+        onCardsMoved(1);
       }
       
       // Track foundation completion
@@ -742,14 +746,27 @@ export const useCardGame = (callbacks = {}) => {
         }
       }
 
-      // Switch to pop animation
-      setAutoMoveAnimation(prev => prev ? { ...prev, phase: 'pop' } : null);
+      // Phase 2: Flying with ghost trails (300ms)
+      setAutoMoveAnimation(prev => prev ? { 
+        ...prev, 
+        phase: 'flying',
+        showGhosts: true 
+      } : null);
 
-      // Clear animation after pop completes (400ms)
+      // Phase 3: Landing (200ms)
       setTimeout(() => {
-        setAutoMoveAnimation(null);
-      }, 400);
-    }, 300);
+        setAutoMoveAnimation(prev => prev ? { 
+          ...prev, 
+          phase: 'landing',
+          showGhosts: false 
+        } : null);
+
+        // Clear animation after landing completes
+        setTimeout(() => {
+          setAutoMoveAnimation(null);
+        }, 200);
+      }, 300);
+    }, 100);
 
     return true;
   }, [gameState, undoSystem, stateTracker, updateCircularPlayState, checkAutoComplete, clearHint, onCardsMoved, onFoundationCompleted]);

@@ -2379,3 +2379,226 @@ header select {
   border-radius: 3px;
   transition: width 0.3s ease;
 }
+
+/* ===== PHASE 2: ARC ANIMATION FOR REGULAR AUTOPLAY ===== */
+
+/* Source vacancy flash - where card departed from */
+.source-vacancy {
+  animation: source-flash 400ms ease-out;
+}
+
+@keyframes source-flash {
+  0% { 
+    box-shadow: inset 0 0 0 rgba(255, 215, 0, 0);
+    background: transparent;
+  }
+  30% { 
+    box-shadow: inset 0 0 30px rgba(255, 215, 0, 0.7);
+    background: rgba(255, 215, 0, 0.2);
+  }
+  100% { 
+    box-shadow: inset 0 0 0 rgba(255, 215, 0, 0);
+    background: transparent;
+  }
+}
+
+/* Card lifting from source */
+.card.arc-lifting {
+  animation: arc-lift 100ms ease-out forwards;
+  z-index: calc(var(--z-card-hover) + 50) !important;
+}
+
+@keyframes arc-lift {
+  0% {
+    transform: scale(1) translateY(0);
+    filter: brightness(1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  100% {
+    transform: scale(1.15) translateY(-20px);
+    filter: brightness(1.3);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.3);
+  }
+}
+
+/* Card flying along arc trajectory */
+.card.arc-flying {
+  animation: arc-fly 300ms ease-in-out forwards;
+  z-index: calc(var(--z-card-hover) + 50) !important;
+  pointer-events: none;
+}
+
+@keyframes arc-fly {
+  0% {
+    transform: scale(1.15) translateY(-20px);
+    filter: brightness(1.3);
+  }
+  50% {
+    /* Peak of arc - scale down slightly as it travels */
+    transform: scale(1.05) translateY(-80px);
+    filter: brightness(1.2);
+  }
+  100% {
+    /* Approaching destination */
+    transform: scale(0.95) translateY(-10px);
+    filter: brightness(1.1);
+  }
+}
+
+/* Card landing at destination */
+.card.arc-landing {
+  animation: arc-land 200ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  z-index: calc(var(--z-card-hover) + 50) !important;
+}
+
+@keyframes arc-land {
+  0% {
+    transform: scale(0.95);
+    filter: brightness(1.2);
+  }
+  40% {
+    transform: scale(1.15);
+    filter: brightness(1.4);
+  }
+  70% {
+    transform: scale(0.98);
+    filter: brightness(1.1);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* Ghost trail effect - trailing behind moving card */
+.ghost-trail {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.ghost-trail-1 {
+  opacity: 0.35;
+  animation: ghost-fade-1 150ms ease-out forwards;
+  animation-delay: 40ms;
+}
+
+.ghost-trail-2 {
+  opacity: 0.2;
+  animation: ghost-fade-2 150ms ease-out forwards;
+  animation-delay: 80ms;
+}
+
+.ghost-trail-3 {
+  opacity: 0.1;
+  animation: ghost-fade-3 150ms ease-out forwards;
+  animation-delay: 120ms;
+}
+
+@keyframes ghost-fade-1 {
+  0% { 
+    opacity: 0.35; 
+    transform: scale(1) translateY(0);
+  }
+  100% { 
+    opacity: 0; 
+    transform: scale(0.9) translateY(10px);
+  }
+}
+
+@keyframes ghost-fade-2 {
+  0% { 
+    opacity: 0.2; 
+    transform: scale(1) translateY(0);
+  }
+  100% { 
+    opacity: 0; 
+    transform: scale(0.85) translateY(15px);
+  }
+}
+
+@keyframes ghost-fade-3 {
+  0% { 
+    opacity: 0.1; 
+    transform: scale(1) translateY(0);
+  }
+  100% { 
+    opacity: 0; 
+    transform: scale(0.8) translateY(20px);
+  }
+}
+
+/* Lane track highlight during arc animation */
+.lane-track.arc-source {
+  animation: arc-source-pulse 600ms ease-out;
+}
+
+@keyframes arc-source-pulse {
+  0% {
+    box-shadow: inset 0 0 0 rgba(255, 215, 0, 0);
+  }
+  20% {
+    box-shadow: inset 0 0 25px rgba(255, 215, 0, 0.5);
+  }
+  100% {
+    box-shadow: inset 0 0 0 rgba(255, 215, 0, 0);
+  }
+}
+
+/* Foundation glow when receiving arc-animated card */
+.foundation-slot.arc-target {
+  animation: arc-target-glow 500ms ease-out;
+}
+
+@keyframes arc-target-glow {
+  0% {
+    box-shadow: 0 0 0 rgba(76, 175, 80, 0);
+  }
+  30% {
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.8), inset 0 0 20px rgba(76, 175, 80, 0.3);
+    border-color: rgba(76, 175, 80, 1);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+    border-color: rgba(76, 175, 80, 0.5);
+  }
+}
+
+/* Waste/pocket source highlight */
+.stock-waste-source {
+  animation: stock-source-flash 400ms ease-out;
+}
+
+@keyframes stock-source-flash {
+  0% {
+    box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+  }
+  30% {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .card.arc-lifting,
+  .card.arc-flying,
+  .card.arc-landing,
+  .ghost-trail,
+  .source-vacancy,
+  .lane-track.arc-source,
+  .foundation-slot.arc-target {
+    animation: none !important;
+    transition: opacity 0.1s ease !important;
+  }
+  
+  .card.arc-lifting,
+  .card.arc-flying,
+  .card.arc-landing {
+    transform: none !important;
+    filter: none !important;
+  }
+}

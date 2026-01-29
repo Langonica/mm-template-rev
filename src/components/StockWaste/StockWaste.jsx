@@ -53,6 +53,20 @@ const StockWaste = ({
                             autoMoveAnimation?.source?.type === 'pocket' &&
                             autoMoveAnimation?.source?.pocketNum === 2;
 
+  // Phase 2: Check for arc animation (double-click autoplay)
+  const isWasteArc = autoMoveAnimation?.cardStr === topWasteCard &&
+                     autoMoveAnimation?.source?.type === 'waste';
+  const isPocket1Arc = autoMoveAnimation?.cardStr === pocket1 &&
+                       autoMoveAnimation?.source?.type === 'pocket' &&
+                       autoMoveAnimation?.source?.pocketNum === 1;
+  const isPocket2Arc = autoMoveAnimation?.cardStr === pocket2 &&
+                       autoMoveAnimation?.source?.type === 'pocket' &&
+                       autoMoveAnimation?.source?.pocketNum === 2;
+  
+  const arcPhase = autoMoveAnimation?.phase;
+  const isArcLifting = arcPhase === 'lifting';
+  const isArcFlying = arcPhase === 'flying';
+
   // Pocket drop handlers
   const handlePocketDragOver = (e, pocketNum) => {
     if (isValidTarget({ type: 'pocket', pocketNum })) {
@@ -181,7 +195,7 @@ const StockWaste = ({
       </div>
       
       {/* Waste Pile */}
-      <div className="waste-container" style={{
+      <div className={`waste-container ${isWasteArc ? 'stock-waste-source' : ''}`} style={{
         position: 'relative',
         width: 'var(--card-w)',
         height: 'var(--card-h)'
@@ -228,7 +242,7 @@ const StockWaste = ({
                   cardStr={topWasteCard}
                   isBack={false}
                   config={config}
-                  className={isWasteSlurping ? 'auto-move-slurping' : ''}
+                  className={isWasteSlurping ? 'auto-move-slurping' : isWasteArc && isArcLifting ? 'arc-lifting' : isWasteArc && isArcFlying ? 'arc-flying' : ''}
                   onDragStart={onDragStart}
                   onDragEnd={onDragEnd}
                   onDoubleClick={onDoubleClick}
@@ -265,7 +279,7 @@ const StockWaste = ({
         <div
           className={`slot pocket-slot ${metadata.pockets >= 1 ? '' : 'pocket-inactive'} ${
             isValidTarget({ type: 'pocket', pocketNum: 1 }) ? 'valid-drop-target' : ''
-          }`}
+          } ${isPocket1Arc ? 'stock-waste-source' : ''}`}
           style={{
             position: 'relative',
             width: 'var(--card-w)',
@@ -298,7 +312,7 @@ const StockWaste = ({
                 cardStr={pocket1}
                 isBack={false}
                 config={config}
-                className={isPocket1Slurping ? 'auto-move-slurping' : ''}
+                className={isPocket1Slurping ? 'auto-move-slurping' : isPocket1Arc && isArcLifting ? 'arc-lifting' : isPocket1Arc && isArcFlying ? 'arc-flying' : ''}
                 onDragStart={onDragStart}
                 onDragEnd={onDragEnd}
                 onDoubleClick={onDoubleClick}
@@ -319,7 +333,7 @@ const StockWaste = ({
       <div
         className={`slot pocket-slot ${metadata.pockets >= 2 ? '' : 'pocket-inactive'} ${
           isValidTarget({ type: 'pocket', pocketNum: 2 }) ? 'valid-drop-target' : ''
-        }`}
+        } ${isPocket2Arc ? 'stock-waste-source' : ''}`}
         style={{
           position: 'relative',
           width: 'var(--card-w)',
@@ -352,7 +366,7 @@ const StockWaste = ({
               cardStr={pocket2}
               isBack={false}
               config={config}
-              className={isPocket2Slurping ? 'auto-move-slurping' : ''}
+              className={isPocket2Slurping ? 'auto-move-slurping' : isPocket2Arc && isArcLifting ? 'arc-lifting' : isPocket2Arc && isArcFlying ? 'arc-flying' : ''}
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
               onDoubleClick={onDoubleClick}
