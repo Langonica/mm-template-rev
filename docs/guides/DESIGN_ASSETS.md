@@ -361,4 +361,4 @@ The dual 1x/2x asset system was simplified to 2x-only in v2.3.2:
 *Document Version: 2.3.2*
 *Created: 2026-01-23*
 *Last Updated: 2026-01-29*
-*Phase 5: Asset Independence ✅ | Phase 6: High-DPI Support ✅ | Phase 7: 2x-Only Simplification ✅*
+*Phase 5: Asset Independence [x] | Phase 6: High-DPI Support [x] | Phase 7: 2x-Only Simplification [x]*
