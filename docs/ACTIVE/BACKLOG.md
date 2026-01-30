@@ -50,24 +50,14 @@ A living document tracking deferred improvements, technical debt, and items to r
 **Resolved:** 2026-01-28 | Implemented Phase 2 with arc trajectory animation. Phases: lifting (100ms) → flying with ghost trails (300ms) → landing with bounce (200ms). Source flash effect on departing location.
 
 ### Portal Animation for Card Stacks
-**Priority:** Medium | **Complexity:** Medium | **Added:** 2026-01-20
+**Status:** 📋 ARCHIVED - Deferred to post-launch  
+**Priority:** Low | **Added:** 2026-01-20
 
-**Current State:** Portal slurp/pop animation only works for single cards. When dragging a King with stacked cards to an empty column, the animation is skipped.
+**Context:** Portal slurp/pop animation only works for single cards. Multi-card sequence animation would be nice but not critical for launch.
 
-**Optimal Solution (Option A):**
-- Track all moving cards in `slurpingCards` array (not just single card)
-- Slurp the entire stack together (shrink/rotate as group)
-- Pop each card sequentially with slight delay (cascade effect)
-- Use `dragState.draggedCards` which already contains the full card array
+**Archived Plan:** See `docs/archive/reference/ANIMATION_IMPROVEMENTS_PLAN.md`
 
-**Technical Details:**
-- `Column.jsx:handleDropEvent` - needs to capture all moving cards
-- `Column.jsx:useEffect` for pop - needs to handle `cards.length > 1`
-- Consider animating cards with staggered delays (50-100ms per card)
-
-**Files to modify:**
-- `src/components/Column.jsx`
-- `src/styles/App.css` (possibly add cascade animation keyframes)
+**Note:** Current animation works fine, just skips for multi-card moves. Can revisit after launch.
 
 ---
 
