@@ -782,14 +782,16 @@
       nav.innerHTML = DOCUMENT_REGISTRY.map(section => {
         totalDocs += section.items.length;
         
-        const items = section.items.map(item => `
+        const items = section.items.map(item => {
+          const escapedTitle = item.title.replace(/"/g, '&quot;');
+          return `
           <a class="nav-item" 
              data-path="${item.path}" 
              data-title="${item.title.toLowerCase()}"
-             onclick='loadDocument("${item.path}", "${item.title.replace(/"/g, "&quot;")}")'>
+             onclick='loadDocument("${item.path}", "${escapedTitle}")'>
             ${item.title}
           </a>
-        `).join('');
+        `;}).join('');
         
         return `
           <div class="nav-section">
