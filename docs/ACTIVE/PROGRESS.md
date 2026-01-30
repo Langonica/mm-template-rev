@@ -179,7 +179,35 @@ python3 cli.py --generate-and-solve --mode classic --difficulty easy
 python3 cli.py --batch --easy 5 --max-nodes 10000
 ```
 
-**Next:** Phase 1C - Generator with Discard Loop (enhance batch generation to discard unwinnable deals)
+---
+
+### Snapshot Generator - Phase 1C: Generator with Discard Loop - COMPLETE [x]
+
+**Status:** COMPLETE  
+**Objective:** Generate batches of verified winnable levels
+
+**Completed:**
+- [x] Enhanced batch generation with automatic discard loop
+- [x] Winnability verification for each generated level
+- [x] Difficulty analysis integration
+- [x] Progress reporting (attempts, success rates)
+- [x] Summary statistics by tier
+- [x] Optional markdown report generation
+
+**CLI Enhancements:**
+```bash
+# Batch generate with verification
+python3 cli.py --batch --easy 10 --moderate 10 --hard 10 \
+  --max-attempts 100 --max-nodes 10000 --max-time 5000 \
+  --output ./staging/ --report
+```
+
+**Known Issue:**
+- Random deals have low winnability rate (~5-10%)
+- May need many attempts per level
+- Phase 2 (backward generation) will address this
+
+**Next:** Phase 1D - CLI Polish & Report Generation
 
 **Upcoming:**
 - [ ] Phase 1B: BFS solver implementation
