@@ -100,6 +100,9 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 
 *Move items here when resolved, with date and brief note:*
 
+### ~~Documentation System Overhaul~~
+**Resolved:** 2026-01-29 | Created comprehensive documentation system with universal Markdown viewer (`docs/viewer.html`). Features: searchable navigation, print-friendly styling, syntax highlighting, mobile-responsive design. Added `PLAYER_GUIDE.md` (complete game manual with strategies and FAQ) and `TECHNICAL_GUIDE.md` (developer architecture reference). Updated all cross-references in README.md, CLAUDE.md, and docs/README.md. Viewer works offline with no build step required.
+
 ### ~~GSN False Positive Fix - Strategic Cycling Detection~~
 **Resolved:** 2026-01-29 | Fixed false "unproductive play" warnings when players cycling stock near endgame to find winning cards. Added "strategic cycling" check to `GameStateTracker.analyzeProductivity()`: when <10 cards remain and player draws/recycles, move is considered productive. Prevents warnings during legitimate endgame strategies.
 

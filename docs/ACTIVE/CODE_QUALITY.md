@@ -92,6 +92,12 @@ src/
 
 ## Recent Improvements (v2.3.2)
 
+### Documentation System Overhaul
+- **Universal Viewer:** Created `docs/viewer.html` - Markdown browser with search & print
+- **Player's Guide:** Complete game manual with strategies and FAQ
+- **Technical Guide:** Developer architecture and engine reference
+- **Result:** Professional documentation experience, works offline
+
 ### Phase 2c - GSN False Positive Fix
 - **Strategic Cycling Detection:** Added to `GameStateTracker.analyzeProductivity()`
 - **Fix:** When <10 cards remain, cycling stock is considered productive

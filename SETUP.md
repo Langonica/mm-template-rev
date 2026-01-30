@@ -554,6 +554,36 @@ Before considering setup complete:
 
 ---
 
+## 📚 Documentation
+
+**New!** Use the built-in documentation browser for a beautiful reading experience:
+
+```bash
+# Open the documentation viewer (no server needed)
+open docs/viewer.html        # macOS
+xdg-open docs/viewer.html    # Linux
+start docs/viewer.html       # Windows
+```
+
+### Available Documentation
+
+| Document | Description | Link |
+|----------|-------------|------|
+| **Player's Guide** | Complete game manual, strategies, FAQ | [Open in Viewer](docs/viewer.html?doc=PLAYER_GUIDE.md) |
+| **Technical Guide** | Architecture, engine, development patterns | [Open in Viewer](docs/viewer.html?doc=TECHNICAL_GUIDE.md) |
+| **Setup Guide** | This document - installation & configuration | [Open in Viewer](docs/viewer.html?doc=../SETUP.md) |
+| **All Docs** | Browse everything with search | [Open Viewer](docs/viewer.html) |
+
+### Features
+
+- 🔍 **Search** - Find anything across all documentation
+- 🖨️ **Print to PDF** - Generate offline copies
+- 💻 **Syntax Highlighting** - Code blocks are beautifully formatted
+- 📱 **Mobile Responsive** - Works on all devices
+- ⚡ **No Build Required** - Pure HTML/JS, works offline
+
+---
+
 ## 🆘 Getting Help
 
 If you encounter issues:
@@ -561,7 +591,7 @@ If you encounter issues:
 1. **Check this guide** - Most common issues covered
 2. **Check browser console** - Look for error messages
 3. **Check terminal output** - Build errors shown here
-4. **Review documentation** - Check `/docs` folder
+4. **Review documentation** - Use the [documentation viewer](docs/viewer.html)
 5. **Check game specification** - Rules in spec document
 
 ---

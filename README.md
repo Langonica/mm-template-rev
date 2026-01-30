@@ -131,12 +131,29 @@ meridian-solitaire-complete/
 │       ├── mm-gameboard@2x.png      # Background (2x only)
 │       └── *.png                    # Additional sprites and badges
 ├── docs/                            # Documentation
-│   └── MERIDIAN_MASTER_GAME_ENGINE_SPECIFICATION.txt
+│   ├── viewer.html                  # 📖 Universal documentation browser
+│   ├── PLAYER_GUIDE.md              # 🎮 Complete player manual
+│   ├── TECHNICAL_GUIDE.md           # ⚙️ Developer reference
+│   ├── ACTIVE/                      # Living documentation
+│   ├── guides/                      # Reference guides
+│   └── archive/                     # Historical records
 ├── package.json                     # Dependencies
 ├── vite.config.js                   # Vite configuration
 ├── eslint.config.js                 # ESLint configuration
 └── index.html                       # HTML entry point
 ```
+
+---
+
+## 📚 Documentation
+
+**New!** Explore comprehensive documentation with our built-in viewer:
+
+- 🎮 **[Player's Guide](docs/viewer.html?doc=PLAYER_GUIDE.md)** - Complete manual, strategies, and tips
+- ⚙️ **[Technical Guide](docs/viewer.html?doc=TECHNICAL_GUIDE.md)** - Architecture, engine, and development
+- 📖 **[All Documentation](docs/viewer.html)** - Browse everything with search & print support
+
+*Open `docs/viewer.html` in your browser for the best experience.*
 
 ---
 

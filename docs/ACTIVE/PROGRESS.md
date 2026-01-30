@@ -1172,11 +1172,38 @@ See [BACKLOG.md](./BACKLOG.md) for active work items and technical debt.
 
 ---
 
-*Last Updated: 2026-01-29*
+*Last Updated: 2026-01-29 (Documentation System Added)*
 
 ---
 
 ## Summary of Recent Changes
+
+### Completed: Documentation System Overhaul
+- **Created `docs/viewer.html`** - Universal Markdown documentation browser
+  - Searchable navigation across all documentation
+  - Print-friendly styling (generate PDFs)
+  - Syntax-highlighted code blocks
+  - Mobile-responsive design
+  - Works offline (no build step required)
+  
+- **Created `docs/PLAYER_GUIDE.md`** - Comprehensive player documentation
+  - Complete game rules and mechanics
+  - Strategy guide (beginner to advanced)
+  - All game modes explained
+  - Campaign mode walkthrough
+  - FAQ and glossary
+  
+- **Created `docs/TECHNICAL_GUIDE.md`** - Developer reference
+  - Architecture overview and patterns
+  - Game engine deep dive
+  - Animation system documentation
+  - State management patterns
+  - Extension points for contributors
+  
+- **Updated cross-references** - All docs now link to viewer and new guides
+  - `docs/README.md` - Added viewer and guide links
+  - `README.md` - Added documentation section
+  - `CLAUDE.md` - Updated related documents
 
 ### Completed: 2x-Only Asset Simplification
 - Deleted `src/hooks/useHighDPIAssets.js` (dynamic asset selection no longer needed)

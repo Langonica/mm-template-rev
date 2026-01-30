@@ -6,6 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `PROCESS.md` - Development workflows, patterns, and skills
 - `README.md` - User-facing project overview
 - `CHANGELOG.md` - Release history
+- `docs/viewer.html` - 📖 Universal documentation browser (open in browser)
+- `docs/PLAYER_GUIDE.md` - 🎮 Complete player manual and strategy guide
+- `docs/TECHNICAL_GUIDE.md` - ⚙️ Developer architecture and engine reference
 - `docs/ACTIVE/` - Living documentation (Design System, Progress, Backlog)
 - `docs/guides/` - Reference guides (Deployment, Assets)
 

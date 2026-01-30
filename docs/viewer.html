@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meridian Solitaire - Documentation Viewer</title>
+  
+  <!-- Marked.js for Markdown parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <!-- Highlight.js for syntax highlighting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11/styles/github-dark.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11/lib/highlight.min.js"></script>
+  
+  <style>
+    /* ============================================
+       BASE & RESET
+       ============================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      /* Colors */
+      --bg-primary: #0a1628;
+      --bg-secondary: #0d1b2a;
+      --bg-elevated: #1b2838;
+      --bg-sidebar: #0d1b2a;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-muted: rgba(255, 255, 255, 0.5);
+      --accent-primary: #00d4ff;
+      --accent-secondary: #00e5ff;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --code-bg: #1a1a2e;
+      --blockquote-bg: rgba(0, 212, 255, 0.05);
+      --table-header-bg: #1b2838;
+      --table-row-alt: rgba(255, 255, 255, 0.02);
+      --warning-bg: rgba(255, 183, 77, 0.1);
+      --warning-border: #ffb74d;
+      --success-bg: rgba(0, 229, 255, 0.1);
+      --success-border: #00e5ff;
+      
+      /* Spacing */
+      --sidebar-width: 300px;
+      --header-height: 60px;
+      --content-max-width: 900px;
+      
+      /* Typography */
+      --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+    }
+    
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    
+    /* ============================================
+       LAYOUT
+       ============================================ */
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    /* ============================================
+       SIDEBAR
+       ============================================ */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 100;
+    }
+    
+    .sidebar-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .sidebar-header h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      margin-bottom: 0.25rem;
+    }
+    
+    .sidebar-header p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    
+    .sidebar-search {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .sidebar-search input {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      outline: none;
+    }
+    
+    .sidebar-search input:focus {
+      border-color: var(--accent-primary);
+    }
+    
+    .sidebar-search input::placeholder {
+      color: var(--text-muted);
+    }
+    
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem 0;
+    }
+    
+    .nav-section {
+      margin-bottom: 0.5rem;
+    }
+    
+    .nav-section-title {
+      padding: 0.5rem 1.25rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    
+    .nav-item {
+      display: block;
+      padding: 0.5rem 1.25rem 0.5rem 1.75rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+    }
+    
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-primary);
+    }
+    
+    .nav-item.active {
+      background: rgba(0, 212, 255, 0.08);
+      color: var(--accent-primary);
+      border-left-color: var(--accent-primary);
+    }
+    
+    .nav-item.hidden {
+      display: none;
+    }
+    
+    .sidebar-footer {
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    
+    /* ============================================
+       MAIN CONTENT
+       ============================================ */
+    .main {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    .topbar {
+      height: var(--header-height);
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    
+    .breadcrumbs a {
+      color: var(--accent-primary);
+      text-decoration: none;
+    }
+    
+    .breadcrumbs a:hover {
+      text-decoration: underline;
+    }
+    
+    .topbar-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      border-color: var(--accent-primary);
+    }
+    
+    .btn-primary {
+      background: rgba(0, 212, 255, 0.1);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+    
+    .btn-primary:hover {
+      background: rgba(0, 212, 255, 0.2);
+    }
+    
+    .content-wrapper {
+      flex: 1;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .content {
+      max-width: var(--content-max-width);
+      width: 100%;
+    }
+    
+    /* ============================================
+       MARKDOWN STYLES
+       ============================================ */
+    .markdown-body {
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+    
+    .markdown-body h1,
+    .markdown-body h2,
+    .markdown-body h3,
+    .markdown-body h4,
+    .markdown-body h5,
+    .markdown-body h6 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--text-primary);
+    }
+    
+    .markdown-body h1 {
+      font-size: 2rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--accent-primary);
+      margin-top: 0;
+    }
+    
+    .markdown-body h2 {
+      font-size: 1.5rem;
+      border-left: 4px solid var(--accent-primary);
+      padding-left: 1rem;
+    }
+    
+    .markdown-body h3 {
+      font-size: 1.25rem;
+      color: var(--accent-secondary);
+    }
+    
+    .markdown-body h4 {
+      font-size: 1.1rem;
+    }
+    
+    .markdown-body p {
+      margin-bottom: 1rem;
+    }
+    
+    .markdown-body a {
+      color: var(--accent-primary);
+      text-decoration: none;
+    }
+    
+    .markdown-body a:hover {
+      text-decoration: underline;
+    }
+    
+    .markdown-body ul,
+    .markdown-body ol {
+      margin-bottom: 1rem;
+      padding-left: 2rem;
+    }
+    
+    .markdown-body li {
+      margin-bottom: 0.35rem;
+    }
+    
+    .markdown-body code {
+      font-family: var(--font-mono);
+      background: var(--code-bg);
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+      font-size: 0.875em;
+      color: var(--accent-secondary);
+    }
+    
+    .markdown-body pre {
+      background: var(--code-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border-color);
+    }
+    
+    .markdown-body pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+    
+    .markdown-body blockquote {
+      background: var(--blockquote-bg);
+      border-left: 4px solid var(--accent-primary);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+    }
+    
+    .markdown-body blockquote p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      font-size: 0.9375rem;
+    }
+    
+    .markdown-body th,
+    .markdown-body td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .markdown-body th {
+      background: var(--table-header-bg);
+      font-weight: 600;
+      color: var(--accent-primary);
+    }
+    
+    .markdown-body tr:nth-child(even) {
+      background: var(--table-row-alt);
+    }
+    
+    .markdown-body tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    
+    .markdown-body hr {
+      border: none;
+      border-top: 1px solid var(--border-color);
+      margin: 2rem 0;
+    }
+    
+    .markdown-body img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+    
+    /* Task lists */
+    .markdown-body input[type="checkbox"] {
+      margin-right: 0.5rem;
+      accent-color: var(--accent-primary);
+    }
+    
+    /* ============================================
+       SPECIAL CALLOUTS (converted from blockquotes)
+       ============================================ */
+    .callout {
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      border-left: 4px solid;
+    }
+    
+    .callout-warning {
+      background: var(--warning-bg);
+      border-color: var(--warning-border);
+    }
+    
+    .callout-success {
+      background: var(--success-bg);
+      border-color: var(--success-border);
+    }
+    
+    .callout-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    /* ============================================
+       HOME/INDEX VIEW
+       ============================================ */
+    .home-view {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    
+    .home-view h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      border: none;
+      padding: 0;
+    }
+    
+    .home-view p {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+    
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .quick-link {
+      display: block;
+      padding: 1.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+    
+    .quick-link:hover {
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 212, 255, 0.1);
+    }
+    
+    .quick-link h3 {
+      color: var(--accent-primary);
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+      margin-top: 0;
+    }
+    
+    .quick-link p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    
+    .doc-stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .stat {
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+    
+    /* ============================================
+       PRINT STYLES
+       ============================================ */
+    @media print {
+      :root {
+        --bg-primary: #ffffff;
+        --text-primary: #000000;
+        --text-secondary: #333333;
+        --accent-primary: #0066cc;
+        --border-color: #cccccc;
+        --code-bg: #f5f5f5;
+        --table-header-bg: #f0f0f0;
+      }
+      
+      .sidebar,
+      .topbar {
+        display: none !important;
+      }
+      
+      .main {
+        margin-left: 0;
+      }
+      
+      .content-wrapper {
+        padding: 0;
+      }
+      
+      .content {
+        max-width: none;
+      }
+      
+      .markdown-body h1 {
+        page-break-before: always;
+      }
+      
+      .markdown-body h1:first-of-type {
+        page-break-before: avoid;
+      }
+      
+      .markdown-body h2,
+      .markdown-body h3 {
+        page-break-after: avoid;
+      }
+      
+      .markdown-body pre,
+      .markdown-body blockquote,
+      .markdown-body table {
+        page-break-inside: avoid;
+      }
+    }
+    
+    /* ============================================
+       MOBILE RESPONSIVE
+       ============================================ */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .main {
+        margin-left: 0;
+      }
+      
+      .content-wrapper {
+        padding: 1rem;
+      }
+      
+      .mobile-menu-btn {
+        display: block !important;
+      }
+    }
+    
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    /* ============================================
+       LOADING STATE
+       ============================================ */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem;
+      color: var(--text-muted);
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .error {
+      text-align: center;
+      padding: 4rem;
+      color: #ff5252;
+    }
+    
+    .error h2 {
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h1>📚 Documentation</h1>
+        <p>Meridian Solitaire</p>
+      </div>
+      
+      <div class="sidebar-search">
+        <input type="text" id="searchInput" placeholder="Search documents...">
+      </div>
+      
+      <nav class="sidebar-nav" id="sidebarNav">
+        <!-- Populated by JavaScript -->
+      </nav>
+      
+      <div class="sidebar-footer">
+        <span id="docCount">Loading...</span>
+      </div>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <main class="main">
+      <header class="topbar">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        <div class="breadcrumbs" id="breadcrumbs">
+          <a href="?">Docs</a>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn" onclick="window.location.href='?'">🏠 Home</button>
+          <button class="btn btn-primary" onclick="window.print()">🖨️ Print</button>
+        </div>
+      </header>
+      
+      <div class="content-wrapper">
+        <div class="content" id="content">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script>
+    // ============================================
+    // DOCUMENT REGISTRY
+    // Define all available documents here
+    // ============================================
+    const DOCUMENT_REGISTRY = [
+      {
+        category: "Player Documentation",
+        items: [
+          { path: "PLAYER_GUIDE.md", title: "Player's Guide", description: "Complete game manual and strategy guide" }
+        ]
+      },
+      {
+        category: "Developer Documentation",
+        items: [
+          { path: "TECHNICAL_GUIDE.md", title: "Technical Guide", description: "Architecture, engine, and development reference" }
+        ]
+      },
+      {
+        category: "Project",
+        items: [
+          { path: "../README.md", title: "Project README", description: "Project overview and quick start" },
+          { path: "../SETUP.md", title: "Setup Guide", description: "Developer onboarding instructions" },
+          { path: "../CLAUDE.md", title: "CLAUDE.md", description: "AI developer context and architecture" },
+          { path: "../CHANGELOG.md", title: "Changelog", description: "Release history" }
+        ]
+      },
+      {
+        category: "Active Documentation",
+        items: [
+          { path: "ACTIVE/DESIGN_SYSTEM.md", title: "Design System", description: "UI patterns and design philosophy" },
+          { path: "ACTIVE/DESIGN_TOKENS.md", title: "Design Tokens", description: "Colors, spacing, and CSS variables" },
+          { path: "ACTIVE/CODE_QUALITY.md", title: "Code Quality", description: "Standards and current state" },
+          { path: "ACTIVE/PROGRESS.md", title: "Progress", description: "Current development status" },
+          { path: "ACTIVE/BACKLOG.md", title: "Backlog", description: "Technical debt and future work" },
+          { path: "ACTIVE/NOTIFICATION_SYSTEM.md", title: "Notification System", description: "Game state messaging spec" }
+        ]
+      },
+      {
+        category: "Guides",
+        items: [
+          { path: "guides/DESIGN_ASSETS.md", title: "Design Assets", description: "Asset specifications for designers" },
+          { path: "guides/DEPLOYMENT.md", title: "Deployment", description: "Build and release guide" },
+          { path: "guides/MODEL_SELECTION.md", title: "Model Selection", description: "AI model selection guidance" }
+        ]
+      },
+      {
+        category: "Reference",
+        items: [
+          { path: "README.md", title: "Documentation Index", description: "Documentation organization guide" }
+        ]
+      }
+    ];
+    
+    // ============================================
+    // STATE
+    // ============================================
+    let currentDoc = null;
+    
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNavigation();
+      loadDocumentFromURL();
+      setupEventListeners();
+    });
+    
+    // ============================================
+    // NAVIGATION RENDERING
+    // ============================================
+    function renderNavigation() {
+      const nav = document.getElementById('sidebarNav');
+      let totalDocs = 0;
+      
+      nav.innerHTML = DOCUMENT_REGISTRY.map(section => {
+        totalDocs += section.items.length;
+        
+        const items = section.items.map(item => `
+          <a class="nav-item" 
+             data-path="${item.path}" 
+             data-title="${item.title.toLowerCase()}"
+             onclick="loadDocument('${item.path}', '${item.title}')">
+            ${item.title}
+          </a>
+        `).join('');
+        
+        return `
+          <div class="nav-section">
+            <div class="nav-section-title">${section.category}</div>
+            ${items}
+          </div>
+        `;
+      }).join('');
+      
+      document.getElementById('docCount').textContent = `${totalDocs} documents`;
+    }
+    
+    // ============================================
+    // DOCUMENT LOADING
+    // ============================================
+    function loadDocumentFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const docPath = params.get('doc');
+      
+      if (docPath) {
+        // Find title from registry
+        const item = findDocInRegistry(docPath);
+        loadDocument(docPath, item ? item.title : docPath);
+      } else {
+        renderHome();
+      }
+    }
+    
+    function findDocInRegistry(path) {
+      for (const section of DOCUMENT_REGISTRY) {
+        const found = section.items.find(item => item.path === path);
+        if (found) return found;
+      }
+      return null;
+    }
+    
+    async function loadDocument(path, title) {
+      currentDoc = { path, title };
+      
+      // Update UI
+      updateActiveNavItem(path);
+      updateBreadcrumbs(title);
+      showLoading();
+      
+      // Update URL without reloading
+      const url = new URL(window.location);
+      url.searchParams.set('doc', path);
+      window.history.pushState({ path, title }, title, url);
+      
+      // Fetch and render
+      try {
+        const response = await fetch(path);
+        if (!response.ok) throw new Error(`Failed to load: ${response.status}`);
+        
+        const markdown = await response.text();
+        renderMarkdown(markdown);
+        
+        // Apply syntax highlighting
+        document.querySelectorAll('pre code').forEach(block => {
+          hljs.highlightElement(block);
+        });
+        
+        // Scroll to top
+        document.querySelector('.content-wrapper').scrollTop = 0;
+        
+      } catch (error) {
+        showError(error.message, path);
+      }
+    }
+    
+    // ============================================
+    // RENDERING
+    // ============================================
+    function renderHome() {
+      const content = document.getElementById('content');
+      
+      // Count total docs
+      let totalDocs = 0;
+      DOCUMENT_REGISTRY.forEach(s => totalDocs += s.items.length);
+      
+      content.innerHTML = `
+        <div class="home-view">
+          <h1>Meridian Solitaire Documentation</h1>
+          <p>Complete documentation for players, developers, and contributors. 
+             Browse using the sidebar or select a quick link below.</p>
+          
+          <div class="quick-links">
+            <a class="quick-link" onclick="loadDocument('PLAYER_GUIDE.md', 'Player\\'s Guide')">
+              <h3>🎮 Player's Guide</h3>
+              <p>Learn to play, master strategies, and explore game modes</p>
+            </a>
+            <a class="quick-link" onclick="loadDocument('TECHNICAL_GUIDE.md', 'Technical Guide')">
+              <h3>⚙️ Technical Guide</h3>
+              <p>Architecture, game engine, and development reference</p>
+            </a>
+            <a class="quick-link" onclick="loadDocument('../README.md', 'Project README')">
+              <h3>📖 Project Overview</h3>
+              <p>Quick start and project introduction</p>
+            </a>
+            <a class="quick-link" onclick="loadDocument('ACTIVE/PROGRESS.md', 'Progress')">
+              <h3>📊 Development Status</h3>
+              <p>Current work, roadmap, and recent changes</p>
+            </a>
+          </div>
+          
+          <div class="doc-stats">
+            <div class="stat">
+              <div class="stat-value">${totalDocs}</div>
+              <div class="stat-label">Documents</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">6</div>
+              <div class="stat-label">Categories</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">∞</div>
+              <div class="stat-label">Possibilities</div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      updateBreadcrumbs('Home');
+      updateActiveNavItem(null);
+      
+      // Clear URL
+      const url = new URL(window.location);
+      url.searchParams.delete('doc');
+      window.history.pushState({}, 'Documentation', url);
+    }
+    
+    function renderMarkdown(markdown) {
+      const content = document.getElementById('content');
+      
+      // Configure marked
+      marked.setOptions({
+        gfm: true,
+        breaks: true,
+        headerIds: true,
+        mangle: false
+      });
+      
+      // Render
+      const html = marked.parse(markdown);
+      content.innerHTML = `<div class="markdown-body">${html}</div>`;
+    }
+    
+    function showLoading() {
+      document.getElementById('content').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading document...</p>
+        </div>
+      `;
+    }
+    
+    function showError(message, path) {
+      document.getElementById('content').innerHTML = `
+        <div class="error">
+          <h2>⚠️ Error Loading Document</h2>
+          <p>${message}</p>
+          <p><code>${path}</code></p>
+          <br>
+          <button class="btn btn-primary" onclick="renderHome()">← Back to Home</button>
+        </div>
+      `;
+    }
+    
+    // ============================================
+    // UI UPDATES
+    // ============================================
+    function updateActiveNavItem(path) {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.path === path);
+      });
+    }
+    
+    function updateBreadcrumbs(title) {
+      const breadcrumbs = document.getElementById('breadcrumbs');
+      breadcrumbs.innerHTML = `
+        <a href="?">Docs</a>
+        <span>/</span>
+        <span>${title}</span>
+      `;
+    }
+    
+    // ============================================
+    // EVENT HANDLERS
+    // ============================================
+    function setupEventListeners() {
+      // Search
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        filterNavigation(query);
+      });
+      
+      // Mobile menu
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const sidebar = document.getElementById('sidebar');
+      mobileMenuBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+      
+      // Browser back/forward
+      window.addEventListener('popstate', (e) => {
+        if (e.state && e.state.path) {
+          loadDocument(e.state.path, e.state.title);
+        } else {
+          renderHome();
+        }
+      });
+    }
+    
+    function filterNavigation(query) {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        const title = item.dataset.title;
+        const matches = title.includes(query);
+        item.classList.toggle('hidden', !matches);
+      });
+    }
+  </script>
+</body>
+</html>
