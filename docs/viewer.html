@@ -947,6 +947,7 @@
         
         // Render
         const html = marked.parse(markdown);
+        console.log('Rendered HTML (first 1000 chars):', html.substring(0, 1000));
         
         // Use DOM API instead of innerHTML for better safety
         content.innerHTML = '';
@@ -954,6 +955,11 @@
         wrapper.className = 'markdown-body';
         wrapper.innerHTML = html;
         content.appendChild(wrapper);
+        
+        // Check what headers we have
+        const headers = wrapper.querySelectorAll('h1, h2, h3');
+        console.log('Number of headers found:', headers.length);
+        headers.forEach(h => console.log('Header:', h.tagName, h.id, h.textContent.substring(0, 50)));
         
         // Handle anchor scrolling if there's a hash in the URL
         console.log('Markdown rendered, calling scrollToAnchor');
