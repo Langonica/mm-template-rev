@@ -946,6 +946,18 @@ export class GameStateTracker {
       return { wasProductive: true, details };
     }
 
+    // Strategic cycling: When few cards remain, cycling stock is likely
+    // part of a winning strategy (finding the right card to finish)
+    // This prevents false "unproductive play" warnings near game end
+    if (moveType === 'recycle' || moveType === 'draw') {
+      const cardsRemaining = 52 - (fingerprint.totalFoundationCards || 0);
+      if (cardsRemaining <= 10) {
+        details.strategicCycling = true;
+        details.cardsRemaining = cardsRemaining;
+        return { wasProductive: true, details };
+      }
+    }
+
     return { wasProductive: false, details };
   }
 

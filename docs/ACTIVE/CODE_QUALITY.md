@@ -92,6 +92,11 @@ src/
 
 ## Recent Improvements (v2.3.2)
 
+### Phase 2c - GSN False Positive Fix
+- **Strategic Cycling Detection:** Added to `GameStateTracker.analyzeProductivity()`
+- **Fix:** When <10 cards remain, cycling stock is considered productive
+- **Result:** No more false "unproductive play" warnings near game end
+
 ### Phase 2a - Game State Detection Tuning
 - **Telemetry System:** New `useGSTelemetry` hook tracks false positives/negatives
 - **Configurable Thresholds:** New `notificationConfig.js` utility for tuning

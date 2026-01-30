@@ -8,6 +8,36 @@ Meridian Solitaire is a unique card game implementation with dual foundation sys
 
 ## Current Work
 
+### Phase 2c: False Positive Fix - Strategic Cycling Detection - COMPLETE ✅
+
+**Objective:** Fix false "unproductive play" warnings when players are cycling stock near endgame to find winning cards.
+
+**Problem:** Player cycling stock with 5 cards remaining gets "unproductive play" warning, even though they're strategically searching for the final card(s) to win.
+
+**Root Cause:** `analyzeProductivity()` only checked foundation progress, face-down reveals, and sequences built. It didn't account for strategic stock cycling near game end.
+
+**Solution:** Added "strategic cycling" detection to `GameStateTracker.analyzeProductivity()`:
+
+```javascript
+// When fewer than 10 cards remain, cycling stock is considered productive
+if (moveType === 'recycle' || moveType === 'draw') {
+  const cardsRemaining = 52 - fingerprint.totalFoundationCards;
+  if (cardsRemaining <= 10) {
+    return { wasProductive: true, details: { strategicCycling: true } };
+  }
+}
+```
+
+**Files Modified:**
+- `src/utils/gameLogic.js` - Added strategic cycling check to analyzeProductivity
+
+**Result:**
+- ✅ Players cycling stock with <10 cards remaining get NO warning
+- ✅ Normal productivity detection unchanged for mid-game
+- ✅ Build passes clean
+
+---
+
 ### Phase 2a: Game State Detection Tuning (Telemetry) - COMPLETE ✅
 
 **Objective:** Add telemetry tracking and configurable thresholds for the game state notification system.

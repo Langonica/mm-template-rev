@@ -16,6 +16,7 @@ A living document tracking deferred improvements, technical debt, and items to r
 **Priority:** 🟡 High | **Complexity:** Medium | **Added:** 2026-01-29
 
 **Phase 2a:** ✅ COMPLETE - Telemetry and configurable thresholds implemented
+**Phase 2c:** ✅ COMPLETE - False positive fix (strategic cycling detection)
 
 **Phase 2b: Game State Detection Hardening**
 - Add "ignore this game" option for edge cases
@@ -101,6 +102,9 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 ## Completed Items
 
 *Move items here when resolved, with date and brief note:*
+
+### ~~GSN False Positive Fix - Strategic Cycling Detection~~
+**Resolved:** 2026-01-29 | Fixed false "unproductive play" warnings when players cycling stock near endgame to find winning cards. Added "strategic cycling" check to `GameStateTracker.analyzeProductivity()`: when <10 cards remain and player draws/recycles, move is considered productive. Prevents warnings during legitimate endgame strategies.
 
 ### ~~Asset Path Fix for Production Builds~~
 **Resolved:** 2026-01-29 | Fixed image assets not loading in production builds. Asset paths were relative but needed the Vite base URL (`/meridian-master/`). Updated `useHighDPIAssets.js` to use `import.meta.env.BASE_URL` and updated CSS fallback paths in `App.css`.
