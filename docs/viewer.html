@@ -861,8 +861,10 @@
           });
         }
         
-        // Scroll to top
-        document.querySelector('.content-wrapper').scrollTop = 0;
+        // Scroll to top (unless there's an anchor to handle)
+        if (!window.location.hash) {
+          document.querySelector('.content-wrapper').scrollTop = 0;
+        }
         
       } catch (error) {
         showError(error.message, path);
@@ -952,6 +954,9 @@
         wrapper.className = 'markdown-body';
         wrapper.innerHTML = html;
         content.appendChild(wrapper);
+        
+        // Handle anchor scrolling if there's a hash in the URL
+        scrollToAnchor();
         
       } catch (error) {
         console.error('Error rendering markdown:', error);
@@ -1090,6 +1095,11 @@
         }
         // If no state (e.g., anchor navigation), don't navigate - let browser handle it
       });
+      
+      // Handle anchor link scrolling after content renders
+      window.addEventListener('hashchange', () => {
+        scrollToAnchor();
+      });
     }
     
     function filterNavigation(query) {
@@ -1098,6 +1108,17 @@
         const matches = title.includes(query);
         item.classList.toggle('hidden', !matches);
       });
+    }
+    
+    function scrollToAnchor() {
+      const hash = window.location.hash;
+      if (hash) {
+        const id = hash.substring(1);
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
     }
   </script>
 </body>
