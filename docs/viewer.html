@@ -934,17 +934,36 @@
     function renderMarkdown(markdown) {
       const content = document.getElementById('content');
       
-      // Configure marked
-      marked.setOptions({
-        gfm: true,
-        breaks: true,
-        headerIds: true,
-        mangle: false
-      });
-      
-      // Render
-      const html = marked.parse(markdown);
-      content.innerHTML = `<div class="markdown-body">${html}</div>`;
+      try {
+        // Configure marked
+        marked.setOptions({
+          gfm: true,
+          breaks: true,
+          headerIds: true,
+          mangle: false,
+          sanitize: false
+        });
+        
+        // Render
+        const html = marked.parse(markdown);
+        
+        // Use DOM API instead of innerHTML for better safety
+        content.innerHTML = '';
+        const wrapper = document.createElement('div');
+        wrapper.className = 'markdown-body';
+        wrapper.innerHTML = html;
+        content.appendChild(wrapper);
+        
+      } catch (error) {
+        console.error('Error rendering markdown:', error);
+        content.innerHTML = `
+          <div class="error">
+            <h2>⚠️ Error Rendering Document</h2>
+            <p>${error.message}</p>
+            <button class="btn btn-primary" onclick="renderHome()">← Back to Home</button>
+          </div>
+        `;
+      }
     }
     
     function showLoading() {
