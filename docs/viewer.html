@@ -786,7 +786,7 @@
           <a class="nav-item" 
              data-path="${item.path}" 
              data-title="${item.title.toLowerCase()}"
-             onclick="loadDocument('${item.path}', '${item.title}')">
+             onclick='loadDocument("${item.path}", "${item.title.replace(/"/g, '&quot;')}")'>
             ${item.title}
           </a>
         `).join('');
@@ -889,15 +889,15 @@
               <h3>🎮 Player's Guide</h3>
               <p>Learn to play, master strategies, and explore game modes</p>
             </a>
-            <a class="quick-link" onclick="loadDocument('TECHNICAL_GUIDE.md', 'Technical Guide')">
+            <a class="quick-link" onclick='loadDocument("TECHNICAL_GUIDE.md", "Technical Guide")'>
               <h3>⚙️ Technical Guide</h3>
               <p>Architecture, game engine, and development reference</p>
             </a>
-            <a class="quick-link" onclick="loadDocument('../README.md', 'Project README')">
+            <a class="quick-link" onclick='loadDocument("../README.md", "Project README")'>
               <h3>📖 Project Overview</h3>
               <p>Quick start and project introduction</p>
             </a>
-            <a class="quick-link" onclick="loadDocument('ACTIVE/PROGRESS.md', 'Progress')">
+            <a class="quick-link" onclick='loadDocument("ACTIVE/PROGRESS.md", "Progress")'>
               <h3>📊 Development Status</h3>
               <p>Current work, roadmap, and recent changes</p>
             </a>
