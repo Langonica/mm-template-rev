@@ -1052,22 +1052,31 @@
           const href = link.getAttribute('href');
           if (!href) return;
           
-          // Skip anchor links (same page)
+          // Skip anchor links (same page) - IMPORTANT: return early and don't intercept
           if (href.startsWith('#')) {
-            return; // Let browser handle anchor navigation
+            // Let browser handle anchor navigation normally
+            return;
           }
           
           // Skip external links
-          if (href.startsWith('http://') || href.startsWith('https://')) {
+          if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//')) {
             return; // Let browser open external links normally
           }
           
           // Handle relative markdown links
-          if (href.endsWith('.md') || !href.includes('.')) {
+          if (href.endsWith('.md')) {
             e.preventDefault();
+            
+            // Resolve relative path from current document
+            let resolvedPath = href;
+            if (currentDoc && currentDoc.path) {
+              const baseDir = currentDoc.path.substring(0, currentDoc.path.lastIndexOf('/') + 1);
+              resolvedPath = new URL(href, 'http://dummy.com/' + baseDir).pathname.substring(1);
+            }
+            
             // Extract title from link text or use path as fallback
-            const title = link.textContent.trim() || href;
-            loadDocument(href, title);
+            const title = link.textContent.trim() || resolvedPath;
+            loadDocument(resolvedPath, title);
           }
         }
       });
