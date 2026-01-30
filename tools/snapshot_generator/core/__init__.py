@@ -8,6 +8,7 @@ for generating winnable Meridian Solitaire campaign levels.
 from .game_state import GameState, Card
 from .moves import Move, MoveType, MoveGenerator, MoveValidator
 from .difficulty import DifficultyMetrics, DifficultyAnalyzer
+from .solver import Solver, SolverResult
 
 __all__ = [
     'GameState',
@@ -17,5 +18,7 @@ __all__ = [
     'MoveGenerator',
     'MoveValidator',
     'DifficultyMetrics',
-    'DifficultyAnalyzer'
+    'DifficultyAnalyzer',
+    'Solver',
+    'SolverResult'
 ]

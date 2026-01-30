@@ -17,7 +17,7 @@ import os
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from core import GameState, Card, MoveGenerator, MoveValidator, DifficultyAnalyzer
+from core import GameState, Card, MoveGenerator, MoveValidator, DifficultyAnalyzer, Solver
 
 
 def generate_single(args):
@@ -97,6 +97,95 @@ def validate_snapshot(args):
         return False
 
 
+def solve_snapshot(args):
+    """Run solver on a snapshot."""
+    import json
+    
+    print(f"Solving: {args.input}")
+    print(f"Max nodes: {args.max_nodes}, Max time: {args.max_time}ms")
+    print()
+    
+    try:
+        # Load state from file
+        with open(args.input, 'r') as f:
+            data = json.load(f)
+        
+        # Reconstruct GameState from JSON
+        state = GameState.create_new_game(mode='classic')  # Placeholder
+        # TODO: Implement from_snapshot_dict() method
+        
+        print("ERROR: Loading from JSON not yet implemented")
+        print("Use: python cli.py --generate-and-solve instead")
+        
+    except Exception as e:
+        print(f"ERROR: {e}")
+
+
+def generate_and_solve(args):
+    """Generate a level and immediately solve it."""
+    print(f"Generating and solving {args.mode} {args.difficulty} level...")
+    print(f"Solver limits: {args.max_nodes} nodes, {args.max_time}ms")
+    print()
+    
+    # Create new game
+    state = GameState.create_new_game(
+        mode=args.mode,
+        difficulty=args.difficulty,
+        seed=args.seed
+    )
+    
+    # Run solver
+    solver = Solver(max_nodes=args.max_nodes, max_time_ms=args.max_time)
+    result = solver.solve(state)
+    
+    print(f"Result: {'WINNABLE' if result.winnable else 'NOT WINNABLE'}")
+    print(f"  Solution moves: {len(result.solution)}")
+    print(f"  Nodes explored: {result.nodes_explored}")
+    print(f"  Solve time: {result.solve_time_ms}ms")
+    print(f"  Dead ends: {result.dead_ends}")
+    print(f"  Max depth: {result.max_depth}")
+    
+    if result.winnable:
+        # Analyze difficulty
+        analyzer = DifficultyAnalyzer()
+        metrics = analyzer.analyze_solution(
+            initial_state=state,
+            solution_moves=len(result.solution),
+            nodes_explored=result.nodes_explored,
+            dead_ends=result.dead_ends,
+            solve_time_ms=result.solve_time_ms,
+            solution_path=result.solution
+        )
+        
+        print(f"\nDifficulty Analysis:")
+        print(f"  Score: {metrics.difficulty_score:.1f}")
+        print(f"  Tier: {metrics.recommended_tier.upper()}")
+        print(f"  Starter accessibility: {metrics.starter_accessibility} moves")
+        print(f"  Branching factor: {metrics.branching_factor:.2f}")
+        
+        # Save if winnable
+        if args.output:
+            output_path = os.path.join(args.output, f"{state.metadata['id']}_verified.json")
+            os.makedirs(args.output, exist_ok=True)
+            
+            # Add validation info to metadata
+            state.metadata['validation']['isWinnable'] = True
+            state.metadata['validation']['solverMetrics'] = {
+                'solutionMoves': len(result.solution),
+                'nodesExplored': result.nodes_explored,
+                'solveTimeMs': result.solve_time_ms,
+                'deadEnds': result.dead_ends,
+                'maxDepth': result.max_depth,
+                'difficultyScore': metrics.difficulty_score,
+                'recommendedTier': metrics.recommended_tier
+            }
+            
+            state.save(output_path)
+            print(f"\nSaved verified snapshot: {output_path}")
+    
+    return result.winnable
+
+
 def batch_generate(args):
     """Generate a batch of snapshots."""
     print(f"Batch generation:")
@@ -114,24 +203,45 @@ def batch_generate(args):
         for i in range(count):
             print(f"Generating {difficulty} {i+1}/{count}...")
             
-            # Simple generation (no solver yet)
-            state = GameState.create_new_game(
-                mode=args.mode,
-                difficulty=difficulty,
-                seed=args.seed_start + len(generated) if args.seed_start else None
-            )
+            # Generate with solver verification
+            attempts = 0
+            max_attempts = 100
             
-            # Update ID to include index
-            state.metadata['id'] = f"{args.mode}_normal_{difficulty}_{i+1:02d}_generated"
+            while attempts < max_attempts:
+                state = GameState.create_new_game(
+                    mode=args.mode,
+                    difficulty=difficulty,
+                    seed=args.seed_start + len(generated) + attempts if args.seed_start else None
+                )
+                
+                # Quick solve check (reduced limits for batch)
+                solver = Solver(max_nodes=5000, max_time_ms=3000)
+                result = solver.solve(state)
+                
+                if result.winnable:
+                    # Update ID to include index
+                    state.metadata['id'] = f"{args.mode}_normal_{difficulty}_{i+1:02d}_verified"
+                    state.metadata['validation']['isWinnable'] = True
+                    state.metadata['validation']['solverMetrics'] = {
+                        'solutionMoves': len(result.solution),
+                        'nodesExplored': result.nodes_explored,
+                        'solveTimeMs': result.solve_time_ms
+                    }
+                    
+                    output_path = os.path.join(args.output, f"{state.metadata['id']}.json")
+                    os.makedirs(args.output, exist_ok=True)
+                    state.save(output_path)
+                    
+                    generated.append(state)
+                    print(f"  Saved: {output_path} (verified winnable, {attempts+1} attempts)")
+                    break
+                
+                attempts += 1
             
-            output_path = os.path.join(args.output, f"{state.metadata['id']}.json")
-            os.makedirs(args.output, exist_ok=True)
-            state.save(output_path)
-            
-            generated.append(state)
-            print(f"  Saved: {output_path}")
+            if attempts >= max_attempts:
+                print(f"  WARNING: Could not generate winnable {difficulty} level after {max_attempts} attempts")
     
-    print(f"\nGenerated {len(generated)} snapshots in {args.output}")
+    print(f"\nGenerated {len(generated)} verified snapshots in {args.output}")
 
 
 def main():
@@ -167,11 +277,21 @@ Examples:
     parser.add_argument('--validate', action='store_true', help='Validate existing snapshot')
     parser.add_argument('--input', help='Input file for validation')
     
+    parser.add_argument('--solve', action='store_true', help='Solve existing snapshot')
+    parser.add_argument('--max-nodes', type=int, default=10000, help='Max solver nodes')
+    parser.add_argument('--max-time', type=int, default=5000, help='Max solver time (ms)')
+    
+    parser.add_argument('--generate-and-solve', action='store_true', 
+                        help='Generate level and solve it')
+    
     args = parser.parse_args()
     
     # Validate arguments
     if args.validate and not args.input:
         parser.error('--input required when using --validate')
+    
+    if args.solve and not args.input:
+        parser.error('--input required when using --solve')
     
     if args.batch:
         if args.easy == 0 and args.moderate == 0 and args.hard == 0:
@@ -179,6 +299,10 @@ Examples:
         batch_generate(args)
     elif args.validate:
         validate_snapshot(args)
+    elif args.solve:
+        solve_snapshot(args)
+    elif args.generate_and_solve:
+        generate_and_solve(args)
     else:
         generate_single(args)
 
