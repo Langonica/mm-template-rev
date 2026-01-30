@@ -74,14 +74,6 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 
 *Items that aren't bugs or debt, but would be nice to have:*
 
-### Hint System
-- Highlight available moves when player is stuck
-- Could pulse valid drop targets or show arrow indicators
-
-### Auto-Complete Detection
-- Detect when game is trivially winnable
-- Offer to auto-complete remaining moves
-
 ### Sound Effects
 - Card flip, drop, shuffle sounds
 - Victory fanfare
@@ -161,4 +153,4 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 
 ---
 
-*Last Updated: 2026-01-29* | *v2.3.1 in progress: Notification bug fix*
+*Last Updated: 2026-01-29* | *v2.3.2 stabilization in progress*
