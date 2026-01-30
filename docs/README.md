@@ -10,10 +10,10 @@ This directory contains all project documentation organized by lifecycle state.
 
 **New!** Use the [Documentation Viewer](./viewer.html) for a beautiful, searchable, print-friendly browsing experience:
 
-- 🎮 **[Player's Guide](./viewer.html?doc=PLAYER_GUIDE.md)** - Complete game manual and strategy
-- ⚙️ **[Technical Guide](./viewer.html?doc=TECHNICAL_GUIDE.md)** - Architecture and developer reference
-- 🔍 **Search all docs** - Find anything instantly
-- 🖨️ **Print to PDF** - Generate offline copies
+- **[Player's Guide](./viewer.html?doc=PLAYER_GUIDE.md)** - Complete game manual and strategy
+- **[Technical Guide](./viewer.html?doc=TECHNICAL_GUIDE.md)** - Architecture and developer reference
+- **Search all docs** - Find anything instantly
+- **Print to PDF** - Generate offline copies
 
 *Open `docs/viewer.html` in your browser to explore all documentation.*
 
@@ -55,9 +55,9 @@ docs/
 │   ├── completed/    # Finished implementation plans
 │   └── reference/    # Original specs, context
 │
-├── PLAYER_GUIDE.md   # 🎮 Complete game manual for players
-├── TECHNICAL_GUIDE.md # ⚙️ Developer architecture reference
-├── viewer.html       # 📖 Universal documentation browser
+├── PLAYER_GUIDE.md   # Complete game manual for players
+├── TECHNICAL_GUIDE.md # Developer architecture reference
+├── viewer.html       # Universal documentation browser
 ├── README.md         # This file
 ├── logs/             # Runtime logs (working directory)
 └── screenshots/      # UI review images (working directory)
@@ -90,9 +90,9 @@ Stable reference material for specific tasks.
 
 Primary documentation files for different audiences.
 
-- **PLAYER_GUIDE.md** - 🎮 Complete game manual and strategy guide for players
-- **TECHNICAL_GUIDE.md** - ⚙️ Architecture, engine, and development reference
-- **viewer.html** - 📖 Universal markdown documentation browser with print support
+- **PLAYER_GUIDE.md** - Complete game manual and strategy guide for players
+- **TECHNICAL_GUIDE.md** - Architecture, engine, and development reference
+- **viewer.html** - Universal markdown documentation browser with print support
 
 ### archive/ - Historical Record
 

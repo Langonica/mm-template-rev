@@ -350,11 +350,11 @@ Each level can award up to 3 stars based on:
 
 ### Common Mistakes to Avoid
 
-1. ❌ **Moving cards to foundations too early** - Sometimes tableau sequences are more useful
-2. ❌ **Filling both pockets** - Keep one free for emergencies
-3. ❌ **Ignoring column types** - Ace/King badges guide optimal play
-4. ❌ **Rushing in Campaign** - Take time to plan in restricted modes
-5. ❌ **Not using undo** - It's there for a reason! Learn from mistakes.
+1. **Moving cards to foundations too early** - Sometimes tableau sequences are more useful
+2. **Filling both pockets** - Keep one free for emergencies
+3. **Ignoring column types** - Ace/King badges guide optimal play
+4. **Rushing in Campaign** - Take time to plan in restricted modes
+5. **Not using undo** - It's there for a reason! Learn from mistakes.
 
 ---
 
@@ -452,7 +452,7 @@ A: If you encounter issues, check the project repository for issue tracking.
 
 ---
 
-**Good luck, and enjoy Meridian Solitaire!** 🎮✨
+**Good luck, and enjoy Meridian Solitaire!**
 
 *Last Updated: 2026-01-29*  
 *Version: 2.3.2*
