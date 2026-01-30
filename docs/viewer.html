@@ -625,6 +625,50 @@
     }
     
     /* ============================================
+       SCROLL TO TOP BUTTON
+       ============================================ */
+    .scroll-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      color: var(--accent-primary);
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .scroll-to-top.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .scroll-to-top:hover {
+      background: var(--accent-primary);
+      color: var(--bg-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 212, 255, 0.3);
+    }
+    
+    /* Offset for anchor links to account for fixed header */
+    .markdown-body h1[id],
+    .markdown-body h2[id],
+    .markdown-body h3[id] {
+      scroll-margin-top: calc(var(--header-height) + 1rem);
+    }
+    
+    /* ============================================
        LOADING STATE
        ============================================ */
     .loading {
@@ -703,6 +747,11 @@
       </div>
     </main>
   </div>
+  
+  <!-- Scroll to Top Button -->
+  <button class="scroll-to-top" id="scrollToTop" onclick="scrollToTop()" title="Jump to top">
+    ⬆️
+  </button>
   
   <script>
     // ============================================
@@ -1089,7 +1138,6 @@
           
           // Skip anchor links (same page) - IMPORTANT: return early and don't intercept
           if (href.startsWith('#')) {
-            console.log('Anchor link clicked, href:', href);
             // Let browser handle anchor navigation normally
             return;
           }
@@ -1127,7 +1175,6 @@
       
       // Handle anchor link scrolling after content renders
       window.addEventListener('hashchange', () => {
-        console.log('hashchange event fired');
         scrollToAnchor();
       });
     }
@@ -1142,22 +1189,38 @@
     
     function scrollToAnchor() {
       const hash = window.location.hash;
-      console.log('scrollToAnchor called, hash:', hash);
       if (hash) {
         const id = hash.substring(1);
-        console.log('Looking for element with id:', id);
         const element = document.getElementById(id);
-        console.log('Element found:', element);
         if (element) {
-          console.log('Scrolling to element');
           element.scrollIntoView({ behavior: 'smooth' });
-        } else {
-          console.log('Element not found in DOM');
         }
-      } else {
-        console.log('No hash in URL');
       }
     }
+    
+    function scrollToTop() {
+      document.querySelector('.content-wrapper').scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+    
+    // Show/hide scroll to top button based on scroll position
+    function setupScrollToTopButton() {
+      const contentWrapper = document.querySelector('.content-wrapper');
+      const scrollButton = document.getElementById('scrollToTop');
+      
+      contentWrapper.addEventListener('scroll', () => {
+        if (contentWrapper.scrollTop > 500) {
+          scrollButton.classList.add('visible');
+        } else {
+          scrollButton.classList.remove('visible');
+        }
+      });
+    }
+    
+    // Initialize scroll to top button
+    setupScrollToTopButton();
   </script>
 </body>
 </html>
