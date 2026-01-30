@@ -179,7 +179,7 @@ python3 cli.py --generate-and-solve --mode classic --difficulty easy
 python3 cli.py --batch --easy 5 --max-nodes 10000
 ```
 
-**Next:** Phase 1C - Generator with Discard Loop
+**Next:** Phase 1C - Generator with Discard Loop (enhance batch generation to discard unwinnable deals)
 
 **Upcoming:**
 - [ ] Phase 1B: BFS solver implementation
