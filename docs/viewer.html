@@ -1212,24 +1212,18 @@
     function setupScrollToTopButton() {
       const scrollButton = document.getElementById('scrollToTop');
       
-      if (!scrollButton) {
-        console.error('Scroll to top: Button not found');
-        return;
-      }
+      if (!scrollButton) return;
       
-      // Try different scroll containers
-      const scrollContainers = [
+      // Listen on multiple containers since scroll can happen on different elements
+      const containers = [
         document.querySelector('.content-wrapper'),
         document.querySelector('.main'),
         window
-      ];
+      ].filter(Boolean);
       
-      scrollContainers.forEach((container, index) => {
-        if (!container) return;
-        const name = ['content-wrapper', 'main', 'window'][index];
+      containers.forEach(container => {
         container.addEventListener('scroll', () => {
           const scrollTop = container === window ? window.scrollY : container.scrollTop;
-          console.log(`Scroll event on ${name}:`, scrollTop);
           if (scrollTop > 500) {
             scrollButton.classList.add('visible');
           } else {
