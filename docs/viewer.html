@@ -936,22 +936,45 @@
       const content = document.getElementById('content');
       
       try {
-        // Configure marked with header IDs enabled
-        marked.use({
-          renderer: {
-            heading(text, level) {
-              // Generate ID from text (slugify)
-              const textStr = String(text);
-              const id = textStr.toLowerCase()
-                .replace(/[^\w\s-]/g, '')
-                .replace(/\s+/g, '-');
-              return `<h${level} id="${id}">${textStr}</h${level}>`;
-            }
-          }
-        });
+        // Parse markdown to tokens and generate IDs manually
+        const tokens = marked.lexer(markdown);
+        const slugCounts = {};
         
-        // Render
-        const html = marked.parse(markdown);
+        function slugify(text) {
+          const base = String(text).toLowerCase()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .substring(0, 50);
+          // Handle duplicates
+          if (slugCounts[base]) {
+            slugCounts[base]++;
+            return `${base}-${slugCounts[base]}`;
+          }
+          slugCounts[base] = 1;
+          return base;
+        }
+        
+        // Walk tokens and add IDs to headings
+        function walkTokens(tokens) {
+          tokens.forEach(token => {
+            if (token.type === 'heading') {
+              token.slug = slugify(token.text);
+            }
+            if (token.tokens) walkTokens(token.tokens);
+          });
+        }
+        walkTokens(tokens);
+        
+        // Custom renderer that uses the slug
+        const renderer = new marked.Renderer();
+        renderer.heading = function(token) {
+          const text = this.parser.parseInline(token.tokens);
+          const id = token.slug || slugify(token.text);
+          return `<h${token.depth} id="${id}">${text}</h${token.depth}>`;
+        };
+        
+        // Render with custom renderer
+        const html = marked.parser(tokens, { renderer });
         
         // Use DOM API instead of innerHTML for better safety
         content.innerHTML = '';
@@ -959,11 +982,6 @@
         wrapper.className = 'markdown-body';
         wrapper.innerHTML = html;
         content.appendChild(wrapper);
-        
-        // Debug: Check what headers we have
-        const headers = wrapper.querySelectorAll('h1[id], h2[id], h3[id]');
-        console.log('Headers with IDs:', headers.length);
-        headers.forEach(h => console.log('  -', h.id, ':', h.textContent.substring(0, 40)));
         
         // Handle anchor scrolling if there's a hash in the URL
         scrollToAnchor();
