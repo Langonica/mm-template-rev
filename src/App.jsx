@@ -83,6 +83,8 @@ function App() {
     handleTouchMove,
     handleTouchEnd,
     handleTouchCancel,
+    showDragHint,
+    dismissDragHint,
     gameStatus,
     circularPlayState,
     canAutoComplete,
@@ -877,6 +879,33 @@ function App() {
         onHint={handleOverlayHint}
         onNewDeal={handleOverlayNewDeal}
       />
+
+      {/* Touch Affordance Hint - shows for first-time mobile users */}
+      {showDragHint && (
+        <div
+          className="touch-drag-hint"
+          onClick={dismissDragHint}
+          style={{
+            position: 'fixed',
+            bottom: '120px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'rgba(0, 0, 0, 0.85)',
+            color: 'white',
+            padding: '12px 20px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: '500',
+            zIndex: 'var(--z-modal)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+            animation: 'fadeIn 0.3s ease-out',
+            cursor: 'pointer',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}
+        >
+          Hold cards to drag them
+        </div>
+      )}
 
       {/* Game UI - only render when not on home screen */}
       {!showHomeScreen && (

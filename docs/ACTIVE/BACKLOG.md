@@ -6,6 +6,21 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ## In Progress
 
+### Touch Interaction Robustness (v2.4.0)
+**Priority:** 🟡 High | **Complexity:** Medium | **Added:** 2026-01-29
+
+**Objective:** Eliminate architectural fragility in touch drag implementation.
+
+**Phases:**
+- Phase 1: Drop target data attributes (CRITICAL) - ✅ Complete
+- Phase 2: Multi-touch handling - ✅ Complete
+- Phase 3: Lightweight ghost element - ✅ Complete
+- Phase 4: Touch affordance tooltip - ✅ Complete
+- Phase 5: Re-validate on drop - ✅ Already implemented
+- Phase 6: Accessibility (ARIA) - Pending (optional, low priority)
+
+**Plan:** `docs/ACTIVE/PLAN_touch_robustness.md`
+
 ---
 
 ## Queued (Ready to Implement)

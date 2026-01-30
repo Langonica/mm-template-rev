@@ -154,6 +154,8 @@ const Column = ({
     <>
       <div
         className={`lane-track lane-${columnType} ${isValid ? 'valid-drop-target' : ''} ${isAutoCompleteSource ? 'autocomplete-source' : ''} ${isAutoCompleteDeparting ? 'autocomplete-departing' : ''} ${isArcSource ? 'arc-source' : ''}`}
+        data-drop-zone="column"
+        data-column-index={columnIndex}
         style={{
           left: `${left}px`,
           top: 'var(--theater-top)',
@@ -187,6 +189,8 @@ const Column = ({
         /* Empty column with portal drop zone */
         <div
           className={`empty-column-zone ${isValid ? 'valid-drop-target' : ''}`}
+          data-drop-zone="column"
+          data-column-index={columnIndex}
           style={{
             position: 'absolute',
             left: `${left}px`,

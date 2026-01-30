@@ -281,6 +281,8 @@ const StockWaste = ({
           className={`slot pocket-slot ${metadata.pockets >= 1 ? '' : 'pocket-inactive'} ${
             isValidTarget({ type: 'pocket', pocketNum: 1 }) ? 'valid-drop-target' : ''
           } ${isPocket1Arc ? 'stock-waste-source' : ''}`}
+          data-drop-zone="pocket"
+          data-pocket-num="1"
           style={{
             position: 'relative',
             width: 'var(--card-w)',
@@ -335,6 +337,8 @@ const StockWaste = ({
         className={`slot pocket-slot ${metadata.pockets >= 2 ? '' : 'pocket-inactive'} ${
           isValidTarget({ type: 'pocket', pocketNum: 2 }) ? 'valid-drop-target' : ''
         } ${isPocket2Arc ? 'stock-waste-source' : ''}`}
+        data-drop-zone="pocket"
+        data-pocket-num="2"
         style={{
           position: 'relative',
           width: 'var(--card-w)',
