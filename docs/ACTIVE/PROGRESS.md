@@ -117,6 +117,32 @@ if (moveType === 'recycle' || moveType === 'draw') {
 
 ---
 
+### Snapshot Generator - Campaign Level Creation Tool - PLANNING
+
+**Status:** Planning Phase  
+**Objective:** Create Python-based tool to generate winnable campaign levels with controlled difficulty  
+**Plan:** `docs/ACTIVE/SNAPSHOT_GENERATOR_PLAN.md`
+
+**Approach:**
+- **Phase 1 (Forward + Solver):** Random deal generation + BFS solver validation
+- **Phase 2 (Future - Backward):** Generate from won states via reverse moves
+
+**Key Features:**
+- Generate 30 winnable Classic levels (10 Easy, 10 Moderate, 10 Hard)
+- Bell curve difficulty progression
+- Comprehensive metrics (solution moves, branching factor, dead ends)
+- Staging output (manual curation before data folder)
+- Viewer-compatible reports for tuning
+
+**Not Started:**
+- [ ] Core infrastructure (game state, move validation)
+- [ ] BFS solver implementation
+- [ ] Difficulty analyzer
+- [ ] CLI interface
+- [ ] Report generation
+
+---
+
 ### 2x-Only Asset Simplification - COMPLETE [x]
 
 **Objective:** Simplify asset handling by using 2x assets exclusively and eliminating the dynamic asset selection hook.

@@ -31,6 +31,7 @@ This directory contains all project documentation organized by lifecycle state.
 | Check code standards | [ACTIVE/CODE_QUALITY.md](./ACTIVE/CODE_QUALITY.md) |
 | Deploy the application | [guides/DEPLOYMENT.md](./guides/DEPLOYMENT.md) |
 | View historical plans | [archive/completed/](./archive/completed/) |
+| **Generate campaign levels** | [ACTIVE/SNAPSHOT_GENERATOR_PLAN.md](./ACTIVE/SNAPSHOT_GENERATOR_PLAN.md) |
 
 ---
 
@@ -43,6 +44,7 @@ docs/
 │   ├── DESIGN_TOKENS.md
 │   ├── NOTIFICATION_SYSTEM.md
 │   ├── CODE_QUALITY.md
+│   ├── SNAPSHOT_GENERATOR_PLAN.md  # Campaign level generator plan
 │   ├── PROGRESS.md
 │   └── BACKLOG.md
 │

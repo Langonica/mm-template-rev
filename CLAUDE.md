@@ -190,6 +190,7 @@ Currently fixed game board (1280×720), scaled via `useViewportScale` hook. Desi
 
 - **Design System:** `docs/ACTIVE/DESIGN_SYSTEM.md` - Principles, taxonomy, patterns
 - **Design Tokens:** `docs/ACTIVE/DESIGN_TOKENS.md` - Colors, spacing, CSS variables
+- **Snapshot Generator:** `docs/ACTIVE/SNAPSHOT_GENERATOR_PLAN.md` - Campaign level generation tool (Planning Phase)
 - **Asset Specs:** `docs/guides/DESIGN_ASSETS.md` - Visual asset requirements (2x-only strategy with CSS background-size scaling)
 
 **Historical:** UI Redux plans archived in `docs/archive/completed/UI_REDUX_2026/`.

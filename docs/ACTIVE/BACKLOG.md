@@ -27,6 +27,34 @@ A living document tracking deferred improvements, technical debt, and items to r
 
 ---
 
+### Snapshot Generator - Campaign Level Creation Tool
+**Priority:** (High) | **Complexity:** High | **Added:** 2026-01-30
+
+**Objective:** Create Python-based tool to generate winnable campaign levels with controlled difficulty.
+
+**Status:** Planning complete, ready for implementation
+
+**Plan:** `docs/ACTIVE/SNAPSHOT_GENERATOR_PLAN.md`
+
+**Implementation Phases:**
+- Phase 1A: Core Infrastructure (Week 1)
+- Phase 1B: Solver (Week 2)
+- Phase 1C: Generator (Week 3)
+- Phase 1D: Difficulty & Reports (Week 4)
+
+**Key Requirements:**
+- Generate 30 winnable Classic levels (10 Easy, 10 Moderate, 10 Hard)
+- Bell curve difficulty progression
+- Staging output (not direct to data folder)
+- Comprehensive metrics for tuning
+
+**Notes:**
+- Extensible to other game modes (Classic Double, Hidden, Hidden Double)
+- Phase 2 (backward generation) architecture prepared
+- Reports viewable in documentation viewer
+
+---
+
 ### Stabilization & Hardening - Phase 2b (v2.3.2)
 **Priority:** (High) | **Complexity:** Medium | **Added:** 2026-01-29
 
