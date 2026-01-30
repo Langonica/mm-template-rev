@@ -134,19 +134,34 @@ if (moveType === 'recycle' || moveType === 'draw') {
 - Staging output (manual curation before data folder)
 - Viewer-compatible reports for tuning
 
-**Phase 1A: Core Infrastructure (In Progress)**
-- [x] Project structure (`tools/snapshot_generator/`)
-- [x] Game state representation (GameState, Card classes)
-- [x] JSON output formatter (to_snapshot_dict, save)
-- [ ] Card and move validation
-- [ ] Unit tests
+**Phase 1A: Core Infrastructure - COMPLETE [x]**
 
-**Completed 2026-01-30:**
-- Project scaffolding with core/ tests/ staging/
-- GameState with full snapshot JSON compatibility
-- Card class with rank/suit/color/numeric_rank
-- create_new_game() supporting all 4 modes
-- State fingerprinting for deduplication
+**Status:** COMPLETE  
+**Objective:** Build foundation for snapshot generation
+
+**Completed:**
+- [x] Project structure (`tools/snapshot_generator/`)
+- [x] GameState and Card classes with JSON serialization
+- [x] Move validation and generation (all Meridian rules)
+- [x] Difficulty analyzer with scoring formula
+- [x] CLI interface (single, batch, validate modes)
+
+**Files Created:**
+- `tools/snapshot_generator/README.md`
+- `tools/snapshot_generator/core/__init__.py`
+- `tools/snapshot_generator/core/game_state.py`
+- `tools/snapshot_generator/core/moves.py`
+- `tools/snapshot_generator/core/difficulty.py`
+- `tools/snapshot_generator/cli.py`
+
+**Verified Working:**
+```bash
+cd tools/snapshot_generator
+python3 cli.py --mode classic --difficulty easy --output ./staging/
+python3 cli.py --validate --input ./staging/classic_normal_easy_generated.json
+```
+
+**Next:** Phase 1B - BFS Solver Implementation
 
 **Upcoming:**
 - [ ] Phase 1B: BFS solver implementation
