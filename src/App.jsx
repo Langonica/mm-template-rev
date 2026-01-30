@@ -18,7 +18,7 @@ import { useCardGame } from './hooks/useCardGame'
 import { useGameStats } from './hooks/useGameStats'
 import { useCampaignProgress } from './hooks/useCampaignProgress'
 import { useViewportScale } from './hooks/useViewportScale'
-import { useHighDPIAssets } from './hooks/useHighDPIAssets'
+
 import { useNotification, Notification, NOTIFICATION_MESSAGES } from './hooks/useNotification.jsx'
 import { useNotificationSettings } from './contexts/NotificationSettingsContext'
 import { useGSTelemetry } from './hooks/useGSTelemetry'
@@ -128,8 +128,7 @@ function App() {
   // Now supports scaling up to 2× for larger viewports (requires 2× assets)
   const { scale, scaledWidth, scaledHeight, devicePixelRatio } = useViewportScale()
 
-  // High-DPI asset loading - selects @2x sprites on Retina/high-DPI displays
-  useHighDPIAssets(scale, devicePixelRatio)
+  // Note: Using 2x assets exclusively. Browser handles downscaling via CSS background-size.
 
   // eslint-disable-next-line no-unused-vars -- setSelectedSnapshotId reserved for future snapshot selection UI
   const [selectedSnapshotId, setSelectedSnapshotId] = useState('classic_normal_easy_01')

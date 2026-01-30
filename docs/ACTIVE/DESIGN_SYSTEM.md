@@ -8,7 +8,7 @@
 ## Related Documents
 
 - [Design Tokens](./DESIGN_TOKENS.md) - Concrete implementation (colors, spacing, CSS variables)
-- [Design Assets](../guides/DESIGN_ASSETS.md) - Asset specifications
+- [Design Assets](../guides/DESIGN_ASSETS.md) - Asset specifications (2x-only strategy with CSS background-size scaling)
 - **[Visual Asset Preview](../../public/ASSET_PREVIEW.html)** - Interactive checklist with live previews
 - [CODE_QUALITY.md](./CODE_QUALITY.md) - CSS architecture and patterns
 
@@ -293,6 +293,40 @@ Settings (gear icon)
 | **Unwinnable** | Mathematically proven no win possible |
 | **Stalled** | No productive moves available |
 | **Circular Play** | Repeating states without progress |
+
+---
+
+## Asset Strategy (2x-Only)
+
+Meridian Solitaire uses a **2x-only asset strategy** for all visual assets. This means:
+
+- **Only @2x high-resolution assets** are provided (e.g., `cardspritesheet@2x.png`)
+- **CSS `background-size`** scales assets down for all display densities
+- **No JavaScript asset selection** - the browser handles everything
+
+### Benefits
+
+- **Simpler codebase** - No runtime asset selection logic
+- **Crisp visuals everywhere** - GPU-accelerated downscaling works at all DPRs
+- **Reduced maintenance** - One asset version to create and update
+- **Future-proof** - Works on all current and future display densities
+
+### Implementation
+
+Assets are loaded via CSS variables with explicit `background-size`:
+
+```css
+/* CSS loads only the @2x asset */
+--sprite-url: url('/meridian-master/assets/cardspritesheet@2x.png');
+
+/* background-size scales to logical dimensions */
+.card {
+  background-image: var(--sprite-url);
+  background-size: 1040px 560px; /* Half of 2080x1120 @2x */
+}
+```
+
+See [Design Assets](../guides/DESIGN_ASSETS.md) for detailed specifications.
 
 ---
 

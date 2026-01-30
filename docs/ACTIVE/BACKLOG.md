@@ -103,8 +103,8 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 ### ~~GSN False Positive Fix - Strategic Cycling Detection~~
 **Resolved:** 2026-01-29 | Fixed false "unproductive play" warnings when players cycling stock near endgame to find winning cards. Added "strategic cycling" check to `GameStateTracker.analyzeProductivity()`: when <10 cards remain and player draws/recycles, move is considered productive. Prevents warnings during legitimate endgame strategies.
 
-### ~~Asset Path Fix for Production Builds~~
-**Resolved:** 2026-01-29 | Fixed image assets not loading in production builds. Asset paths were relative but needed the Vite base URL (`/meridian-master/`). Updated `useHighDPIAssets.js` to use `import.meta.env.BASE_URL` and updated CSS fallback paths in `App.css`.
+### ~~Asset Simplification - 2x-Only Strategy~~
+**Resolved:** 2026-01-29 | Simplified asset system to use only @2x high-resolution assets with CSS `background-size` scaling. Removed 150 lines of JavaScript asset selection logic (`useHighDPIAssets.js` hook deleted). Deleted 1× asset files (cardspritesheet.png, mm-gameboard.png - ~1.4MB saved). Updated CSS to reference @2x files directly with proper background-size scaling. Benefits: simpler codebase, consistent quality across all displays, faster initial load.
 
 ### ~~Game State Notification Bug Fix (v2.3.1)~~
 **Resolved:** 2026-01-29 | Fixed toast dismiss loop where notification would immediately reopen after user dismissed it. Root cause: useEffect re-triggered when `gameStateToastOpen` changed but tier was still elevated. Fix: Added `dismissedNotificationTier` suppression state that prevents re-triggering until tier escalates or resets. Also removed redundant action button from toast and raised hint threshold from 2 to 3 cycles.
@@ -164,7 +164,7 @@ Build shows warnings for camelCase CSS properties (e.g., `borderRadius` vs `bord
 **Resolved:** 2026-01-22 | Created tokens.css, Button and Select components with CSS Modules. Refactored Header.jsx as proof of concept. Header reduced from 238 to 127 lines, eliminated all inline styles.
 
 ### ~~Responsive Scaling Enhancement (v2.1.0)~~
-**Resolved:** 2026-01-28 | Removed 1.0× scale cap (now supports up to 2.0× / 2560×1440). Added `useHighDPIAssets` hook for automatic @2x asset selection based on viewport scale and DPR. Updated stock/waste pile visuals with centered stacking model. Assets: cardspritesheet@2x.png, mm-gameboard@2x.png.
+**Resolved:** 2026-01-28 | Removed 1.0× scale cap (now supports up to 2.0× / 2560×1440). ~~Added `useHighDPIAssets` hook~~ **DEPRECATED: Hook removed in v2.3.2** - Now using 2x-only assets with CSS `background-size` scaling. Updated stock/waste pile visuals with centered stacking model. Assets: cardspritesheet@2x.png, mm-gameboard@2x.png.
 
 ---
 

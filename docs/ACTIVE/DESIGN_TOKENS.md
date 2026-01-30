@@ -519,7 +519,83 @@ Each new theme requires only:
 
 **Next Step:** Upon approval, begin Phase 1 (Token Creation)
 
+## 10. Asset Token Implementation
+
+### 10.1 CSS Custom Properties (Variables)
+
+Asset paths are defined as CSS custom properties for consistent reference across components:
+
+```css
+:root {
+  /* Sprite sheet for card faces - 2x resolution for crisp display */
+  --sprite-url: url('/meridian-master/assets/cardspritesheet@2x.png');
+  --sprite-width: 2000px;  /* Actual 2x sprite width */
+  --sprite-height: 960px;  /* Actual 2x sprite height */
+  
+  /* Card back pattern */
+  --cardback-url: url('/meridian-master/assets/cardbackpattern@2x.png');
+  
+  /* Individual card assets (if needed) */
+  --card-asset-path: '/meridian-master/assets/cards';
+}
+```
+
+### 10.2 Asset Path Tokens
+
+| Token | 2x Path | Usage |
+|-------|---------|-------|
+| `--sprite-url` | `/meridian-master/assets/cardspritesheet@2x.png` | Card face sprite sheet |
+| `--cardback-url` | `/meridian-master/assets/cardbackpattern@2x.png` | Card back pattern |
+| Card backs | `/meridian-master/assets/card_backs/{name}@2x.png` | Individual card back designs |
+| Icons | `/meridian-master/assets/icons/{name}@2x.png` | UI icons |
+
+> **Note:** All assets use the `@2x` suffix to indicate 2x resolution. CSS `background-size` is used to scale assets down for standard displays, ensuring crisp rendering on all screen densities.
+
+### 10.3 2x-Only Asset Strategy
+
+**Philosophy:** Instead of maintaining multiple asset versions (1x, 2x, 3x), we use a single 2x-resolution asset and let CSS handle the downscaling.
+
+**Benefits:**
+- **Simpler maintenance:** Only one asset version to update
+- **Smaller bundle:** No duplicate assets at different resolutions
+- **Future-proof:** Works on all display densities (1x, 2x, 3x+)
+- **Crisp rendering:** Browsers scale high-res assets better than upscaling low-res
+
+**Implementation:**
+```css
+.card-face {
+  background-image: var(--sprite-url);
+  background-size: 1000px 480px; /* Display at 1x logical size */
+  /* Sprite is actually 2000x960 (2x), but displayed at 1000x480 */
+}
+```
+
+### 10.4 Responsive Asset Strategy
+
+Instead of using responsive image techniques (srcset, picture elements) with multiple asset versions, we use **CSS background-size** to handle scaling:
+
+| Strategy | Traditional | Our Approach |
+|----------|-------------|--------------|
+| Asset versions | 3 (1x, 2x, 3x) | 1 (@2x only) |
+| Selection | srcset/media queries | CSS background-size |
+| Maintenance | Update 3 files | Update 1 file |
+| Quality | Good on matched density | Excellent on all densities |
+
+**Example CSS:**
+```css
+/* The sprite is 2000x960 (2x resolution) */
+.card {
+  width: 100px;  /* Logical size */
+  height: 140px; /* Logical size */
+  background-image: url('/meridian-master/assets/cardspritesheet@2x.png');
+  background-size: 1000px 480px; /* Scale to 1x logical size */
+  background-position: /* calculated based on card */;
+}
+```
+
+The browser automatically scales the 2x asset to the logical size, resulting in crisp rendering on all displays.
+
 ---
 
 *Document Version: 1.0*  
-*Related Documents: DESIGN_ASSETS.md, PROGRESS.md, CODE_AUDIT.md*
+*Related Documents: DESIGN_ASSETS.md, PROGRESS.md, CODE_AUDIT.md, PLAN_Asset_Simplification_2x_Only.md*

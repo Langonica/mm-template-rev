@@ -117,19 +117,26 @@ if (moveType === 'recycle' || moveType === 'draw') {
 
 ---
 
-### Asset Path Fix for Production Builds - COMPLETE ✅
+### 2x-Only Asset Simplification - COMPLETE ✅
 
-**Objective:** Fix image assets not loading in production/distribution builds.
+**Objective:** Simplify asset handling by using 2x assets exclusively and eliminating the dynamic asset selection hook.
 
-**Problem:** Asset paths were relative (`assets/cardspritesheet.png`) but needed to include the Vite base URL (`/meridian-master/`) for production builds.
+**Problem:** The `useHighDPIAssets.js` hook added complexity with dynamic asset selection based on scale and DPR. With modern displays, 2x assets are now the standard.
 
 **Solution Applied (2026-01-29):**
-- `useHighDPIAssets.js`: Added `import.meta.env.BASE_URL` prefix to all asset paths
-- `App.css`: Updated fallback paths to include full base URL
+- **Deleted:** `src/hooks/useHighDPIAssets.js` - Removed dynamic asset selection hook
+- **Simplified:** Asset loading now uses 2x assets directly with proper base URL handling
+- **Updated:** `App.css` with correct asset paths for production builds
 
 **Files Modified:**
-- `src/hooks/useHighDPIAssets.js`
-- `src/styles/App.css`
+- `src/hooks/useHighDPIAssets.js` - **DELETED**
+- `src/styles/App.css` - Updated asset paths with `import.meta.env.BASE_URL`
+- `src/App.jsx` - Removed useHighDPIAssets hook integration
+
+**Result:**
+- ✅ Cleaner codebase with simplified asset handling
+- ✅ 2x assets load correctly in both dev and production
+- ✅ No conditional asset selection logic needed
 
 ---
 
@@ -508,7 +515,7 @@ Complete: Win celebration
 | Task | Files | Changes |
 |------|-------|---------|
 | Console cleanup | `validateSnapshots.js` | Wrapped 15 logs in DEBUG flag |
-| Console cleanup | `useHighDPIAssets.js` | Removed 5 debug logs |
+| Console cleanup | `useHighDPIAssets.js` | Hook deleted - no longer needed |
 | Z-index consolidation | `App.css` | 9 hardcoded values → tokens |
 | Z-index consolidation | `Column.jsx` | 110 + index → calc() |
 | Z-index consolidation | `useTouchDrag.js` | 9999 → --z-touch-drag |
@@ -615,11 +622,11 @@ Complete: Win celebration
 - Game now scales proportionally up to 2560×1440
 - Container `transform: scale()` preserves exact 1280×720 layout
 
-**Phase 2: High-DPI Asset Support**
-- Created `useHighDPIAssets.js` hook for dynamic asset selection
-- Automatically selects @2x assets when `scale >= 1.25` or `DPR >= 2`
+**Phase 2: High-DPI Asset Support (SIMPLIFIED - 2026-01-29)**
+- ~~Created `useHighDPIAssets.js` hook~~ - **DELETED: Now using 2x assets exclusively**
+- 2x assets used directly without dynamic selection
 - CSS `background-size: 1040px 560px` ensures @2x sprites render correctly
-- Graceful fallback to 1× assets if @2x files not present
+- Simplified codebase by removing conditional asset logic
 
 **Stock/Waste Pile Visual Improvements:**
 - Both piles now use same centered stacking model (deepest layer centered)
@@ -631,10 +638,10 @@ Complete: Win celebration
 **Files Modified:**
 - `src/hooks/useViewportScale.js` - MAX_SCALE constant, DPR export
 - `src/hooks/useResponsiveDimensions.js` - MAX_CARD_WIDTH (160px)
-- `src/hooks/useHighDPIAssets.js` - New hook for asset selection
+- ~~`src/hooks/useHighDPIAssets.js`~~ - **DELETED** - Using 2x assets directly
 - `src/components/StockWaste.jsx` - Centered stacking, z-index fixes
 - `src/styles/App.css` - background-size for @2x, relative asset paths
-- `src/App.jsx` - Integrated useHighDPIAssets hook
+- `src/App.jsx` - Simplified asset loading (removed useHighDPIAssets hook)
 
 **Assets Required (User Provided):**
 - `cardspritesheet@2x.png` (2080×1120px) ✅
@@ -1166,3 +1173,13 @@ See [BACKLOG.md](./BACKLOG.md) for active work items and technical debt.
 ---
 
 *Last Updated: 2026-01-29*
+
+---
+
+## Summary of Recent Changes
+
+### Completed: 2x-Only Asset Simplification
+- Deleted `src/hooks/useHighDPIAssets.js` (dynamic asset selection no longer needed)
+- Updated `src/styles/App.css` with simplified 2x asset paths
+- Updated `src/App.jsx` to load 2x assets directly
+- All asset-related sections in this document updated to reflect the simplification

@@ -385,7 +385,7 @@
   <h2>Technical Constraints</h2>
   <ul>
     <li>Base canvas: 1280 × 720px (16:9)</li>
-    <li>Card size: 80 × 112px (1×), 160 × 224px (2× for Retina)</li>
+    <li>Card size: 80 × 112px logical (160 × 224px @2x asset, CSS scaled)</li>
     <li>CSS-based scaling for responsive behavior</li>
     <li>Sprite-sheet for card graphics (performance)</li>
   </ul>
@@ -662,8 +662,8 @@
   <table>
     <tr>
       <th>Asset</th>
-      <th>1× Size</th>
-      <th>2× Size</th>
+      <th>Logical Size</th>
+      <th>@2x Asset Size</th>
       <th>Aspect Ratio</th>
     </tr>
     <tr>
@@ -674,7 +674,7 @@
     </tr>
     <tr>
       <td>Sprite Sheet</td>
-      <td>1040 × 560px</td>
+      <td>1040 × 560px (via CSS)</td>
       <td>2080 × 1120px</td>
       <td>13:7</td>
     </tr>
@@ -1273,16 +1273,16 @@
     <tr>
       <td>1920-2560px</td>
       <td>1.5-2.0</td>
-      <td>Large monitors (2× assets)</td>
+      <td>Large monitors (CSS scaled @2x assets)</td>
     </tr>
   </table>
   
-  <h2>8.2 2× Asset Strategy</h2>
-  <p>For viewports scaling above 1.5× or with device pixel ratio ≥ 2:</p>
+  <h2>8.2 2×-Only Asset Strategy</h2>
+  <p>Meridian Solitaire uses a simplified 2×-only asset system. Only high-resolution @2x assets are provided, and CSS <code>background-size</code> scales them for all display densities:</p>
   <ul>
-    <li>Load <code>cardspritesheet@2x.png</code> (2080 × 1120px)</li>
-    <li>Load <code>mm-gameboard@2x.png</code> (2560 × 1440px)</li>
-    <li>CSS scales down by 50%</li>
+    <li><code>cardspritesheet@2x.png</code> (2080 × 1120px) - CSS scaled to 1040 × 560px</li>
+    <li><code>mm-gameboard@2x.png</code> (2560 × 1440px) - CSS scaled via background-size: 100% 100%</li>
+    <li>No JavaScript asset selection needed - GPU handles downscaling</li>
   </ul>
   
   <h2>8.3 Portrait Blocker</h2>
@@ -1392,30 +1392,16 @@
       <th>Status</th>
     </tr>
     <tr>
-      <td>Card Sprite Sheet (1×)</td>
-      <td><code>cardspritesheet.png</code></td>
-      <td>1040×560px</td>
-      <td>PNG-24</td>
-      <td class="status"><span class="status-pending">☐ Check</span></td>
-    </tr>
-    <tr>
-      <td>Card Sprite Sheet (2×)</td>
+      <td>Card Sprite Sheet (@2x)</td>
       <td><code>cardspritesheet@2x.png</code></td>
-      <td>2080×1120px</td>
+      <td>2080×1120px (CSS scaled to 1040×560px)</td>
       <td>PNG-24</td>
       <td class="status"><span class="status-pending">☐ Check</span></td>
     </tr>
     <tr>
-      <td>Game Board Background (1×)</td>
-      <td><code>mm-gameboard.png</code></td>
-      <td>1280×720px</td>
-      <td>PNG-24</td>
-      <td class="status"><span class="status-pending">☐ Check</span></td>
-    </tr>
-    <tr>
-      <td>Game Board Background (2×)</td>
+      <td>Game Board Background (@2x)</td>
       <td><code>mm-gameboard@2x.png</code></td>
-      <td>2560×1440px</td>
+      <td>2560×1440px (CSS scaled)</td>
       <td>PNG-24</td>
       <td class="status"><span class="status-pending">☐ Check</span></td>
     </tr>

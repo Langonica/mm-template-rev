@@ -127,9 +127,9 @@ meridian-solitaire-complete/
 │       └── App.css                  # Complete styles & animations
 ├── public/
 │   └── assets/                      # Game assets
-│       ├── cardspritesheet.png      # Card graphics
-│       ├── gameboardbkgd.png        # Background
-│       └── gameboardonly.png        # Board overlay
+│       ├── cardspritesheet@2x.png   # Card graphics (2x only)
+│       ├── mm-gameboard@2x.png      # Background (2x only)
+│       └── *.png                    # Additional sprites and badges
 ├── docs/                            # Documentation
 │   └── MERIDIAN_MASTER_GAME_ENGINE_SPECIFICATION.txt
 ├── package.json                     # Dependencies

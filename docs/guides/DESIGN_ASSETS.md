@@ -15,15 +15,41 @@ This document catalogs all visual assets for Meridian Solitaire and provides spe
 
 | Category | Count | Check Via |
 |----------|-------|-----------|
-| Required | 4 | Interactive preview or checklist below |
+| Required | 2 | Interactive preview or checklist below |
 | Optional (with CSS fallbacks) | 6 | Interactive preview shows fallback comparison |
 | Future UI | 3 | Planned for future enhancement |
 
 ---
 
+## 2x-Only Asset Strategy (v2.3.2+)
+
+**Meridian Solitaire uses a simplified 2x-only asset system.** We provide only high-resolution @2x assets and use CSS `background-size` to scale them down for all display densities. This approach:
+
+- **Simplifies the codebase** - No JavaScript asset selection logic needed
+- **Ensures crisp visuals** - High-DPI assets downscale beautifully via GPU
+- **Reduces maintenance** - One asset version to create and maintain
+- **Works everywhere** - Modern browsers handle downscaling excellently
+
+### How It Works
+
+```css
+/* CSS loads only the @2x asset */
+--sprite-url: url('/meridian-master/assets/cardspritesheet@2x.png');
+
+/* background-size scales it to logical dimensions */
+.card {
+  background-image: var(--sprite-url);
+  background-size: 1040px 560px; /* Half of 2080x1120 @2x */
+}
+```
+
+The browser's GPU-accelerated downscaling produces excellent results at all viewport scales and device pixel ratios.
+
+---
+
 ## Asset Independence (Phase 5)
 
-**The game now works with CSS-only styling by default.** All track backgrounds, plinths, and placeholders use CSS gradients. This means:
+**The game works with CSS-only styling by default.** All track backgrounds, plinths, and placeholders use CSS gradients. This means:
 
 - The game runs without any custom sprite assets (except card faces)
 - Designers can create new sprites at their own pace
@@ -33,14 +59,10 @@ This document catalogs all visual assets for Meridian Solitaire and provides spe
 
 | Asset Type | Status | Notes |
 |------------|--------|-------|
-| Card Sprite Sheet | **REQUIRED** | Cards cannot be rendered without this |
-| Card Sprite Sheet @2x | **REQUIRED** | For crisp cards on high-DPI/scaled displays |
-| Game Board Background | **REQUIRED** | `mm-gameboard.png` - active in current build |
-| Game Board Background @2x | **REQUIRED** | For crisp background on high-DPI/scaled displays |
+| Card Sprite Sheet @2x | **REQUIRED** | Cards cannot be rendered without this |
+| Game Board Background @2x | **REQUIRED** | `mm-gameboard@2x.png` - active in current build |
 | Track Backgrounds | Optional | CSS gradients provide fallback |
-| Track Backgrounds @2x | Optional | Only if using custom track sprites |
 | Column Badges | Optional | CSS gradients provide fallback |
-| Column Badges @2x | Optional | Only if using custom badge sprites |
 
 ---
 
@@ -50,17 +72,17 @@ Edit `src/styles/App.css` and uncomment the relevant URL variables:
 
 ```css
 /* Track backgrounds - uncomment to use custom sprites */
---track-ace: url('/assets/aces-up.png');
---track-king: url('/assets/kings-down.png');
---track-default: url('/assets/default-down.png');
---track-empty: url('/assets/empty.png');
+--track-ace: url('/meridian-master/assets/aces-up@2x.png');
+--track-king: url('/meridian-master/assets/kings-down@2x.png');
+--track-default: url('/meridian-master/assets/default-down@2x.png');
+--track-empty: url('/meridian-master/assets/empty@2x.png');
 
 /* Column badges - uncomment to use custom sprites */
---ace-badge-url: url('/assets/ace-badge.png');
---king-badge-url: url('/assets/king-badge.png');
+--ace-badge-url: url('/meridian-master/assets/ace-badge@2x.png');
+--king-badge-url: url('/meridian-master/assets/king-badge@2x.png');
 
-/* Game board background - uncomment to use custom sprite */
---gamestage-url: url('/assets/gameboardonly.png');
+/* Game board background - change to use custom sprite */
+--gamestage-url: url('/meridian-master/assets/custom-gameboard@2x.png');
 ```
 
 ---
@@ -69,25 +91,26 @@ Edit `src/styles/App.css` and uncomment the relevant URL variables:
 
 ### 1. Card Sprite Sheet (REQUIRED)
 
-| Property | 1× (@1x) | 2× (@2x) |
-|----------|----------|----------|
-| **Filename** | `cardspritesheet.png` | `cardspritesheet@2x.png` |
-| **Dimensions** | 1040 × 560 px | 2080 × 1120 px |
-| **Grid** | 13 columns × 5 rows | 13 columns × 5 rows |
-| **Cell Size** | 80 × 112 px | 160 × 224 px |
-| **Format** | PNG-24 with transparency | PNG-24 with transparency |
+| Property | @2x (High-DPI) |
+|----------|----------------|
+| **Filename** | `cardspritesheet@2x.png` |
+| **Dimensions** | 2080 × 1120 px |
+| **Grid** | 13 columns × 5 rows |
+| **Cell Size** | 160 × 224 px |
+| **Format** | PNG-24 with transparency |
+| **CSS Display Size** | 1040 × 560 px (via background-size) |
 
 **Grid Layout:**
 ```
-Row 0 (y=0):    Hearts    (A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K)
-Row 1 (y=112):  Diamonds  (A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K)
-Row 2 (y=224):  Clubs     (A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K)
-Row 3 (y=336):  Spades    (A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K)
-Row 4 (y=448):  Card Back (only column 6 is used: position -480px -448px)
+Row 0 (y=0):     Hearts    (A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K)
+Row 1 (y=224):   Diamonds  (A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K)
+Row 2 (y=448):   Clubs     (A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K)
+Row 3 (y=672):   Spades    (A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K)
+Row 4 (y=896):   Card Back (only column 6 is used: position -960px -896px)
 ```
 
 **Card Design Notes:**
-- Corner radius: 6px (baked into sprite)
+- Corner radius: 12px (baked into sprite, appears as 6px when scaled)
 - No padding between cells
 - Card back should be decorative/branded
 
@@ -99,18 +122,19 @@ Tracks are the vertical lanes where tableau cards stack. Each track type has a d
 
 | Track Type | Filename | Purpose | CSS Fallback |
 |------------|----------|---------|--------------|
-| Ace Track | `aces-up.png` | Columns that build A→6 | Light blue tint (upward) |
-| King Track | `kings-down.png` | Columns that build K→7 | Deep blue tint (downward) |
-| Traditional Track | `default-down.png` | Flexible direction columns | Blue-grey gradient |
-| Empty Track | `empty.png` | Empty/available columns | Dark blue inset |
+| Ace Track | `aces-up@2x.png` | Columns that build A→6 | Light blue tint (upward) |
+| King Track | `kings-down@2x.png` | Columns that build K→7 | Deep blue tint (downward) |
+| Traditional Track | `default-down@2x.png` | Flexible direction columns | Blue-grey gradient |
+| Empty Track | `empty@2x.png` | Empty/available columns | Dark blue inset |
 
 **Track Specifications:**
 
 | Property | Value |
 |----------|-------|
-| **Width** | 80 px (matches card width) |
-| **Height** | 290 px (track height) |
+| **Width** | 160 px (matches card width @2x) |
+| **Height** | 580 px (track height @2x) |
 | **Format** | PNG-24 with transparency |
+| **CSS Display Size** | 80 × 290 px (via background-size) |
 
 **Design Guidelines (v2.2+ Blue Theme):**
 - Ace tracks: Light/cyan blue tones (#E3F2FD), upward visual flow
@@ -131,16 +155,17 @@ Badges appear at the anchor position of ace/king columns (top for ace, bottom fo
 
 | Badge Type | Filename | Purpose |
 |------------|----------|---------|
-| Ace Badge | `ace-badge.png` | Marks ace column anchor (top) |
-| King Badge | `king-badge.png` | Marks king column anchor (bottom) |
+| Ace Badge | `ace-badge@2x.png` | Marks ace column anchor (top) |
+| King Badge | `king-badge@2x.png` | Marks king column anchor (bottom) |
 
 **Badge Specifications:**
 
 | Property | Value |
 |----------|-------|
-| **Width** | 80 px (matches card width) |
-| **Height** | 112 px (matches card height) |
+| **Width** | 160 px (matches card width @2x) |
+| **Height** | 224 px (matches card height @2x) |
 | **Format** | PNG-24 with transparency |
+| **CSS Display Size** | 80 × 112 px (via background-size) |
 
 **Design Guidelines:**
 - Should be subtle, not compete with cards
@@ -152,20 +177,21 @@ Badges appear at the anchor position of ace/king columns (top for ace, bottom fo
 
 ### 4. Game Board Background (REQUIRED)
 
-Full background for the play area. Currently using `mm-gameboard.png`.
+Full background for the play area. Currently using `mm-gameboard@2x.png`.
 
-| Property | 1× (@1x) | 2× (@2x) |
-|----------|----------|----------|
-| **Filename** | `mm-gameboard.png` | `mm-gameboard@2x.png` |
-| **Dimensions** | 1280 × 720 px | 2560 × 1440 px |
-| **Format** | PNG-24 | PNG-24 |
+| Property | @2x (High-DPI) |
+|----------|----------------|
+| **Filename** | `mm-gameboard@2x.png` |
+| **Dimensions** | 2560 × 1440 px |
+| **Format** | PNG-24 |
+| **CSS Display Size** | Full viewport (via background-size: 100% 100%) |
 
 **Design Guidelines (v2.2+ Blue Casino Theme):**
 - Deep blue theme (current: `#0D1B2A` deep blue)
 - Should not compete with cards
 - Can include subtle texture or pattern
 - Consider leaving track areas transparent for layering
-- Must match current `mm-gameboard.png` layout exactly (just higher resolution)
+- Must match current layout exactly
 - Gradient suggestion: `#0A1628` (top) → `#0D1B2A` (center) → `#1B2838` (bottom)
 
 **Legacy Guidelines (Pre-v2.2):**
@@ -228,8 +254,9 @@ Full background for the play area. Currently using `mm-gameboard.png`.
 All asset URLs are controlled via CSS custom properties in `:root`:
 
 ```css
-/* Required */
---sprite-url: url('/assets/cardspritesheet.png');
+/* Required - @2x assets with CSS downscaling */
+--sprite-url: url('/meridian-master/assets/cardspritesheet@2x.png');
+--gamestage-url: url('/meridian-master/assets/mm-gameboard@2x.png');
 
 /* Optional - set to 'none' for CSS-only fallback */
 --track-ace: none;
@@ -238,7 +265,22 @@ All asset URLs are controlled via CSS custom properties in `:root`:
 --track-empty: none;
 --ace-badge-url: none;
 --king-badge-url: none;
---gamestage-url: none;
+```
+
+### Background-Size Scaling
+
+```css
+/* Cards: 2080x1120 @2x scaled to 1040x560 logical */
+.card {
+  background-image: var(--sprite-url);
+  background-size: 1040px 560px;
+}
+
+/* Game board: Full viewport coverage */
+.game-stage {
+  background-image: var(--gamestage-url);
+  background-size: 100% 100%;
+}
 ```
 
 ---
@@ -247,15 +289,15 @@ All asset URLs are controlled via CSS custom properties in `:root`:
 
 All dimensions derive from card width. At base size:
 
-| Element | Pixels | Ratio to Card Width |
-|---------|--------|---------------------|
-| Card Width | 80 px | 1.0 |
-| Card Height | 112 px | 1.4 |
-| Track Height | 290 px | 3.625 |
-| Column Gap | 20 px | 0.25 |
-| Card Overlap | 16 px | 0.2 |
+| Element | Logical Size | @2x Asset Size | Ratio to Card Width |
+|---------|--------------|----------------|---------------------|
+| Card Width | 80 px | 160 px | 1.0 |
+| Card Height | 112 px | 224 px | 1.4 |
+| Track Height | 290 px | 580 px | 3.625 |
+| Column Gap | 20 px | - | 0.25 |
+| Card Overlap | 16 px | - | 0.2 |
 
-**For @2x retina assets, double all dimensions.**
+**Note:** Create assets at @2x dimensions. CSS `background-size` handles the downscaling.
 
 ---
 
@@ -264,47 +306,59 @@ All dimensions derive from card width. At base size:
 When creating/updating assets:
 
 ### Required Assets (Must Have)
-- [ ] Export `cardspritesheet.png` at 1× (1040×560px)
-- [ ] Export `cardspritesheet@2x.png` at 2× (2080×1120px)
-- [ ] Export `mm-gameboard.png` at 1× (1280×720px)
-- [ ] Export `mm-gameboard@2x.png` at 2× (2560×1440px)
+- [ ] Export `cardspritesheet@2x.png` at 2080×1120px
+- [ ] Export `mm-gameboard@2x.png` at 2560×1440px
 
 ### Optional Assets (Only If Customizing)
-- [ ] Export track sprites at 1× (80×290px) and 2× (160×580px)
-- [ ] Export badge sprites at 1× (80×112px) and 2× (160×224px)
+- [ ] Export track sprites at 160×580px (@2x)
+- [ ] Export badge sprites at 160×224px (@2x)
 
 ### All Assets
 - [ ] Use PNG-24 for transparency, JPEG only for photos
 - [ ] Verify alignment with grid system
-- [ ] Test against dark background (`#1720c3` blue felt)
+- [ ] Test against dark background (`#0D1B2A` deep blue)
 - [ ] Optimize file size (TinyPNG or similar)
 - [ ] Place files in `/public/assets/`
-- [ ] Ensure @2x versions match @1x layout exactly (just doubled)
+- [ ] Verify browser downscaling quality at various viewport scales
 
 ---
 
 ## File Naming Convention
 
 ```
-[category]-[name].[ext]          # 1× assets
-[category]-[name]@2x.[ext]       # 2× (retina) assets
+[category]-[name]@2x.[ext]       # High-DPI assets (only version needed)
 
 Examples:
-cardspritesheet.png              (card faces and back - 1×)
-cardspritesheet@2x.png           (card faces and back - 2×)
-mm-gameboard.png                 (game board background - 1×)
-mm-gameboard@2x.png              (game board background - 2×)
-aces-up.png                      (ace track background - 1×)
-aces-up@2x.png                   (ace track background - 2×)
-ace-badge.png                    (ace column badge - 1×)
-ace-badge@2x.png                 (ace column badge - 2×)
+cardspritesheet@2x.png           (card faces and back - @2x)
+mm-gameboard@2x.png              (game board background - @2x)
+aces-up@2x.png                   (ace track background - @2x)
+ace-badge@2x.png                 (ace column badge - @2x)
 ```
 
-**Note:** The `@2x` suffix is standard convention for retina/high-DPI assets. CSS and JS will automatically select the appropriate version based on device pixel ratio.
+**Note:** The `@2x` suffix indicates high-DPI assets. CSS `background-size` automatically scales them down for all display densities. No 1× versions are needed.
 
 ---
 
-*Document Version: 2.1*
+## Migration Notes (v2.3.2)
+
+The dual 1x/2x asset system was simplified to 2x-only in v2.3.2:
+
+| Old Approach | New Approach |
+|--------------|--------------|
+| Two asset files (1x and 2x) | One @2x asset file |
+| JavaScript runtime selection | CSS background-size scaling |
+| 150 lines of asset selection code | Zero lines of JS |
+| Conditional asset loading | Simple CSS variable |
+
+**Benefits:**
+- Reduced code complexity
+- Consistent visual quality across all devices
+- Smaller total file size (no duplicate 1x assets)
+- Faster initial load (no JS asset selection)
+
+---
+
+*Document Version: 2.3.2*
 *Created: 2026-01-23*
-*Last Updated: 2026-01-28*
-*Phase 5: Asset Independence ✅ | Phase 6: High-DPI Support ✅*
+*Last Updated: 2026-01-29*
+*Phase 5: Asset Independence ✅ | Phase 6: High-DPI Support ✅ | Phase 7: 2x-Only Simplification ✅*

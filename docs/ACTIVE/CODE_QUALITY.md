@@ -97,6 +97,12 @@ src/
 - **Fix:** When <10 cards remain, cycling stock is considered productive
 - **Result:** No more false "unproductive play" warnings near game end
 
+### Asset Simplification - 2x-Only Strategy
+- **Hook removed:** Deleted `useHighDPIAssets.js` (150 lines of asset selection logic)
+- **CSS approach:** Using `background-size` to scale @2x assets for all displays
+- **Files deleted:** `cardspritesheet.png`, `mm-gameboard.png` (~1.4MB saved)
+- **Result:** Simpler codebase, consistent quality, faster load
+
 ### Phase 2a - Game State Detection Tuning
 - **Telemetry System:** New `useGSTelemetry` hook tracks false positives/negatives
 - **Configurable Thresholds:** New `notificationConfig.js` utility for tuning

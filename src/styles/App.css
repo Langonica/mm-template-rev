@@ -63,12 +63,12 @@
      =========================================== */
 
   /* Card sprite sheet - REQUIRED */
-  /* In production, CSS and assets are both in dist/assets/ */
-  --sprite-url: url('/meridian-master/assets/cardspritesheet.png');
+  /* Using 2x assets only - browser handles downscaling via background-size */
+  --sprite-url: url('/meridian-master/assets/cardspritesheet@2x.png');
 
   /* Game board backgrounds - OPTIONAL (CSS gradient used if not set) */
   --gamefield-url: none;
-  --gamestage-url: url('/meridian-master/assets/mm-gameboard.png');
+  --gamestage-url: url('/meridian-master/assets/mm-gameboard@2x.png');
 
   /* Track backgrounds - OPTIONAL (CSS gradients used if not set)
    * Uncomment to use custom track sprites:

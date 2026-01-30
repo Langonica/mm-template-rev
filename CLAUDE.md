@@ -179,13 +179,15 @@ Columns become typed when an Ace or King is placed:
 
 Currently fixed game board (1280×720), scaled via `useViewportScale` hook. Design tokens in `src/styles/tokens.css`. See `docs/ACTIVE/DESIGN_TOKENS.md` for token reference.
 
+**Asset Strategy (2x-Only):** The game uses a simplified 2x-only asset system. Only `@2x` high-resolution assets are provided (e.g., `cardspritesheet@2x.png`, `mm-gameboard@2x.png`), and CSS `background-size` scales them down for all display densities. This eliminates JavaScript asset selection logic and ensures crisp visuals via GPU downscaling. See `docs/guides/DESIGN_ASSETS.md` for specifications.
+
 **Historical:** Layout audit research archived in `docs/archive/reference/LAYOUT_AUDIT.md`.
 
 ### UI/UX System
 
 - **Design System:** `docs/ACTIVE/DESIGN_SYSTEM.md` - Principles, taxonomy, patterns
 - **Design Tokens:** `docs/ACTIVE/DESIGN_TOKENS.md` - Colors, spacing, CSS variables
-- **Asset Specs:** `docs/guides/DESIGN_ASSETS.md` - Visual asset requirements
+- **Asset Specs:** `docs/guides/DESIGN_ASSETS.md` - Visual asset requirements (2x-only strategy with CSS background-size scaling)
 
 **Historical:** UI Redux plans archived in `docs/archive/completed/UI_REDUX_2026/`.
 

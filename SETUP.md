@@ -220,6 +220,45 @@ Press F12 and check:
 
 ---
 
+## 📦 Required Assets
+
+Meridian Solitaire uses a **2x-only asset strategy** for simplified maintenance and optimal visual quality.
+
+### The 2x-Only Strategy
+
+Instead of providing multiple resolutions (1x, 2x), we provide only high-resolution @2x assets and use CSS `background-size` to scale them down for all display densities. This approach:
+
+- **Simplifies the codebase** - No JavaScript asset selection logic needed
+- **Ensures crisp visuals** - High-DPI assets downscale beautifully via GPU
+- **Reduces maintenance** - One asset version to create and maintain
+- **Works everywhere** - Modern browsers handle downscaling excellently
+
+### Required Assets (Must Have)
+
+Place these files in `/public/assets/`:
+
+| Asset | Filename | Dimensions | Display Size |
+|-------|----------|------------|--------------|
+| Card Sprite Sheet | `cardspritesheet@2x.png` | 2080 × 1120 px | 1040 × 560 px (via CSS) |
+| Game Board Background | `mm-gameboard@2x.png` | 2560 × 1440 px | Full viewport (via CSS) |
+
+### Optional Assets
+
+These can be added for custom styling (CSS fallbacks are used by default):
+
+| Asset | Filename | Dimensions |
+|-------|----------|------------|
+| Ace Track Background | `aces-up@2x.png` | 160 × 580 px |
+| King Track Background | `kings-down@2x.png` | 160 × 580 px |
+| Default Track Background | `default-down@2x.png` | 160 × 580 px |
+| Empty Track Background | `empty@2x.png` | 160 × 580 px |
+| Ace Badge | `ace-badge@2x.png` | 160 × 224 px |
+| King Badge | `king-badge@2x.png` | 160 × 224 px |
+
+> **Note:** No 1x versions are needed. CSS `background-size` automatically scales @2x assets for all display densities.
+
+---
+
 ## 📂 Directory Structure Explained
 
 ```
@@ -235,7 +274,7 @@ meridian-solitaire-complete/
 │   └── styles/            # CSS files
 │
 ├── public/                # Static assets
-│   └── assets/            # Images, sprites
+│   └── assets/            # @2x images and sprites (CSS scaled)
 │
 ├── node_modules/          # Dependencies (auto-generated)
 ├── dist/                  # Production build (auto-generated)

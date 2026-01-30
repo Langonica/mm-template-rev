@@ -385,34 +385,19 @@
     const assets = {
       required: [
         {
-          name: 'Card Sprite Sheet (1×)',
-          filename: 'cardspritesheet.png',
-          expectedSize: { width: 1040, height: 560 },
-          format: 'PNG-24',
-          description: '52 cards in 13×4 grid + card back',
-          grid: '13 cols × 5 rows, 80×112px cells'
-        },
-        {
-          name: 'Card Sprite Sheet (2×)',
+          name: 'Card Sprite Sheet (@2x)',
           filename: 'cardspritesheet@2x.png',
           expectedSize: { width: 2080, height: 1120 },
           format: 'PNG-24',
-          description: 'High-DPI version for retina displays',
-          grid: '13 cols × 5 rows, 160×224px cells'
+          description: '2x-only: 52 cards in 13×4 grid + card back. CSS background-size scales to logical 1040×560px',
+          grid: '13 cols × 5 rows, 160×224px cells (CSS scaled to 80×112px)'
         },
         {
-          name: 'Game Board Background (1×)',
-          filename: 'mm-gameboard.png',
-          expectedSize: { width: 1280, height: 720 },
-          format: 'PNG-24',
-          description: 'Main play area background'
-        },
-        {
-          name: 'Game Board Background (2×)',
+          name: 'Game Board Background (@2x)',
           filename: 'mm-gameboard@2x.png',
           expectedSize: { width: 2560, height: 1440 },
           format: 'PNG-24',
-          description: 'High-DPI background for retina displays'
+          description: '2x-only: Main play area background. CSS background-size: 100% 100% for all displays'
         }
       ],
       optional: [
