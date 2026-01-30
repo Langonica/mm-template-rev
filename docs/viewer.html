@@ -1031,9 +1031,10 @@
         }
       });
       
-      // Quick links click delegation (on content area)
+      // Content area click delegation (quick links + markdown links)
       const contentArea = document.getElementById('content');
       contentArea.addEventListener('click', (e) => {
+        // Handle quick links (home page cards)
         const quickLink = e.target.closest('.quick-link');
         if (quickLink) {
           e.preventDefault();
@@ -1041,6 +1042,32 @@
           const title = quickLink.dataset.title;
           if (path && title) {
             loadDocument(path, title);
+          }
+          return;
+        }
+        
+        // Handle markdown links
+        const link = e.target.closest('a');
+        if (link) {
+          const href = link.getAttribute('href');
+          if (!href) return;
+          
+          // Skip anchor links (same page)
+          if (href.startsWith('#')) {
+            return; // Let browser handle anchor navigation
+          }
+          
+          // Skip external links
+          if (href.startsWith('http://') || href.startsWith('https://')) {
+            return; // Let browser open external links normally
+          }
+          
+          // Handle relative markdown links
+          if (href.endsWith('.md') || !href.includes('.')) {
+            e.preventDefault();
+            // Extract title from link text or use path as fallback
+            const title = link.textContent.trim() || href;
+            loadDocument(href, title);
           }
         }
       });
