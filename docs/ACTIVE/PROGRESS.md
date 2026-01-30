@@ -134,12 +134,19 @@ if (moveType === 'recycle' || moveType === 'draw') {
 - Staging output (manual curation before data folder)
 - Viewer-compatible reports for tuning
 
-**Phase 1A: Core Infrastructure (Current)**
-- [ ] Project structure (`tools/snapshot_generator/`)
-- [ ] Game state representation
+**Phase 1A: Core Infrastructure (In Progress)**
+- [x] Project structure (`tools/snapshot_generator/`)
+- [x] Game state representation (GameState, Card classes)
+- [x] JSON output formatter (to_snapshot_dict, save)
 - [ ] Card and move validation
-- [ ] JSON output formatter
 - [ ] Unit tests
+
+**Completed 2026-01-30:**
+- Project scaffolding with core/ tests/ staging/
+- GameState with full snapshot JSON compatibility
+- Card class with rank/suit/color/numeric_rank
+- create_new_game() supporting all 4 modes
+- State fingerprinting for deduplication
 
 **Upcoming:**
 - [ ] Phase 1B: BFS solver implementation
