@@ -13,6 +13,7 @@ Usage:
 import argparse
 import sys
 import os
+from datetime import datetime
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -187,61 +188,183 @@ def generate_and_solve(args):
 
 
 def batch_generate(args):
-    """Generate a batch of snapshots."""
-    print(f"Batch generation:")
+    """Generate a batch of winnable snapshots with discard loop."""
+    print(f"Batch generation with winnability verification:")
+    print(f"  Mode: {args.mode}")
     print(f"  Easy: {args.easy}")
     print(f"  Moderate: {args.moderate}")
     print(f"  Hard: {args.hard}")
+    print(f"  Max attempts per level: {args.max_attempts}")
+    print(f"  Solver: {args.max_nodes} nodes, {args.max_time}ms")
     print()
     
-    total = args.easy + args.moderate + args.hard
-    generated = []
+    os.makedirs(args.output, exist_ok=True)
+    total_requested = args.easy + args.moderate + args.hard
+    total_generated = 0
+    total_attempts = 0
+    discarded = 0
+    
+    results_by_tier = {'easy': [], 'moderate': [], 'hard': []}
     
     for difficulty, count in [('easy', args.easy), 
                                ('moderate', args.moderate), 
                                ('hard', args.hard)]:
+        if count == 0:
+            continue
+            
+        print(f"\n{'='*60}")
+        print(f"Generating {count} {difficulty.upper()} levels")
+        print('='*60)
+        
         for i in range(count):
-            print(f"Generating {difficulty} {i+1}/{count}...")
+            level_num = i + 1
+            print(f"\n[{difficulty} {level_num}/{count}] Generating...")
             
-            # Generate with solver verification
-            attempts = 0
-            max_attempts = 100
+            level_attempts = 0
+            found = False
             
-            while attempts < max_attempts:
+            while level_attempts < args.max_attempts and not found:
+                total_attempts += 1
+                level_attempts += 1
+                
+                # Generate new deal
+                seed = args.seed_start + total_attempts if args.seed_start else None
                 state = GameState.create_new_game(
                     mode=args.mode,
                     difficulty=difficulty,
-                    seed=args.seed_start + len(generated) + attempts if args.seed_start else None
+                    seed=seed
                 )
                 
-                # Quick solve check (reduced limits for batch)
-                solver = Solver(max_nodes=5000, max_time_ms=3000)
+                # Verify winnability
+                solver = Solver(max_nodes=args.max_nodes, max_time_ms=args.max_time)
                 result = solver.solve(state)
                 
                 if result.winnable:
-                    # Update ID to include index
-                    state.metadata['id'] = f"{args.mode}_normal_{difficulty}_{i+1:02d}_verified"
+                    # Success! Save the verified snapshot
+                    found = True
+                    total_generated += 1
+                    
+                    # Update metadata
+                    state.metadata['id'] = f"{args.mode}_normal_{difficulty}_{level_num:02d}_verified"
                     state.metadata['validation']['isWinnable'] = True
                     state.metadata['validation']['solverMetrics'] = {
                         'solutionMoves': len(result.solution),
                         'nodesExplored': result.nodes_explored,
-                        'solveTimeMs': result.solve_time_ms
+                        'solveTimeMs': result.solve_time_ms,
+                        'deadEnds': result.dead_ends,
+                        'maxDepth': result.max_depth
                     }
                     
+                    # Analyze difficulty
+                    analyzer = DifficultyAnalyzer()
+                    metrics = analyzer.analyze_solution(
+                        initial_state=state,
+                        solution_moves=len(result.solution),
+                        nodes_explored=result.nodes_explored,
+                        dead_ends=result.dead_ends,
+                        solve_time_ms=result.solve_time_ms,
+                        solution_path=result.solution
+                    )
+                    
+                    state.metadata['validation']['difficultyMetrics'] = {
+                        'difficultyScore': metrics.difficulty_score,
+                        'recommendedTier': metrics.recommended_tier,
+                        'branchingFactor': metrics.branching_factor,
+                        'starterAccessibility': metrics.starter_accessibility
+                    }
+                    
+                    # Save file
                     output_path = os.path.join(args.output, f"{state.metadata['id']}.json")
-                    os.makedirs(args.output, exist_ok=True)
                     state.save(output_path)
                     
-                    generated.append(state)
-                    print(f"  Saved: {output_path} (verified winnable, {attempts+1} attempts)")
-                    break
-                
-                attempts += 1
+                    results_by_tier[difficulty].append({
+                        'id': state.metadata['id'],
+                        'score': metrics.difficulty_score,
+                        'moves': len(result.solution),
+                        'attempts': level_attempts
+                    })
+                    
+                    print(f"  [SUCCESS] Saved: {state.metadata['id']}.json")
+                    print(f"    Score: {metrics.difficulty_score:.1f} ({metrics.recommended_tier})")
+                    print(f"    Solution: {len(result.solution)} moves")
+                    print(f"    Attempts: {level_attempts}")
+                    
+                else:
+                    discarded += 1
+                    if level_attempts % 10 == 0:
+                        print(f"  ...attempt {level_attempts}, discarded {discarded} so far")
             
-            if attempts >= max_attempts:
-                print(f"  WARNING: Could not generate winnable {difficulty} level after {max_attempts} attempts")
+            if not found:
+                print(f"  [FAILED] Could not generate winnable level after {args.max_attempts} attempts")
     
-    print(f"\nGenerated {len(generated)} verified snapshots in {args.output}")
+    # Generate summary report
+    print(f"\n{'='*60}")
+    print("BATCH GENERATION SUMMARY")
+    print('='*60)
+    print(f"Total requested: {total_requested}")
+    print(f"Total generated: {total_generated}")
+    print(f"Total attempts: {total_attempts}")
+    print(f"Discarded (unwinnable): {discarded}")
+    print(f"Success rate: {(total_generated/total_attempts*100):.1f}%" if total_attempts > 0 else "N/A")
+    print()
+    
+    for tier in ['easy', 'moderate', 'hard']:
+        if results_by_tier[tier]:
+            scores = [r['score'] for r in results_by_tier[tier]]
+            avg_score = sum(scores) / len(scores)
+            print(f"{tier.upper()}: {len(results_by_tier[tier])} levels, avg score: {avg_score:.1f}")
+    
+    # Save report
+    if args.report:
+        report_path = os.path.join(args.output, f"batch_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md")
+        generate_batch_report(results_by_tier, total_attempts, discarded, report_path)
+        print(f"\nReport saved: {report_path}")
+    
+    print(f"\nOutput directory: {args.output}")
+
+
+def generate_batch_report(results_by_tier, total_attempts, discarded, report_path):
+    """Generate a markdown report for the batch."""
+    from datetime import datetime
+    
+    lines = [
+        "# Batch Generation Report",
+        "",
+        f"**Generated:** {datetime.now().isoformat()}",
+        f"**Total Attempts:** {total_attempts}",
+        f"**Discarded (Unwinnable):** {discarded}",
+        "",
+        "## Summary by Tier",
+        ""
+    ]
+    
+    for tier in ['easy', 'moderate', 'hard']:
+        if results_by_tier[tier]:
+            results = results_by_tier[tier]
+            scores = [r['score'] for r in results]
+            moves = [r['moves'] for r in results]
+            attempts = [r['attempts'] for r in results]
+            
+            lines.extend([
+                f"### {tier.upper()}",
+                "",
+                f"- **Count:** {len(results)}",
+                f"- **Avg Difficulty Score:** {sum(scores)/len(scores):.1f}",
+                f"- **Score Range:** {min(scores):.1f} - {max(scores):.1f}",
+                f"- **Avg Solution Moves:** {sum(moves)/len(moves):.0f}",
+                f"- **Avg Attempts:** {sum(attempts)/len(attempts):.1f}",
+                "",
+                "| Level | Score | Moves | Attempts |",
+                "|-------|-------|-------|----------|"
+            ])
+            
+            for r in sorted(results, key=lambda x: x['id']):
+                lines.append(f"| {r['id']} | {r['score']:.1f} | {r['moves']} | {r['attempts']} |")
+            
+            lines.append("")
+    
+    with open(report_path, 'w') as f:
+        f.write('\n'.join(lines))
 
 
 def main():
@@ -273,6 +396,10 @@ Examples:
     parser.add_argument('--easy', type=int, default=0, help='Number of easy levels')
     parser.add_argument('--moderate', type=int, default=0, help='Number of moderate levels')
     parser.add_argument('--hard', type=int, default=0, help='Number of hard levels')
+    parser.add_argument('--max-attempts', type=int, default=100, 
+                        help='Max attempts per level before giving up')
+    parser.add_argument('--report', action='store_true', 
+                        help='Generate markdown report for batch')
     
     parser.add_argument('--validate', action='store_true', help='Validate existing snapshot')
     parser.add_argument('--input', help='Input file for validation')
