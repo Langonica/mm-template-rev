@@ -1,0 +1,77 @@
+client:733 [vite] connecting...
+client:827 [vite] connected.
+viewer.html:957 Rendered HTML (first 1000 chars): <h1>Meridian Solitaire - Player&#39;s Guide</h1>
+<p><strong>The Modern Solitaire Experience</strong></p>
+<p>Welcome to Meridian Solitaire, a beautiful reimagining of the classic card game with modern design, smooth animations, and engaging gameplay mechanics.</p>
+<hr>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#game-overview">Game Overview</a></li>
+<li><a href="#how-to-play">How to Play</a></li>
+<li><a href="#game-modes">Game Modes</a></li>
+<li><a href="#strategy-guide">Strategy Guide</a></li>
+<li><a href="#scoring--statistics">Scoring &amp; Statistics</a></li>
+<li><a href="#campaign-mode">Campaign Mode</a></li>
+<li><a href="#tips--tricks">Tips &amp; Tricks</a></li>
+<li><a href="#faq">FAQ</a></li>
+<li><a href="#glossary">Glossary</a></li>
+</ol>
+<hr>
+<h2>Introduction</h2>
+<p>Meridian Solitaire takes the timeless appeal of solitaire and elevates it with:</p>
+<ul>
+<li><strong>Beautiful Visual Design</strong> - Deep blue casino theme with
+viewer.html:968 Number of headers found: 43
+viewer.html:969 Header: H1  Meridian Solitaire - Player's Guide
+viewer.html:969 Header: H2  Table of Contents
+viewer.html:969 Header: H2  Introduction
+viewer.html:969 Header: H2  Game Overview
+viewer.html:969 Header: H3  Objective
+viewer.html:969 Header: H3  The Playing Field
+viewer.html:969 Header: H3  Card Arrangement
+viewer.html:969 Header: H2  How to Play
+viewer.html:969 Header: H3  Basic Controls
+viewer.html:969 Header: H3  Making Moves
+viewer.html:969 Header: H3  Special Column Types
+viewer.html:969 Header: H2  Game Modes
+viewer.html:969 Header: H3  Classic Mode
+viewer.html:969 Header: H3  Hidden Mode
+viewer.html:969 Header: H3  Hidden Double Mode
+viewer.html:969 Header: H3  Campaign Mode
+viewer.html:969 Header: H2  Strategy Guide
+viewer.html:969 Header: H3  Beginner Strategies
+viewer.html:969 Header: H3  Intermediate Strategies
+viewer.html:969 Header: H3  Advanced Strategies
+viewer.html:969 Header: H2  Scoring & Statistics
+viewer.html:969 Header: H3  Scoring System
+viewer.html:969 Header: H3  Statistics Tracked
+viewer.html:969 Header: H3  Viewing Statistics
+viewer.html:969 Header: H2  Campaign Mode
+viewer.html:969 Header: H3  Getting Started
+viewer.html:969 Header: H3  Level Types
+viewer.html:969 Header: H3  Earning Stars
+viewer.html:969 Header: H3  Tips for Campaign
+viewer.html:969 Header: H2  Tips & Tricks
+viewer.html:969 Header: H3  Visual Indicators
+viewer.html:969 Header: H3  Keyboard Shortcuts
+viewer.html:969 Header: H3  Accessibility Features
+viewer.html:969 Header: H3  Common Mistakes to Avoid
+viewer.html:969 Header: H2  FAQ
+viewer.html:969 Header: H3  General Questions
+viewer.html:969 Header: H3  Gameplay Questions
+viewer.html:969 Header: H3  Technical Questions
+viewer.html:969 Header: H2  Glossary
+viewer.html:969 Header: H2  Quick Reference Card
+viewer.html:969 Header: H3  Winning Checklist
+viewer.html:969 Header: H3  Priority Reminder
+viewer.html:969 Header: H3  Emergency Moves
+viewer.html:972 Markdown rendered, calling scrollToAnchor
+viewer.html:1131 scrollToAnchor called, hash: 
+viewer.html:1144 No hash in URL
+viewer.html:1078 Anchor link clicked, href: #introduction
+viewer.html:1116 hashchange event fired
+viewer.html:1131 scrollToAnchor called, hash: #introduction
+viewer.html:1134 Looking for element with id: introduction
+viewer.html:1136 Element found: null
+viewer.html:1141 Element not found in DOM
