@@ -263,33 +263,26 @@ function addToTarget(cards, target, state) {
  */
 function updateColumnType(columnIndex, state) {
   const column = state.tableau[columnIndex.toString()] || [];
-  
+
   if (!state.columnState) {
     state.columnState = { types: [], faceDownCounts: [] };
   }
-  
+
   // Case 1: Empty column
   if (column.length === 0) {
     state.columnState.types[columnIndex] = 'empty';
     return;
   }
-  
-  const currentType = state.columnState.types[columnIndex];
-  
-  // Case 2: Type already established and column not empty - preserve it
-  // Types are "sticky" - adding/removing cards doesn't change the column type
-  if (currentType && currentType !== 'empty') {
-    return;
-  }
-  
-  // Case 3: Empty column getting first card - determine initial type
-  // Get face-down count (defaults to 0 for classic modes)
+
+  // Case 2: Determine type based on current bottom face-up card
+  // Column type is always determined by the bottom-most face-up card
+  // This allows the type to update when cards are removed
   const faceDownCount = state.columnState.faceDownCounts?.[columnIndex] || 0;
-  
+
   // First face-up card determines column type
   const firstFaceUpIndex = faceDownCount;
   const card = parseCard(column[firstFaceUpIndex]);
-  
+
   if (card) {
     if (card.value === 'A') {
       state.columnState.types[columnIndex] = 'ace';
