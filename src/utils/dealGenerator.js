@@ -1,7 +1,10 @@
 import { parseCard } from './cardUtils';
+import { getRandomDeal as getPoolDeal, hasRandomDeals, dealToGameState, getPoolStats } from './dealPool';
 
 // ============================================================================
 // DEAL GENERATOR - Creates random deals for each game mode
+// 
+// PHASE 2 UPDATE: Now uses deal pool when available, falls back to pure random
 // ============================================================================
 
 /**
@@ -206,6 +209,34 @@ export function generateRandomDeal(mode) {
 }
 
 /**
+ * Get a random deal - tries pool first, falls back to pure random
+ * @param {string} mode - Game mode
+ * @param {Object} options - Options
+ * @param {string} options.difficulty - Preferred difficulty (easy, moderate, hard)
+ * @returns {Promise<Object|null>} Game state object
+ */
+export async function getRandomDealAsync(mode, options = {}) {
+  const { difficulty = 'moderate' } = options;
+  
+  // Try pool first
+  if (hasRandomDeals(mode, difficulty)) {
+    try {
+      const poolDeal = await getPoolDeal(mode, difficulty);
+      if (poolDeal) {
+        console.log(`[DealGenerator] Using pool deal: ${poolDeal._poolId}`);
+        return dealToGameState(poolDeal);
+      }
+    } catch (error) {
+      console.warn('[DealGenerator] Pool deal failed, falling back:', error);
+    }
+  }
+  
+  // Fall back to pure random
+  console.log(`[DealGenerator] Using pure random deal for ${mode}`);
+  return generateRandomDeal(mode);
+}
+
+/**
  * Get available game modes
  * @returns {object[]} Array of mode info objects
  */
@@ -226,4 +257,12 @@ export function getGameModes() {
  */
 export function getModeConfig(mode) {
   return MODE_CONFIGS[mode] || null;
+}
+
+/**
+ * Get pool statistics
+ * @returns {Object} Pool stats
+ */
+export function getDealPoolStats() {
+  return getPoolStats();
 }

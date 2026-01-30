@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import styles from './HomeScreen.module.css';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
@@ -23,13 +23,37 @@ const HomeScreen = ({
   onShowStats,
   onShowCampaign,
   campaignProgress,
+  onDebugExport,
 }) => {
   const [isExiting, setIsExiting] = useState(false);
+  const clickCountRef = useRef(0);
+  const clickTimerRef = useRef(null);
 
   const handleAction = (action) => {
     setIsExiting(true);
     setTimeout(() => action(), 250);
   };
+
+  // Hidden debug trigger: triple-click version text
+  const handleVersionClick = useCallback(() => {
+    if (!import.meta.env.DEV) return;
+    
+    clickCountRef.current += 1;
+    
+    if (clickCountRef.current === 1) {
+      clickTimerRef.current = setTimeout(() => {
+        clickCountRef.current = 0;
+      }, 500);
+    }
+    
+    if (clickCountRef.current >= 3) {
+      clearTimeout(clickTimerRef.current);
+      clickCountRef.current = 0;
+      if (onDebugExport) {
+        onDebugExport();
+      }
+    }
+  }, [onDebugExport]);
 
   const campaignStats = campaignProgress ? {
     completed: Object.values(campaignProgress.levels || {}).filter(l => l?.completed).length,
@@ -95,7 +119,14 @@ const HomeScreen = ({
         <TextLinkGroup items={secondaryNavItems} />
 
         {/* Version - inside content area */}
-        <div className={styles.version}>v2.3.0</div>
+        <div 
+          className={styles.version}
+          onClick={handleVersionClick}
+          style={import.meta.env.DEV ? { cursor: 'pointer' } : {}}
+          title={import.meta.env.DEV ? 'Triple-click to export debug data' : ''}
+        >
+          v2.3.0
+        </div>
       </div>
     </div>
   );

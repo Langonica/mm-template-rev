@@ -1,0 +1,163 @@
+{
+  "id": "campaign_tier2_06",
+  "metadata": {
+    "mode": "classic",
+    "difficulty": "moderate",
+    "variant": "normal",
+    "source": "curated",
+    "verified": true,
+    "winnable": true,
+    "pockets": 1,
+    "allUp": true,
+    "originalId": "classic_normal_moderate_06",
+    "name": "CLASSIC MODERATE 06",
+    "description": "moderate classic deal simulated for 100% solvability.",
+    "createdAt": "2026-01-14T00:53:43Z",
+    "version": "1.0.0"
+  },
+  "deal": {
+    "tableau": {
+      "0": [
+        "Qs"
+      ],
+      "1": [
+        "4d",
+        "6s"
+      ],
+      "2": [
+        "3d",
+        "7c",
+        "10c"
+      ],
+      "3": [
+        "9s",
+        "7d",
+        "8h",
+        "8d"
+      ],
+      "4": [
+        "Ac",
+        "7s",
+        "10h",
+        "5s",
+        "8s"
+      ],
+      "5": [
+        "Kc",
+        "7h",
+        "Jd",
+        "3s",
+        "4c",
+        "Qc"
+      ],
+      "6": [
+        "Ad",
+        "6c",
+        "9h",
+        "As",
+        "Kh",
+        "2h",
+        "Jh"
+      ]
+    },
+    "stock": [
+      "5h",
+      "8c",
+      "4h",
+      "3c",
+      "3h",
+      "10s",
+      "6d",
+      "Jc",
+      "Kd",
+      "2c",
+      "2d",
+      "2s",
+      "Js",
+      "9d",
+      "Qd",
+      "6h",
+      "Qh",
+      "5d",
+      "10d",
+      "Ah",
+      "Ks",
+      "5c",
+      "4s"
+    ],
+    "waste": [
+      "9c"
+    ],
+    "pocket1": null,
+    "pocket2": null,
+    "foundations": {
+      "up": {
+        "h": [],
+        "d": [],
+        "c": [],
+        "s": []
+      },
+      "down": {
+        "h": [],
+        "d": [],
+        "c": [],
+        "s": []
+      }
+    },
+    "columnState": {
+      "types": [
+        "traditional",
+        "traditional",
+        "traditional",
+        "traditional",
+        "traditional",
+        "traditional",
+        "traditional"
+      ],
+      "faceUpCounts": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "faceDownCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "analysis": {
+      "progress": {
+        "foundationCards": 0,
+        "totalCards": 52,
+        "percentage": 0.0
+      },
+      "cardCounts": {
+        "tableau": 28,
+        "stock": 23,
+        "waste": 1,
+        "foundations": 0,
+        "pockets": 0
+      },
+      "tableau": {
+        "totalCards": 28,
+        "faceUpCards": 28,
+        "faceDownCards": 0,
+        "emptyColumns": 0
+      }
+    },
+    "validation": {
+      "isValid": true,
+      "errors": [],
+      "warnings": [],
+      "validatedAt": "2026-01-14T00:53:43Z"
+    }
+  }
+}

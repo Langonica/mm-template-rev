@@ -23,10 +23,20 @@ import { useViewportScale } from './hooks/useViewportScale'
 import { useNotification, Notification, NOTIFICATION_MESSAGES } from './hooks/useNotification.jsx'
 import { useNotificationSettings } from './contexts/NotificationSettingsContext'
 import { useGSTelemetry } from './hooks/useGSTelemetry'
-import { generateRandomDeal, getGameModes } from './utils/dealGenerator'
+import { generateRandomDeal, getRandomDealAsync, getGameModes } from './utils/dealGenerator'
+import { initDebugExport, triggerDebugExport } from './utils/debugExport'
+import gameLogger from './utils/gameLogger'
+import gameLogStorage from './utils/gameLogStorage'
 import './styles/App.css'
 
 function App() {
+  // Initialize debug tools (DEV only)
+  useEffect(() => {
+    initDebugExport();
+    gameLogger.init();
+    gameLogStorage.init();
+    gameLogStorage.initDebug();
+  }, [])
   const {
     notification,
     showError,
@@ -193,15 +203,15 @@ function App() {
     setShowHomeScreen(false)
   }, [])
 
-  const handleNewGameFromHome = useCallback(() => {
+  const handleNewGameFromHome = useCallback(async () => {
     // If there's a game in progress, record it as a forfeit
     if (hasGameInProgress) {
       recordForfeit(moveCount, selectedMode)
       gameEndedRef.current = true // Prevent double-recording
     }
 
-    // Generate a new game in selected mode
-    const newDeal = generateRandomDeal(selectedMode)
+    // Generate a new game in selected mode (try pool first)
+    const newDeal = await getRandomDealAsync(selectedMode)
     if (newDeal) {
       loadGameState(newDeal)
       gameEndedRef.current = false // Reset for new game
@@ -273,12 +283,12 @@ function App() {
 
   // Handle new game (with confirmation if mid-game, but not if game is over)
   const handleNewGame = useCallback(() => {
-    const action = () => {
+    const action = async () => {
       // Clear campaign level when starting a new quick play game
       setCurrentCampaignLevel(null)
       // Reset notification suppression
       setDismissedNotificationTier(null)
-      const newDeal = generateRandomDeal(selectedMode)
+      const newDeal = await getRandomDealAsync(selectedMode)
       if (newDeal) {
         loadGameState(newDeal)
         showInfo(NOTIFICATION_MESSAGES.GAME_LOADED)
@@ -339,10 +349,12 @@ function App() {
     if (success) {
       showInfo(NOTIFICATION_MESSAGES.UNDONE)
       recordUndo() // Track undo usage for stats
+      gameLogger.undo(moveCount); // Logger: Undo
+      gameLogStorage.logUndo(moveCount); // Persistent log
     } else {
       showError(NOTIFICATION_MESSAGES.NO_UNDO)
     }
-  }, [handleUndo, showInfo, showError, recordUndo])
+  }, [handleUndo, showInfo, showError, recordUndo, moveCount])
 
   const handleRedoWithNotification = useCallback(() => {
     const success = handleRedo()
@@ -407,12 +419,31 @@ function App() {
       recordGameStart()
       startTelemetry(selectedMode) // Telemetry: track game start
       gameEndedRef.current = false
+      
+      // Logger: Game start
+      const gameId = `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+      gameLogger.gameStart({
+        gameId,
+        mode: selectedMode,
+        dealId: currentCampaignLevel?.id,
+        isCampaign: !!currentCampaignLevel,
+        campaignLevel: currentCampaignLevel?.levelNumber
+      });
+      
+      // Persistent log storage
+      gameLogStorage.startSession({
+        mode: selectedMode,
+        dealId: currentCampaignLevel?.id,
+        isCampaign: !!currentCampaignLevel,
+        campaignLevel: currentCampaignLevel?.levelNumber
+      })
+      
       // Defer state update to avoid synchronous setState in effect
       queueMicrotask(() => {
         setLastGameResult(null)
       })
     }
-  }, [currentSnapshot, moveCount, recordGameStart, selectedMode, startTelemetry])
+  }, [currentSnapshot, moveCount, recordGameStart, selectedMode, startTelemetry, currentCampaignLevel])
 
   // Record game end when status changes to won or stalemate
   // Uses statsRef to avoid excessive dependencies (Performance fix - Phase 1)
@@ -422,6 +453,21 @@ function App() {
       const won = gameStatus.status === 'won'
       endTelemetry(gameStatus.status, moveCount) // Telemetry: track game end
       const result = recordGameEnd(won, moveCount, selectedMode)
+      
+      // Logger: Game end
+      gameLogger.gameEnd({
+        outcome: gameStatus.status,
+        moves: moveCount,
+        duration: result?.duration,
+        won
+      });
+      
+      // Persistent log storage
+      gameLogStorage.endSession({
+        outcome: gameStatus.status,
+        moves: moveCount,
+        duration: result?.duration
+      })
 
       // Record campaign completion if this was a campaign level
       if (won && currentCampaignLevel) {
@@ -473,6 +519,13 @@ function App() {
     // Telemetry: record tier changes and cycle counts
     recordTier(tier)
     recordCycleCount(cycleCount || 0)
+    
+    // Logger: Notification tier
+    const tierNum = { none: 0, hint: 1, concern: 2, warning: 3, confirmed: 4 }[tier] || 0;
+    if (tierNum > 0) {
+      gameLogger.notification(tier, tierNum);
+      gameLogStorage.logNotification(tier); // Persistent log
+    }
 
     // Don't show notifications if game is over or paused
     if (isPaused) return
@@ -813,6 +866,7 @@ function App() {
             onShowStats={() => setShowStatistics(true)}
             onShowCampaign={handleShowCampaign}
             campaignProgress={campaignProgress}
+            onDebugExport={triggerDebugExport}
           />
         )}
 

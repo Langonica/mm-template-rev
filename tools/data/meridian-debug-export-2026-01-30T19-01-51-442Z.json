@@ -1,0 +1,284 @@
+{
+  "exportedAt": "2026-01-30T19:01:51.441Z",
+  "version": "1.0.0",
+  "appVersion": "unknown",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+  "screen": {
+    "width": 1920,
+    "height": 1080,
+    "availWidth": 1920,
+    "availHeight": 1049,
+    "colorDepth": 24,
+    "pixelRatio": 1
+  },
+  "viewport": {
+    "innerWidth": 1727,
+    "innerHeight": 940
+  },
+  "data": {
+    "meridian_solitaire_stats": {
+      "totalGames": 31,
+      "wins": 30,
+      "losses": 0,
+      "forfeits": 1,
+      "currentStreak": 22,
+      "bestStreak": 22,
+      "bestWinMoves": 102,
+      "bestWinTime": 198,
+      "totalMoves": 3978,
+      "totalPlayTime": 11926,
+      "totalCardsMoved": 150,
+      "perfectGames": 1,
+      "foundationsCompleted": 0,
+      "totalUndosUsed": 2,
+      "byMode": {
+        "classic": {
+          "games": 56,
+          "wins": 56,
+          "forfeits": 0,
+          "bestMoves": 102,
+          "bestTime": 198,
+          "perfectGames": 2
+        },
+        "classic_double": {
+          "games": 2,
+          "wins": 0,
+          "forfeits": 2,
+          "bestMoves": null,
+          "bestTime": null,
+          "perfectGames": 0
+        },
+        "hidden": {
+          "games": 2,
+          "wins": 2,
+          "forfeits": 0,
+          "bestMoves": 137,
+          "bestTime": 291,
+          "perfectGames": 0
+        },
+        "hidden_double": {
+          "games": 2,
+          "wins": 2,
+          "forfeits": 0,
+          "bestMoves": 104,
+          "bestTime": 289,
+          "perfectGames": 0
+        }
+      },
+      "lastPlayed": 1769735180617
+    },
+    "meridian_solitaire_session": {
+      "date": "Thu Jan 29 2026",
+      "gamesPlayed": 2,
+      "gamesWon": 2,
+      "totalMoves": 214,
+      "totalTime": 649,
+      "cardsMoved": 150,
+      "undosUsed": 7
+    },
+    "meridian-gs-telemetry": {
+      "version": "1.0",
+      "games": [
+        {
+          "gameId": "ml06g793",
+          "startTime": "2026-01-30T01:01:12.759Z",
+          "mode": "classic",
+          "outcome": "won",
+          "highestTier": 3,
+          "wasDismissed": true,
+          "ignoredWarning": true,
+          "eventuallyWon": true,
+          "cycleCount": 0,
+          "solverChecked": 0,
+          "solverResult": "none",
+          "endTime": "2026-01-30T01:06:20.616Z",
+          "moves": 112
+        }
+      ]
+    },
+    "meridian-notification-settings": {
+      "gameStateNotifications": "on"
+    },
+    "meridian-theme": "blue-casino",
+    "meridian-campaign-progress": {
+      "currentLevel": 1,
+      "highestUnlocked": 29,
+      "tiersCompleted": {
+        "easy": true,
+        "moderate": true,
+        "hard": false
+      },
+      "campaignComplete": false,
+      "levels": {
+        "classic_normal_easy_01": {
+          "completed": true,
+          "bestMoves": 129,
+          "bestTime": 272,
+          "attempts": 4
+        },
+        "classic_normal_easy_02": {
+          "completed": true,
+          "bestMoves": 131,
+          "bestTime": 314,
+          "attempts": 1
+        },
+        "classic_normal_easy_03": {
+          "completed": true,
+          "bestMoves": 104,
+          "bestTime": 289,
+          "attempts": 1
+        },
+        "classic_normal_easy_04": {
+          "completed": true,
+          "bestMoves": 113,
+          "bestTime": 306,
+          "attempts": 1
+        },
+        "classic_normal_easy_05": {
+          "completed": true,
+          "bestMoves": 106,
+          "bestTime": 198,
+          "attempts": 1
+        },
+        "classic_normal_easy_06": {
+          "completed": true,
+          "bestMoves": 123,
+          "bestTime": 505,
+          "attempts": 1
+        },
+        "classic_normal_easy_07": {
+          "completed": true,
+          "bestMoves": 107,
+          "bestTime": 233,
+          "attempts": 1
+        },
+        "classic_normal_easy_08": {
+          "completed": true,
+          "bestMoves": 105,
+          "bestTime": 234,
+          "attempts": 1
+        },
+        "classic_normal_easy_09": {
+          "completed": true,
+          "bestMoves": 116,
+          "bestTime": 269,
+          "attempts": 1
+        },
+        "classic_normal_easy_10": {
+          "completed": true,
+          "bestMoves": 106,
+          "bestTime": 259,
+          "attempts": 1
+        },
+        "classic_normal_moderate_01": {
+          "completed": true,
+          "bestMoves": 168,
+          "bestTime": 546,
+          "attempts": 1
+        },
+        "classic_normal_moderate_02": {
+          "completed": true,
+          "bestMoves": 159,
+          "bestTime": 444,
+          "attempts": 1
+        },
+        "classic_normal_moderate_03": {
+          "completed": true,
+          "bestMoves": 145,
+          "bestTime": 425,
+          "attempts": 8
+        },
+        "classic_normal_moderate_04": {
+          "completed": true,
+          "bestMoves": 120,
+          "bestTime": 338,
+          "attempts": 2
+        },
+        "classic_normal_moderate_05": {
+          "completed": true,
+          "bestMoves": 127,
+          "bestTime": 374,
+          "attempts": 2
+        },
+        "classic_normal_moderate_06": {
+          "completed": true,
+          "bestMoves": 139,
+          "bestTime": 379,
+          "attempts": 1
+        },
+        "classic_normal_moderate_07": {
+          "completed": true,
+          "bestMoves": 123,
+          "bestTime": 420,
+          "attempts": 3
+        },
+        "classic_normal_moderate_08": {
+          "completed": true,
+          "bestMoves": 153,
+          "bestTime": 582,
+          "attempts": 3
+        },
+        "classic_normal_moderate_09": {
+          "completed": true,
+          "bestMoves": 138,
+          "bestTime": 446,
+          "attempts": 5
+        },
+        "classic_normal_moderate_10": {
+          "completed": true,
+          "bestMoves": 147,
+          "bestTime": 568,
+          "attempts": 4
+        },
+        "classic_normal_hard_01": {
+          "completed": true,
+          "bestMoves": 135,
+          "bestTime": 492,
+          "attempts": 4
+        },
+        "classic_normal_hard_02": {
+          "completed": true,
+          "bestMoves": 143,
+          "bestTime": 512,
+          "attempts": 1
+        },
+        "classic_normal_hard_03": {
+          "completed": true,
+          "bestMoves": 218,
+          "bestTime": 645,
+          "attempts": 5
+        },
+        "classic_normal_hard_04": {
+          "completed": true,
+          "bestMoves": 147,
+          "bestTime": 383,
+          "attempts": 4
+        },
+        "classic_normal_hard_05": {
+          "completed": true,
+          "bestMoves": 124,
+          "bestTime": 401,
+          "attempts": 2
+        },
+        "classic_normal_hard_06": {
+          "completed": true,
+          "bestMoves": 122,
+          "bestTime": 343,
+          "attempts": 1
+        },
+        "classic_normal_hard_07": {
+          "completed": true,
+          "bestMoves": 180,
+          "bestTime": 606,
+          "attempts": 2
+        },
+        "classic_normal_hard_08": {
+          "completed": true,
+          "bestMoves": 112,
+          "bestTime": 307,
+          "attempts": 2
+        }
+      }
+    }
+  }
+}

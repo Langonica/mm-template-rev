@@ -205,34 +205,36 @@ class MoveGenerator:
         # Check waste top card
         if self.state.waste:
             waste_card = self.state.waste[-1]
+            # Only check foundations matching the card's suit
             for foundation_type in ['up', 'down']:
-                for suit in 'hdcs':
-                    pile = self.state.foundations[foundation_type][suit]
-                    if self.validator.can_place_on_foundation(
-                        waste_card, foundation_type, pile
-                    ):
-                        moves.append(Move(
-                            move_type=MoveType.TO_FOUNDATION,
-                            source={'type': 'waste'},
-                            target={'type': 'foundation', 'foundation_type': foundation_type, 'suit': suit},
-                            cards=[waste_card]
-                        ))
+                suit = waste_card.suit
+                pile = self.state.foundations[foundation_type][suit]
+                if self.validator.can_place_on_foundation(
+                    waste_card, foundation_type, pile
+                ):
+                    moves.append(Move(
+                        move_type=MoveType.TO_FOUNDATION,
+                        source={'type': 'waste'},
+                        target={'type': 'foundation', 'foundation_type': foundation_type, 'suit': suit},
+                        cards=[waste_card]
+                    ))
         
         # Check pocket cards
         for pocket_num, pocket_card in [(1, self.state.pocket1), (2, self.state.pocket2)]:
             if pocket_card and pocket_card != "N/A":
+                # Only check foundations matching the card's suit
                 for foundation_type in ['up', 'down']:
-                    for suit in 'hdcs':
-                        pile = self.state.foundations[foundation_type][suit]
-                        if self.validator.can_place_on_foundation(
-                            pocket_card, foundation_type, pile
-                        ):
-                            moves.append(Move(
-                                move_type=MoveType.TO_FOUNDATION,
-                                source={'type': 'pocket', 'pocket_num': pocket_num},
-                                target={'type': 'foundation', 'foundation_type': foundation_type, 'suit': suit},
-                                cards=[pocket_card]
-                            ))
+                    suit = pocket_card.suit
+                    pile = self.state.foundations[foundation_type][suit]
+                    if self.validator.can_place_on_foundation(
+                        pocket_card, foundation_type, pile
+                    ):
+                        moves.append(Move(
+                            move_type=MoveType.TO_FOUNDATION,
+                            source={'type': 'pocket', 'pocket_num': pocket_num},
+                            target={'type': 'foundation', 'foundation_type': foundation_type, 'suit': suit},
+                            cards=[pocket_card]
+                        ))
         
         # Check tableau face-up cards
         for col_idx in range(7):
@@ -244,18 +246,19 @@ class MoveGenerator:
                 
                 if face_up_cards:
                     top_card = face_up_cards[-1]  # Topmost face-up card
+                    # Only check foundations matching the card's suit
                     for foundation_type in ['up', 'down']:
-                        for suit in 'hdcs':
-                            pile = self.state.foundations[foundation_type][suit]
-                            if self.validator.can_place_on_foundation(
-                                top_card, foundation_type, pile
-                            ):
-                                moves.append(Move(
-                                    move_type=MoveType.TO_FOUNDATION,
-                                    source={'type': 'tableau', 'column': col_idx},
-                                    target={'type': 'foundation', 'foundation_type': foundation_type, 'suit': suit},
-                                    cards=[top_card]
-                                ))
+                        suit = top_card.suit
+                        pile = self.state.foundations[foundation_type][suit]
+                        if self.validator.can_place_on_foundation(
+                            top_card, foundation_type, pile
+                        ):
+                            moves.append(Move(
+                                move_type=MoveType.TO_FOUNDATION,
+                                source={'type': 'tableau', 'column': col_idx},
+                                target={'type': 'foundation', 'foundation_type': foundation_type, 'suit': suit},
+                                cards=[top_card]
+                            ))
         
         return moves
     

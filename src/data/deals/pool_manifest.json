@@ -1,0 +1,170 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-01-29",
+  "description": "Meridian Solitaire verified deal pool",
+  "stats": {
+    "campaign": {
+      "total": 30,
+      "byTier": {
+        "tier1": 10,
+        "tier2": 10,
+        "tier3": 10
+      }
+    },
+    "random": {
+      "total": 0,
+      "byMode": {
+        "classic": 0,
+        "classic_double": 0,
+        "hidden": 0,
+        "hidden_double": 0
+      }
+    }
+  },
+  "pools": {
+    "campaign": {
+      "tier1": {
+        "path": "./campaign/tier1/",
+        "count": 10,
+        "difficulty": "easy",
+        "movesRange": [15, 25],
+        "levels": [
+          { "id": "campaign_tier1_01", "file": "level_01.json", "unlocked": true },
+          { "id": "campaign_tier1_02", "file": "level_02.json", "unlocked": true },
+          { "id": "campaign_tier1_03", "file": "level_03.json", "unlocked": false },
+          { "id": "campaign_tier1_04", "file": "level_04.json", "unlocked": false },
+          { "id": "campaign_tier1_05", "file": "level_05.json", "unlocked": false },
+          { "id": "campaign_tier1_06", "file": "level_06.json", "unlocked": false },
+          { "id": "campaign_tier1_07", "file": "level_07.json", "unlocked": false },
+          { "id": "campaign_tier1_08", "file": "level_08.json", "unlocked": false },
+          { "id": "campaign_tier1_09", "file": "level_09.json", "unlocked": false },
+          { "id": "campaign_tier1_10", "file": "level_10.json", "unlocked": false }
+        ]
+      },
+      "tier2": {
+        "path": "./campaign/tier2/",
+        "count": 10,
+        "difficulty": "moderate",
+        "movesRange": [25, 40],
+        "levels": [
+          { "id": "campaign_tier2_01", "file": "level_01.json", "unlocked": false },
+          { "id": "campaign_tier2_02", "file": "level_02.json", "unlocked": false },
+          { "id": "campaign_tier2_03", "file": "level_03.json", "unlocked": false },
+          { "id": "campaign_tier2_04", "file": "level_04.json", "unlocked": false },
+          { "id": "campaign_tier2_05", "file": "level_05.json", "unlocked": false },
+          { "id": "campaign_tier2_06", "file": "level_06.json", "unlocked": false },
+          { "id": "campaign_tier2_07", "file": "level_07.json", "unlocked": false },
+          { "id": "campaign_tier2_08", "file": "level_08.json", "unlocked": false },
+          { "id": "campaign_tier2_09", "file": "level_09.json", "unlocked": false },
+          { "id": "campaign_tier2_10", "file": "level_10.json", "unlocked": false }
+        ]
+      },
+      "tier3": {
+        "path": "./campaign/tier3/",
+        "count": 10,
+        "difficulty": "hard",
+        "movesRange": [40, 60],
+        "levels": [
+          { "id": "campaign_tier3_01", "file": "level_01.json", "unlocked": false },
+          { "id": "campaign_tier3_02", "file": "level_02.json", "unlocked": false },
+          { "id": "campaign_tier3_03", "file": "level_03.json", "unlocked": false },
+          { "id": "campaign_tier3_04", "file": "level_04.json", "unlocked": false },
+          { "id": "campaign_tier3_05", "file": "level_05.json", "unlocked": false },
+          { "id": "campaign_tier3_06", "file": "level_06.json", "unlocked": false },
+          { "id": "campaign_tier3_07", "file": "level_07.json", "unlocked": false },
+          { "id": "campaign_tier3_08", "file": "level_08.json", "unlocked": false },
+          { "id": "campaign_tier3_09", "file": "level_09.json", "unlocked": false },
+          { "id": "campaign_tier3_10", "file": "level_10.json", "unlocked": false }
+        ]
+      }
+    },
+    "random": {
+      "classic_easy": {
+        "path": "./random/classic/easy/",
+        "count": 0,
+        "verified": true,
+        "difficulty": "easy"
+      },
+      "classic_moderate": {
+        "path": "./random/classic/moderate/",
+        "count": 0,
+        "verified": true,
+        "difficulty": "moderate"
+      },
+      "classic_hard": {
+        "path": "./random/classic/hard/",
+        "count": 0,
+        "verified": true,
+        "difficulty": "hard"
+      },
+      "classic_double_easy": {
+        "path": "./random/classic_double/easy/",
+        "count": 0,
+        "verified": true,
+        "difficulty": "easy"
+      },
+      "classic_double_moderate": {
+        "path": "./random/classic_double/moderate/",
+        "count": 0,
+        "verified": true,
+        "difficulty": "moderate"
+      },
+      "classic_double_hard": {
+        "path": "./random/classic_double/hard/",
+        "count": 0,
+        "verified": true,
+        "difficulty": "hard"
+      },
+      "hidden_easy": {
+        "path": "./random/hidden/easy/",
+        "count": 0,
+        "verified": true,
+        "difficulty": "easy"
+      },
+      "hidden_moderate": {
+        "path": "./random/hidden/moderate/",
+        "count": 0,
+        "verified": true,
+        "difficulty": "moderate"
+      },
+      "hidden_hard": {
+        "path": "./random/hidden/hard/",
+        "count": 0,
+        "verified": true,
+        "difficulty": "hard"
+      },
+      "hidden_double_easy": {
+        "path": "./random/hidden_double/easy/",
+        "count": 0,
+        "verified": true,
+        "difficulty": "easy"
+      },
+      "hidden_double_moderate": {
+        "path": "./random/hidden_double/moderate/",
+        "count": 0,
+        "verified": true,
+        "difficulty": "moderate"
+      },
+      "hidden_double_hard": {
+        "path": "./random/hidden_double/hard/",
+        "count": 0,
+        "verified": true,
+        "difficulty": "hard"
+      }
+    }
+  },
+  "schema": {
+    "dealVersion": "1.0",
+    "requiredFields": [
+      "id",
+      "metadata",
+      "deal"
+    ],
+    "metadataFields": [
+      "mode",
+      "difficulty",
+      "verified",
+      "source"
+    ]
+  }
+}
