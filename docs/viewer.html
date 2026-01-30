@@ -1210,6 +1210,11 @@
       const contentWrapper = document.querySelector('.content-wrapper');
       const scrollButton = document.getElementById('scrollToTop');
       
+      if (!contentWrapper || !scrollButton) {
+        console.error('Scroll to top: Required elements not found');
+        return;
+      }
+      
       contentWrapper.addEventListener('scroll', () => {
         if (contentWrapper.scrollTop > 500) {
           scrollButton.classList.add('visible');
@@ -1219,8 +1224,12 @@
       });
     }
     
-    // Initialize scroll to top button
-    setupScrollToTopButton();
+    // Initialize scroll to top button after DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupScrollToTopButton);
+    } else {
+      setupScrollToTopButton();
+    }
   </script>
 </body>
 </html>
