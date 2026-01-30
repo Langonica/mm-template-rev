@@ -10,6 +10,7 @@ import PauseOverlay from './components/PauseOverlay'
 import OrientationBlocker from './components/OrientationBlocker'
 import GearButton from './components/GearButton'
 import StalemateModal from './components/StalemateModal'
+import SettingsModal from './components/SettingsModal'
 import AutoCompleteButton from './components/AutoCompleteButton'
 import HintDisplay from './components/HintDisplay'
 import GameStateToast from './components/GameStateToast'
@@ -136,6 +137,7 @@ function App() {
   const [showHowToPlay, setShowHowToPlay] = useState(false)
   const [showStatistics, setShowStatistics] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const [showHomeScreen, setShowHomeScreen] = useState(true)
   const [showCampaignScreen, setShowCampaignScreen] = useState(false)
 
@@ -1143,10 +1145,17 @@ function App() {
               isCampaignGame={!!currentCampaignLevel}
               campaignLevelNumber={currentCampaignLevel?.levelNumber}
               onOpenStats={() => setShowStatistics(true)}
+              onOpenSettings={() => setShowSettings(true)}
               onGoHome={handleGoHome}
               hideToggle={true}
             />
           </div>
+
+          {/* Settings Modal */}
+          <SettingsModal
+            isOpen={showSettings}
+            onClose={() => setShowSettings(false)}
+          />
         </>
       )}
         {/* Pause Overlay - inside game-container for proper scaling */}

@@ -1,24 +1,20 @@
 import React, { useEffect, useRef } from 'react';
 import styles from './GameMenu.module.css';
 import MenuItem from '../MenuItem';
-import Select from '../Select';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useNotificationSettings, NOTIFICATION_LEVELS } from '../../contexts/NotificationSettingsContext';
-import { RotateCcw, Home, BarChart3 } from '../Icon';
+import { RotateCcw, Home, BarChart3, Settings } from '../Icon';
 
 /**
  * GameMenu Component
  *
- * Hamburger menu for game actions, settings, and navigation.
- * Consolidates secondary header controls into a clean dropdown.
+ * Hamburger menu for game actions and navigation.
+ * Settings are now in a separate SettingsModal.
  *
  * @param {boolean} isOpen - Whether menu is open
  * @param {function} onToggle - Toggle menu open/closed
  * @param {function} onClose - Close the menu
-
  * @param {function} onOpenStats - Open statistics modal
+ * @param {function} onOpenSettings - Open settings modal
  * @param {function} onGoHome - Return to home screen
- * @param {function} onSnapshotChange - Snapshot change handler
  * @param {React.ReactNode} snapshotSelector - Snapshot selector component (for dev tools)
  * @param {boolean} hideToggle - Hide the internal hamburger button (default: false)
  */
@@ -30,6 +26,7 @@ const GameMenu = ({
   isCampaignGame = false,
   campaignLevelNumber = null,
   onOpenStats,
+  onOpenSettings,
   onGoHome,
   snapshotSelector,
   hideToggle = false,
@@ -83,30 +80,8 @@ const GameMenu = ({
     onClose();
   };
 
-  // Theme selector
-  const { theme, setTheme, availableThemes } = useTheme();
-  
-  const themeOptions = availableThemes.map(t => ({
-    value: t,
-    label: t
-  }));
-  
-  const handleThemeChange = (e) => {
-    setTheme(e.target.value);
-    onClose();
-  };
-
-  // Notification settings
-  const { settings, updateSettings } = useNotificationSettings();
-  
-  const notificationOptions = [
-    { value: NOTIFICATION_LEVELS.ON, label: 'On' },
-    { value: NOTIFICATION_LEVELS.MINIMAL, label: 'Minimal' },
-    { value: NOTIFICATION_LEVELS.OFF, label: 'Off' }
-  ];
-  
-  const handleNotificationChange = (e) => {
-    updateSettings({ gameStateNotifications: e.target.value });
+  const handleOpenSettings = () => {
+    onOpenSettings?.();
     onClose();
   };
 
@@ -165,33 +140,11 @@ const GameMenu = ({
 
         {/* Settings */}
         <div className={styles.section}>
-          <MenuItem sectionHeader="Settings" />
-          
-          {/* Theme Selector */}
-          <div className={styles.themeGroup}>
-            <span className={styles.themeLabel}>Theme</span>
-            <Select
-              variant="primary"
-              size="sm"
-              options={themeOptions}
-              value={theme}
-              onChange={handleThemeChange}
-              className={styles.themeSelect}
-            />
-          </div>
-          
-          {/* Notification Settings */}
-          <div className={styles.themeGroup}>
-            <span className={styles.themeLabel}>Notifications</span>
-            <Select
-              variant="primary"
-              size="sm"
-              options={notificationOptions}
-              value={settings.gameStateNotifications}
-              onChange={handleNotificationChange}
-              className={styles.themeSelect}
-            />
-          </div>
+          <MenuItem
+            label="Settings"
+            icon={<Settings size={16} />}
+            onClick={handleOpenSettings}
+          />
         </div>
 
         {/* Dev Tools - Only show if snapshotSelector is provided */}

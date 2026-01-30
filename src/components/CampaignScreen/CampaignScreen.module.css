@@ -122,12 +122,13 @@
 }
 
 .levelGrid {
-  flex: 1;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-  padding: 0 24px 24px;
-  overflow-y: auto;
+  gap: 8px;
+  padding: 0 24px 16px;
+  align-content: start;
+  /* Fit 2 rows of tiles without scrolling */
+  max-height: 220px;
 }
 
 @media (max-width: 960px) {

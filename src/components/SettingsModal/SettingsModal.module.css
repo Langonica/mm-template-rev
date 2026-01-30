@@ -1,0 +1,46 @@
+.tabContent {
+  padding: var(--spacing-4);
+  min-height: 200px;
+}
+
+.settingsGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+}
+
+.settingItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.settingLabel {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.aboutContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing-6);
+}
+
+.aboutTitle {
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.aboutVersion {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  margin: 0;
+}

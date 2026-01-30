@@ -597,5 +597,38 @@ The browser automatically scales the 2x asset to the logical size, resulting in 
 
 ---
 
-*Document Version: 1.0*  
+## 11. Border Radius Tokens
+
+### 11.1 Primary Border Radius Tokens
+
+Border radius tokens provide consistent corner rounding across components:
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--radius-xs` | 2px | Subtle rounding, minimal visual impact |
+| `--radius-sm` | 4px | Small buttons, subtle elements |
+| `--radius-md` | 6px | Default for most interactive elements |
+| `--radius-lg` | 8px | Larger components, cards, modals |
+| `--radius-xl` | 12px | Large buttons, prominent sections |
+| `--radius-2xl` | 16px | Extra-large components |
+| `--radius-pill` | 999px | Fully rounded pill shapes (buttons, badges) |
+| `--radius-round` | 50% | Perfect circles |
+
+### 11.2 Border Radius Aliases
+
+For backward compatibility, `--border-radius-*` aliases are provided:
+- `--border-radius-xs` → `--radius-xs`
+- `--border-radius-sm` → `--radius-sm`
+- `--border-radius-md` → `--radius-md`
+- `--border-radius-lg` → `--radius-lg`
+- `--border-radius-xl` → `--radius-xl`
+- `--border-radius-2xl` → `--radius-2xl`
+- `--border-radius-pill` → `--radius-pill`
+- `--border-radius-round` → `--radius-round`
+
+**Preferred:** Use `--radius-*` tokens directly for new code.
+
+---
+
+*Document Version: 1.0*
 *Related Documents: DESIGN_ASSETS.md, PROGRESS.md, CODE_AUDIT.md, PLAN_Asset_Simplification_2x_Only.md*

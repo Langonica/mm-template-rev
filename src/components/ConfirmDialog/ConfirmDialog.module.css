@@ -12,38 +12,57 @@
   align-items: center;
   justify-content: center;
   z-index: var(--z-overlay);
+  animation: fadeIn var(--duration-normal) var(--timing-ease-out);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .dialog {
-  background: var(--bg-deep);
-  border-radius: 16px;
-  padding: 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-6);
   width: 90%;
   max-width: 360px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-4);
+  animation: scaleIn var(--duration-normal) var(--timing-ease-out);
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .title {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
   color: var(--text-primary);
   margin: 0;
   text-align: center;
 }
 
 .message {
-  font-size: 14px;
+  font-size: var(--font-size-md);
   color: var(--text-secondary);
   margin: 0;
   text-align: center;
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
 }
 
 .buttonRow {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-3);
   justify-content: center;
-  padding-top: 8px;
+  padding-top: var(--spacing-2);
 }

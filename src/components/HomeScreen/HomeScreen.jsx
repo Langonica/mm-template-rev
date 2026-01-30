@@ -5,7 +5,7 @@ import SecondaryButton from '../SecondaryButton';
 import ActionCard from '../ActionCard';
 import ProgressBar from '../ProgressBar';
 import TextLinkGroup from '../TextLinkGroup';
-import Select from '../Select';
+import ModeSelector from '../ModeSelector';
 
 /**
  * HomeScreen Component
@@ -62,12 +62,10 @@ const HomeScreen = ({
         <div className={styles.cards}>
           <ActionCard title="Quick Play" description="Random deal in selected mode">
             {!hasGameInProgress && (
-              <Select
-                variant="primary"
+              <ModeSelector
                 options={modeOptions}
                 value={selectedMode}
-                onChange={(e) => onModeChange(e.target.value)}
-                className={styles.select}
+                onChange={onModeChange}
               />
             )}
             <SecondaryButton onClick={() => handleAction(onNewGame)}>

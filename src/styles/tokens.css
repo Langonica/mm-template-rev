@@ -158,6 +158,16 @@
   --radius-pill: 999px;
   --radius-round: 50%;
 
+  /* Aliases for border-radius (backward compatibility) */
+  --border-radius-xs: var(--radius-xs);
+  --border-radius-sm: var(--radius-sm);
+  --border-radius-md: var(--radius-md);
+  --border-radius-lg: var(--radius-lg);
+  --border-radius-xl: var(--radius-xl);
+  --border-radius-2xl: var(--radius-2xl);
+  --border-radius-pill: var(--radius-pill);
+  --border-radius-round: var(--radius-round);
+
   /* ========================================
      SHADOWS - Elevation & Effects
      ======================================== */

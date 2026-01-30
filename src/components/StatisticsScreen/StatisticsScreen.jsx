@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './StatisticsScreen.module.css';
 import FullBleedScreen from '../FullBleedScreen';
+import BackButton from '../BackButton';
 import TabBar from '../TabBar';
 import DataCard from '../DataCard';
 import TertiaryButton from '../TertiaryButton';
@@ -182,7 +183,7 @@ const StatisticsScreen = ({
   return (
     <FullBleedScreen isOpen={isOpen}>
       <div className={styles.screen}>
-        <button className={styles.backButton} onClick={onClose}>←</button>
+        <BackButton onClick={onClose} />
         <TabBar tabs={tabs} activeTab={activeTab} onChange={setActiveTab} className={styles.tabBar} />
         <div className={styles.content}>
           {renderContent()}

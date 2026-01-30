@@ -222,6 +222,188 @@ Settings (gear icon)
 
 ---
 
+## Form Components
+
+The following reusable form components provide consistent UI patterns for user input, selections, and navigation across settings, modals, and screens.
+
+### Toggle
+
+**Purpose:** Binary on/off switch for boolean settings.
+
+**Location:** `src/components/Toggle/`
+
+**Props:**
+- `checked` (boolean) - Current toggle state
+- `onChange` (function) - Callback when user toggles
+- `disabled` (boolean, optional) - Disable toggle interaction
+- `label` (string, optional) - Display label
+- `description` (string, optional) - Helper text below label
+- `size` (string, optional) - Size variant: `sm`, `md`, `lg` (default: `md`)
+
+**Usage:** Settings toggles for binary preferences:
+- Sound Effects On/Off
+- Game State Notifications On/Off
+- Haptic Feedback On/Off
+- Reduced Motion On/Off
+
+**Example:**
+```jsx
+<Toggle
+  checked={soundEnabled}
+  onChange={(checked) => setSoundEnabled(checked)}
+  label="Sound Effects"
+  description="Play audio on card moves and game events"
+/>
+```
+
+---
+
+### TileSelector
+
+**Purpose:** Multi-option selector presented as clickable tiles (replaces traditional dropdown selects).
+
+**Location:** `src/components/TileSelector/`
+
+**Props:**
+- `options` (array of {value, label, description?}) - Available selections
+- `value` (any) - Currently selected value
+- `onChange` (function) - Callback with new value
+- `label` (string, optional) - Field label
+- `size` (string, optional) - Size variant: `sm`, `md`, `lg`
+- `disabled` (boolean, optional) - Disable selector
+
+**Usage:** Multi-choice settings where visual presentation matters:
+- Theme selection (Blue Casino, Green Classic, Crimson)
+- Card style selection (Standard, Large Print)
+- Notification level selection
+
+**Example:**
+```jsx
+<TileSelector
+  options={[
+    { value: 'blue', label: 'Blue Casino' },
+    { value: 'green', label: 'Green Classic' },
+    { value: 'crimson', label: 'Crimson' }
+  ]}
+  value={theme}
+  onChange={setTheme}
+  label="Theme"
+/>
+```
+
+---
+
+### ModeSelector
+
+**Purpose:** 2x2 grid selector for game mode choice with icons and descriptions.
+
+**Location:** `src/components/ModeSelector/`
+
+**Props:**
+- `options` (array of {value, label, icon, description}) - Four game modes
+- `value` (string) - Currently selected mode
+- `onChange` (function) - Callback with selected mode
+- `disabled` (boolean, optional) - Disable selector
+
+**Usage:** Quick Play mode selection on HomeScreen:
+- Classic (all face-up, 1 pocket)
+- Classic Double (all face-up, 2 pockets)
+- Hidden (pyramid deal, 1 pocket)
+- Hidden Double (pyramid deal, 2 pockets)
+
+**Example:**
+```jsx
+<ModeSelector
+  options={GAME_MODES}
+  value={selectedMode}
+  onChange={setSelectedMode}
+/>
+```
+
+---
+
+### BackButton
+
+**Purpose:** Standardized navigation button for returning to previous screen or parent context.
+
+**Location:** `src/components/BackButton/`
+
+**Props:**
+- `onClick` (function) - Callback when user clicks back
+- `className` (string, optional) - Additional CSS classes
+
+**Usage:** Full-screen views that need back navigation:
+- Campaign screen
+- Rules/Help screen
+- Statistics screen
+- Settings screen
+
+**Example:**
+```jsx
+<BackButton onClick={() => navigate('/')} />
+```
+
+---
+
+### ModalContainer
+
+**Purpose:** Standardized modal wrapper providing consistent styling, animations, and dismiss behavior.
+
+**Location:** `src/components/ModalContainer/`
+
+**Props:**
+- `isOpen` (boolean) - Controls modal visibility
+- `onClose` (function) - Callback when modal should close
+- `title` (string) - Modal header title
+- `showCloseButton` (boolean, optional) - Show X button in header (default: true)
+- `closeOnBackdrop` (boolean, optional) - Dismiss when clicking outside (default: true)
+- `closeOnEscape` (boolean, optional) - Dismiss on Escape key (default: true)
+- `maxWidth` (string, optional) - CSS max-width (default: `600px`)
+- `children` (ReactNode) - Modal content
+
+**Usage:** Wraps modal content with consistent styling, animations, and keyboard handling:
+- Settings modal (tabbed)
+- Game over modal
+- Confirmation dialogs
+- Information modals
+
+**Example:**
+```jsx
+<ModalContainer
+  isOpen={isSettingsOpen}
+  onClose={() => setIsSettingsOpen(false)}
+  title="Settings"
+  maxWidth="700px"
+>
+  <SettingsContent />
+</ModalContainer>
+```
+
+---
+
+### SettingsModal
+
+**Purpose:** Tabbed settings interface for managing all persistent user preferences.
+
+**Location:** `src/components/SettingsModal/`
+
+**Structure:**
+- **Gameplay Tab:** Game State Notifications, Hints, Auto-Complete Offer toggles
+- **Audio Tab:** Sound Effects, Music toggles + Volume slider
+- **Visual Tab:** Theme selector, Card Style selector, Reduced Motion toggle
+- **Advanced Tab:** Reset Statistics, Reset Campaign buttons
+- **About Tab:** Version, Credits, Privacy Policy links
+
+**Accessed via:** Gear icon button in header menu
+
+**Key Features:**
+- Wraps toggles and selectors in consistent tabbed layout
+- Persists all preferences to localStorage
+- Respects existing preference values on load
+- Non-blocking (can dismiss with close button, backdrop, or Escape)
+
+---
+
 ## Implementation Guidelines
 
 ### Adding New UI Elements

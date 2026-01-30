@@ -1,7 +1,8 @@
 .levelCard {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1 / 1;
+  max-height: 100px;
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
@@ -156,8 +157,7 @@
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .levelCard {
-    width: 60px;
-    height: 75px;
+    max-height: 70px;
   }
 
   .levelNumber {

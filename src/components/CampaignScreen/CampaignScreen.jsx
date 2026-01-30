@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import LevelCard from '../LevelCard';
 import FullBleedScreen from '../FullBleedScreen';
+import BackButton from '../BackButton';
 import { CAMPAIGN_LEVELS } from '../../hooks/useCampaignProgress';
 import styles from './CampaignScreen.module.css';
 import { Trophy, Star } from '../Icon';
@@ -34,7 +35,7 @@ const CampaignScreen = ({
   return (
     <FullBleedScreen isOpen={true}>
       <div className={styles.screen}>
-        <button className={styles.backButton} onClick={onBack}>←</button>
+        <BackButton onClick={onBack} />
         
         <div className={styles.header}>
           <h1 className={styles.title}>Campaign</h1>

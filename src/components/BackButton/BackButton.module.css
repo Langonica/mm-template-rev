@@ -1,0 +1,27 @@
+.backButton {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.backButton:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.backButton:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
+}
