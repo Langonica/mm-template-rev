@@ -1199,10 +1199,13 @@
     }
     
     function scrollToTop() {
-      document.querySelector('.content-wrapper').scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+      // Try scrolling the content wrapper first, then window
+      const contentWrapper = document.querySelector('.content-wrapper');
+      if (contentWrapper && contentWrapper.scrollTop > 0) {
+        contentWrapper.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
     
     // Show/hide scroll to top button based on scroll position
