@@ -154,14 +154,32 @@ if (moveType === 'recycle' || moveType === 'draw') {
 - `tools/snapshot_generator/core/difficulty.py`
 - `tools/snapshot_generator/cli.py`
 
+---
+
+### Snapshot Generator - Phase 1B: BFS Solver - COMPLETE [x]
+
+**Status:** COMPLETE  
+**Objective:** Implement solver to verify winnability
+
+**Completed:**
+- [x] BFS solver with configurable limits
+- [x] State deduplication (fingerprint tracking)
+- [x] Move application (all 6 move types)
+- [x] Win condition detection
+- [x] Solver metrics (nodes, time, dead ends, depth)
+- [x] CLI integration (--generate-and-solve, --solve)
+- [x] Batch generation with winnability verification
+
+**Files Created:**
+- `tools/snapshot_generator/core/solver.py`
+
 **Verified Working:**
 ```bash
-cd tools/snapshot_generator
-python3 cli.py --mode classic --difficulty easy --output ./staging/
-python3 cli.py --validate --input ./staging/classic_normal_easy_generated.json
+python3 cli.py --generate-and-solve --mode classic --difficulty easy
+python3 cli.py --batch --easy 5 --max-nodes 10000
 ```
 
-**Next:** Phase 1B - BFS Solver Implementation
+**Next:** Phase 1C - Generator with Discard Loop
 
 **Upcoming:**
 - [ ] Phase 1B: BFS solver implementation
