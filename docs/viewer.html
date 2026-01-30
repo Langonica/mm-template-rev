@@ -960,6 +960,11 @@
         wrapper.innerHTML = html;
         content.appendChild(wrapper);
         
+        // Debug: Check what headers we have
+        const headers = wrapper.querySelectorAll('h1[id], h2[id], h3[id]');
+        console.log('Headers with IDs:', headers.length);
+        headers.forEach(h => console.log('  -', h.id, ':', h.textContent.substring(0, 40)));
+        
         // Handle anchor scrolling if there's a hash in the URL
         scrollToAnchor();
         
