@@ -117,9 +117,9 @@ if (moveType === 'recycle' || moveType === 'draw') {
 
 ---
 
-### Snapshot Generator - Campaign Level Creation Tool - PLANNING
+### Snapshot Generator - Campaign Level Creation Tool - IN PROGRESS
 
-**Status:** Planning Phase  
+**Status:** Phase 1A Implementation  
 **Objective:** Create Python-based tool to generate winnable campaign levels with controlled difficulty  
 **Plan:** `docs/ACTIVE/SNAPSHOT_GENERATOR_PLAN.md`
 
@@ -134,12 +134,18 @@ if (moveType === 'recycle' || moveType === 'draw') {
 - Staging output (manual curation before data folder)
 - Viewer-compatible reports for tuning
 
-**Not Started:**
-- [ ] Core infrastructure (game state, move validation)
-- [ ] BFS solver implementation
-- [ ] Difficulty analyzer
-- [ ] CLI interface
-- [ ] Report generation
+**Phase 1A: Core Infrastructure (Current)**
+- [ ] Project structure (`tools/snapshot_generator/`)
+- [ ] Game state representation
+- [ ] Card and move validation
+- [ ] JSON output formatter
+- [ ] Unit tests
+
+**Upcoming:**
+- [ ] Phase 1B: BFS solver implementation
+- [ ] Phase 1C: Generator + discard loop
+- [ ] Phase 1D: Difficulty analyzer + CLI
+- [ ] Phase 1E (Future): Web UI (deferred)
 
 ---
 

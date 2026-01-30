@@ -359,6 +359,20 @@ MODES = {
 
 ---
 
-*Document Version: 1.0*
+## 12. DECISION LOG
+
+### 2026-01-30: Web UI Deferred
+**Decision:** Start with CLI only, defer Web UI to Phase 1E (future enhancement)  
+**Rationale:** 
+- Core functionality (CLI + reports in viewer) sufficient for initial iteration
+- Web UI adds 1-2 weeks; add only if CLI friction proves significant
+- Core module architecture supports Web UI addition later
+
+**Status:** Ready for Phase 1A implementation
+
+---
+
+*Document Version: 1.1*
 *Created: 2026-01-30*
-*Status: Planning Phase*
+*Last Updated: 2026-01-30*
+*Status: Planning Complete - Implementation Ready*
