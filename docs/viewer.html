@@ -825,7 +825,7 @@
       return null;
     }
     
-    async function loadDocument(path, title) {
+    async function loadDocument(path, title, isAlreadyResolved = false) {
       currentDoc = { path, title };
       
       // Update UI
@@ -838,15 +838,17 @@
       url.searchParams.set('doc', path);
       window.history.pushState({ path, title }, title, url);
       
-      // Resolve the path relative to current location
-      // If we're at /docs/viewer.html and path is ../README.md,
-      // we need to fetch from /README.md
-      const basePath = window.location.pathname.replace(/\/[^\/]*$/, '/');
-      const resolvedPath = new URL(path, window.location.origin + basePath).pathname;
+      // Resolve the path for fetching
+      let fetchPath = path;
+      if (!isAlreadyResolved && !path.startsWith('/')) {
+        // Resolve relative to viewer.html location
+        const basePath = window.location.pathname.replace(/\/[^\/]*$/, '/');
+        fetchPath = new URL(path, window.location.origin + basePath).pathname;
+      }
       
       // Fetch and render
       try {
-        const response = await fetch(resolvedPath);
+        const response = await fetch(fetchPath);
         if (!response.ok) throw new Error(`Failed to load: ${response.status}`);
         
         const markdown = await response.text();
@@ -1076,7 +1078,7 @@
             
             // Extract title from link text or use path as fallback
             const title = link.textContent.trim() || resolvedPath;
-            loadDocument(resolvedPath, title);
+            loadDocument(resolvedPath, title, true); // Path already resolved
           }
         }
       });
