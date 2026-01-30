@@ -836,18 +836,26 @@
       url.searchParams.set('doc', path);
       window.history.pushState({ path, title }, title, url);
       
+      // Resolve the path relative to current location
+      // If we're at /docs/viewer.html and path is ../README.md,
+      // we need to fetch from /README.md
+      const basePath = window.location.pathname.replace(/\/[^\/]*$/, '/');
+      const resolvedPath = new URL(path, window.location.origin + basePath).pathname;
+      
       // Fetch and render
       try {
-        const response = await fetch(path);
+        const response = await fetch(resolvedPath);
         if (!response.ok) throw new Error(`Failed to load: ${response.status}`);
         
         const markdown = await response.text();
         renderMarkdown(markdown);
         
-        // Apply syntax highlighting
-        document.querySelectorAll('pre code').forEach(block => {
-          hljs.highlightElement(block);
-        });
+        // Apply syntax highlighting (if hljs loaded)
+        if (typeof hljs !== 'undefined') {
+          document.querySelectorAll('pre code').forEach(block => {
+            hljs.highlightElement(block);
+          });
+        }
         
         // Scroll to top
         document.querySelector('.content-wrapper').scrollTop = 0;
