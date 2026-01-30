@@ -782,17 +782,13 @@
       nav.innerHTML = DOCUMENT_REGISTRY.map(section => {
         totalDocs += section.items.length;
         
-        const items = section.items.map(item => {
-          const escapedTitle = item.title.replace(/"/g, '&quot;');
-          return (
-            `<a class="nav-item" 
-               data-path="${item.path}" 
-               data-title="${item.title.toLowerCase()}"
-               onclick='loadDocument("${item.path}", "${escapedTitle}")'>
-              ${item.title}
-            </a>`
-          );
-        }).join('');
+        const items = section.items.map(item => `
+          <a class="nav-item" 
+             data-path="${item.path}" 
+             data-title="${item.title.toLowerCase()}">
+            ${item.title}
+          </a>
+        `).join('');
         
         return `
           <div class="nav-section">
@@ -888,19 +884,19 @@
              Browse using the sidebar or select a quick link below.</p>
           
           <div class="quick-links">
-            <a class="quick-link" onclick='loadDocument("PLAYER_GUIDE.md", "Player's Guide")'>
+            <a class="quick-link" data-path="PLAYER_GUIDE.md" data-title="Player's Guide">
               <h3>🎮 Player's Guide</h3>
               <p>Learn to play, master strategies, and explore game modes</p>
             </a>
-            <a class="quick-link" onclick='loadDocument("TECHNICAL_GUIDE.md", "Technical Guide")'>
+            <a class="quick-link" data-path="TECHNICAL_GUIDE.md" data-title="Technical Guide">
               <h3>⚙️ Technical Guide</h3>
               <p>Architecture, game engine, and development reference</p>
             </a>
-            <a class="quick-link" onclick='loadDocument("../README.md", "Project README")'>
+            <a class="quick-link" data-path="../README.md" data-title="Project README">
               <h3>📖 Project Overview</h3>
               <p>Quick start and project introduction</p>
             </a>
-            <a class="quick-link" onclick='loadDocument("ACTIVE/PROGRESS.md", "Progress")'>
+            <a class="quick-link" data-path="ACTIVE/PROGRESS.md" data-title="Progress">
               <h3>📊 Development Status</h3>
               <p>Current work, roadmap, and recent changes</p>
             </a>
@@ -1022,6 +1018,31 @@
       const sidebar = document.getElementById('sidebar');
       mobileMenuBtn.addEventListener('click', () => {
         sidebar.classList.toggle('open');
+      });
+      
+      // Navigation click delegation
+      const sidebarNav = document.getElementById('sidebarNav');
+      sidebarNav.addEventListener('click', (e) => {
+        const navItem = e.target.closest('.nav-item');
+        if (navItem) {
+          const path = navItem.dataset.path;
+          const title = navItem.textContent.trim();
+          loadDocument(path, title);
+        }
+      });
+      
+      // Quick links click delegation (on content area)
+      const contentArea = document.getElementById('content');
+      contentArea.addEventListener('click', (e) => {
+        const quickLink = e.target.closest('.quick-link');
+        if (quickLink) {
+          e.preventDefault();
+          const path = quickLink.dataset.path;
+          const title = quickLink.dataset.title;
+          if (path && title) {
+            loadDocument(path, title);
+          }
+        }
       });
       
       // Browser back/forward
