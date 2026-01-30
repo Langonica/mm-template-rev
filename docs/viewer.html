@@ -956,6 +956,7 @@
         content.appendChild(wrapper);
         
         // Handle anchor scrolling if there's a hash in the URL
+        console.log('Markdown rendered, calling scrollToAnchor');
         scrollToAnchor();
         
       } catch (error) {
@@ -1061,6 +1062,7 @@
           
           // Skip anchor links (same page) - IMPORTANT: return early and don't intercept
           if (href.startsWith('#')) {
+            console.log('Anchor link clicked, href:', href);
             // Let browser handle anchor navigation normally
             return;
           }
@@ -1098,6 +1100,7 @@
       
       // Handle anchor link scrolling after content renders
       window.addEventListener('hashchange', () => {
+        console.log('hashchange event fired');
         scrollToAnchor();
       });
     }
@@ -1112,12 +1115,20 @@
     
     function scrollToAnchor() {
       const hash = window.location.hash;
+      console.log('scrollToAnchor called, hash:', hash);
       if (hash) {
         const id = hash.substring(1);
+        console.log('Looking for element with id:', id);
         const element = document.getElementById(id);
+        console.log('Element found:', element);
         if (element) {
+          console.log('Scrolling to element');
           element.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          console.log('Element not found in DOM');
         }
+      } else {
+        console.log('No hash in URL');
       }
     }
   </script>
