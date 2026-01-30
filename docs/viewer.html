@@ -1211,11 +1211,14 @@
       const scrollButton = document.getElementById('scrollToTop');
       
       if (!contentWrapper || !scrollButton) {
-        console.error('Scroll to top: Required elements not found');
+        console.error('Scroll to top: Required elements not found', { contentWrapper, scrollButton });
         return;
       }
       
+      console.log('Scroll to top: Setup complete');
+      
       contentWrapper.addEventListener('scroll', () => {
+        console.log('Scroll event:', contentWrapper.scrollTop);
         if (contentWrapper.scrollTop > 500) {
           scrollButton.classList.add('visible');
         } else {
