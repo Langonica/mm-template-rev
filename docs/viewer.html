@@ -784,14 +784,15 @@
         
         const items = section.items.map(item => {
           const escapedTitle = item.title.replace(/"/g, '&quot;');
-          return `
-          <a class="nav-item" 
-             data-path="${item.path}" 
-             data-title="${item.title.toLowerCase()}"
-             onclick='loadDocument("${item.path}", "${escapedTitle}")'>
-            ${item.title}
-          </a>
-        `;}).join('');
+          return (
+            `<a class="nav-item" 
+               data-path="${item.path}" 
+               data-title="${item.title.toLowerCase()}"
+               onclick='loadDocument("${item.path}", "${escapedTitle}")'>
+              ${item.title}
+            </a>`
+          );
+        }).join('');
         
         return `
           <div class="nav-section">
