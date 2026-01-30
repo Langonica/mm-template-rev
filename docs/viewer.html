@@ -1087,9 +1087,8 @@
       window.addEventListener('popstate', (e) => {
         if (e.state && e.state.path) {
           loadDocument(e.state.path, e.state.title);
-        } else {
-          renderHome();
         }
+        // If no state (e.g., anchor navigation), don't navigate - let browser handle it
       });
     }
     
