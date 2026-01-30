@@ -1,18 +1,18 @@
 # Game State Notification System - Implementation Specification
 
-**Status:** All Phases Complete ✅ (v2.3.0)  
+**Status:** All Phases Complete [x] (v2.3.0)  
 **Based On:** DESIGN_PRINCIPLES.md - Conservative, User-Controllable, Signal Over Noise
 
 ## Implementation Status
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| Phase 1 | Enhanced Progress Detection | ✅ Complete |
-| Phase 2 | Unwinnable Detection Algorithm | ✅ Complete |
-| Phase 3 | Toast UI Components | ✅ Complete |
-| Phase 4 | Settings Integration | ✅ Complete |
-| Phase 5 | Remove Stats Bar Warning | ✅ Complete |
-| Phase 6 | Testing & Polish | ✅ Complete |
+| Phase 1 | Enhanced Progress Detection | [x] Complete |
+| Phase 2 | Unwinnable Detection Algorithm | [x] Complete |
+| Phase 3 | Toast UI Components | [x] Complete |
+| Phase 4 | Settings Integration | [x] Complete |
+| Phase 5 | Remove Stats Bar Warning | [x] Complete |
+| Phase 6 | Testing & Polish | [x] Complete |
 
 ---
 
@@ -62,11 +62,11 @@ Replace the current "moves since progress" warning system with a conservative, t
 Current (incorrect): Only foundation cards
 
 **New Definition (productive moves):**
-- ✅ Card placed on foundation
-- ✅ Face-down card revealed
-- ✅ Valid sequence created in tableau (3+ cards)
-- ✅ Card moved to empty column (Ace/King)
-- ✅ Pocket card played (not stored)
+- [x] Card placed on foundation
+- [x] Face-down card revealed
+- [x] Valid sequence created in tableau (3+ cards)
+- [x] Card moved to empty column (Ace/King)
+- [x] Pocket card played (not stored)
 
 **Does NOT count (neutral):**
 - Stock draw
@@ -175,7 +175,7 @@ function isGameUnwinnable(gameState, searchDepth = 5) {
 
 ```
 ┌─────────────────────────────────┐
-│  💡 Tip: You've been cycling    │
+│  [Idea] Tip: You've been cycling    │
 │  through the deck. Consider     │
 │  undoing if you're stuck.       │
 │                          [×]    │
@@ -194,7 +194,7 @@ function isGameUnwinnable(gameState, searchDepth = 5) {
 ```
 ┌──────────────────────────────────────────────────┐
 │                                                  │
-│            ⚠️ You may be stuck                   │
+│            [Warning] You may be stuck                   │
 │                                                  │
 │    You've cycled through the deck 5 times        │
 │    without making progress.                      │
@@ -216,7 +216,7 @@ function isGameUnwinnable(gameState, searchDepth = 5) {
 ```
 ┌──────────────────────────────────────────────────┐
 │                                                  │
-│            🏁 Game Analysis Complete             │
+│            [Launch] Game Analysis Complete             │
 │                                                  │
 │    This game appears to be unwinnable.           │
 │    All possible moves have been explored.        │
@@ -267,7 +267,7 @@ function isGameUnwinnable(gameState, searchDepth = 5) {
 
 ## Implementation Plan
 
-### Phase 1: Enhanced Detection (Core) ✅
+### Phase 1: Enhanced Detection (Core) [x]
 
 **Files:**
 - `src/utils/gameLogic.js` - Enhanced GameStateTracker with productivity tracking
@@ -275,25 +275,25 @@ function isGameUnwinnable(gameState, searchDepth = 5) {
 - `src/utils/cardUtils.js` - Enhanced state fingerprinting
 
 **Implemented:**
-1. ✅ Face-down count, valid sequences, empty columns in fingerprint
-2. ✅ `isProductiveMove()` - 6 types of productive moves tracked
-3. ✅ `unproductiveCycleCount` - Separate from total moves
-4. ✅ Four-tier system: hint → concern → warning → confirmed
+1. [x] Face-down count, valid sequences, empty columns in fingerprint
+2. [x] `isProductiveMove()` - 6 types of productive moves tracked
+3. [x] `unproductiveCycleCount` - Separate from total moves
+4. [x] Four-tier system: hint → concern → warning → confirmed
 
-### Phase 2: Unwinnable Detection ✅
+### Phase 2: Unwinnable Detection [x]
 
 **Files:**
 - `src/utils/gameLogic.js` - `detectUnwinnableState()`, `quick/deepUnwinnableCheck()`
 - `src/hooks/useCardGame.js` - `runUnwinnableCheck()` integration
 
 **Implemented:**
-1. ✅ BFS-based solver with node/time/depth limits
-2. ✅ Quick (3K nodes) vs Deep (8K nodes) checks
-3. ✅ Confidence levels (low/medium/high/certain)
-4. ✅ Automatic triggering at 4+ unproductive cycles
-5. ✅ Result caching in GameStateTracker
+1. [x] BFS-based solver with node/time/depth limits
+2. [x] Quick (3K nodes) vs Deep (8K nodes) checks
+3. [x] Confidence levels (low/medium/high/certain)
+4. [x] Automatic triggering at 4+ unproductive cycles
+5. [x] Result caching in GameStateTracker
 
-### Phase 3: UI Components ✅
+### Phase 3: UI Components [x]
 
 **Files:**
 - `src/components/GameStateToast/` - Toast for hint/concern tiers
@@ -301,13 +301,13 @@ function isGameUnwinnable(gameState, searchDepth = 5) {
 - `src/App.jsx` - Integration with game state
 
 **Implemented:**
-1. ✅ `GameStateToast` - Auto-dismiss, tier-specific styling, action button
-2. ✅ `GameStateOverlay` - Semi-transparent backdrop, action buttons
-3. ✅ CSS animations with `prefers-reduced-motion` support
-4. ✅ Responsive mobile/desktop layouts
-5. ✅ Integration in App.jsx with automatic display logic
+1. [x] `GameStateToast` - Auto-dismiss, tier-specific styling, action button
+2. [x] `GameStateOverlay` - Semi-transparent backdrop, action buttons
+3. [x] CSS animations with `prefers-reduced-motion` support
+4. [x] Responsive mobile/desktop layouts
+5. [x] Integration in App.jsx with automatic display logic
 
-### Phase 5: Stats Bar Cleanup ✅
+### Phase 5: Stats Bar Cleanup [x]
 
 **Files:**
 - `src/components/GameStats/GameStats.jsx` - Simplified component
@@ -316,12 +316,12 @@ function isGameUnwinnable(gameState, searchDepth = 5) {
 - `src/App.jsx` - Removed prop
 
 **Implemented:**
-1. ✅ Removed `circularPlayState` prop from GameStats
-2. ✅ Removed warning indicator logic and CSS
-3. ✅ Component now shows only moves and time
-4. ✅ All warnings now via GameStateToast/GameStateOverlay
+1. [x] Removed `circularPlayState` prop from GameStats
+2. [x] Removed warning indicator logic and CSS
+3. [x] Component now shows only moves and time
+4. [x] All warnings now via GameStateToast/GameStateOverlay
 
-### Phase 4: Settings Integration ✅
+### Phase 4: Settings Integration [x]
 
 **Files:**
 - `src/contexts/NotificationSettingsContext.jsx` - Context provider
@@ -330,12 +330,12 @@ function isGameUnwinnable(gameState, searchDepth = 5) {
 - `src/App.jsx` - Settings-aware display logic
 
 **Implemented:**
-1. ✅ `NotificationSettingsContext` with localStorage persistence
-2. ✅ Three levels: On / Minimal / Off
-3. ✅ `shouldShowNotification()` utility function
-4. ✅ Settings UI in GameMenu (Notifications dropdown)
-5. ✅ `isTierEnabled()` hook method for conditional display
-6. ✅ App.jsx effect respects user preferences
+1. [x] `NotificationSettingsContext` with localStorage persistence
+2. [x] Three levels: On / Minimal / Off
+3. [x] `shouldShowNotification()` utility function
+4. [x] Settings UI in GameMenu (Notifications dropdown)
+5. [x] `isTierEnabled()` hook method for conditional display
+6. [x] App.jsx effect respects user preferences
 - `src/contexts/SettingsContext.jsx` - Update schema
 - `src/hooks/useSettings.js` - Handle new setting
 
@@ -381,8 +381,8 @@ function isGameUnwinnable(gameState, searchDepth = 5) {
 
 | Scenario | Current | New |
 |----------|---------|-----|
-| Active play, cycling stock | "⚡ 18 moves" warning | Nothing (Tier 0) |
-| Cycling 5+ times no progress | "⚠️ Circular play" | Toast suggestion (Tier 2) |
+| Active play, cycling stock | "[Data] 18 moves" warning | Nothing (Tier 0) |
+| Cycling 5+ times no progress | "[Warning] Circular play" | Toast suggestion (Tier 2) |
 | Unwinnable detected | Nothing | Modal (Tier 3) |
 | Notifications disabled | Same warnings | Nothing shown |
 
@@ -477,10 +477,10 @@ function isGameUnwinnable(gameState, searchDepth = 5) {
 
 | Issue | Solution | Status |
 |-------|----------|--------|
-| False positives | Enhanced "progress" definition (6 types of productive moves) | ✅ Implemented |
-| False negatives | Unwinnable detection with BFS solver | ✅ Implemented |
-| Poor visibility | Progressive toast → overlay → modal system | ✅ Implemented |
-| No guidance | Clear action buttons in each tier | ✅ Implemented |
+| False positives | Enhanced "progress" definition (6 types of productive moves) | [x] Implemented |
+| False negatives | Unwinnable detection with BFS solver | [x] Implemented |
+| Poor visibility | Progressive toast → overlay → modal system | [x] Implemented |
+| No guidance | Clear action buttons in each tier | [x] Implemented |
 
 ### Threshold Evolution
 

@@ -21,7 +21,7 @@
 |--------|-------|
 | Total Errors | 15 (down from 20) |
 | Files with Errors | 8 (down from 10) |
-| Build Status | ✅ Passing |
+| Build Status | [x] Passing |
 
 **Note:** Remaining errors are in non-critical files (context constants, GameStateToast.jsx). App.jsx is now clean.
 
@@ -29,9 +29,9 @@
 
 | Category | Count | Severity | Notes |
 |----------|-------|----------|-------|
-| setState-in-effect | 10 | 🟡 Medium | Complex refactor needed - architectural patterns |
-| Fast refresh exports | 8 | 🟢 Low | Hooks/functions exported from context files |
-| Missing dependencies | 2 | 🟢 Low | useEffect dependency arrays |
+| setState-in-effect | 10 | (Medium) | Complex refactor needed - architectural patterns |
+| Fast refresh exports | 8 | (Low) | Hooks/functions exported from context files |
+| Missing dependencies | 2 | (Low) | useEffect dependency arrays |
 
 ---
 
@@ -56,13 +56,13 @@
 
 #### 1. Token Usage
 ```css
-/* ✅ Use design tokens */
+/* [x] Use design tokens */
 .element {
   background: var(--bg-surface);
   z-index: var(--z-modal);
 }
 
-/* ❌ No hardcoded values */
+/* [-] No hardcoded values */
 .element {
   background: #1B2838;
   z-index: 9999;

@@ -257,22 +257,22 @@ Settings (gear icon)
 
 ## Anti-Patterns to Avoid
 
-### ❌ Visual Clutter
+### [-] Visual Clutter
 - Multiple competing animations
 - Decorative elements that don't serve gameplay
 - Information density too high
 
-### ❌ Inconsistent Patterns
+### [-] Inconsistent Patterns
 - Different modal styles for similar actions
 - Animation durations that vary randomly
 - Button styles that differ between screens
 
-### ❌ Passive-Aggressive UX
+### [-] Passive-Aggressive UX
 - Notifications that can't be dismissed
 - Guilt-inducing language ("You gave up!")
 - Overly cheerful messages during failure
 
-### ❌ Mystery Meat Navigation
+### [-] Mystery Meat Navigation
 - Icons without labels
 - Gestures without hints
 - Hidden features without discovery paths

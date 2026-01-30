@@ -12,42 +12,42 @@ The touch implementation in `useTouchDrag.js` is **functional and improving**:
 
 | Aspect | Status | Notes |
 |--------|--------|-------|
-| Long-press detection | ✅ Working | 100ms delay, 10px threshold |
-| Ghost element drag | ✅ Lightweight | Built from card data, no DOM cloning (Phase 3) |
-| Drop target detection | ✅ Robust | Uses data attributes (Phase 1 complete) |
-| Multi-touch | ✅ Handled | Cancels drag cleanly with feedback (Phase 2) |
-| Touch affordance | ✅ Implemented | First-time hint on quick tap (Phase 4) |
-| Accessibility | ❌ Missing | No ARIA labels for touch state |
+| Long-press detection | [x] Working | 100ms delay, 10px threshold |
+| Ghost element drag | [x] Lightweight | Built from card data, no DOM cloning (Phase 3) |
+| Drop target detection | [x] Robust | Uses data attributes (Phase 1 complete) |
+| Multi-touch | [x] Handled | Cancels drag cleanly with feedback (Phase 2) |
+| Touch affordance | [x] Implemented | First-time hint on quick tap (Phase 4) |
+| Accessibility | [-] Missing | No ARIA labels for touch state |
 
 ---
 
 ## Key Problems Identified
 
-### ~~1. Drop Target Detection Fragility (High Priority)~~ ✅ RESOLVED
+### ~~1. Drop Target Detection Fragility (High Priority)~~ [x] RESOLVED
 
 **Problem:** Used hardcoded constants for column detection.
 
 **Solution Implemented:** Data attributes on drop zones (`data-drop-zone`, `data-column-index`, `data-pocket-num`). `findDropTargetAtPosition()` now uses `element.closest('[data-drop-zone]')` pattern.
 
-### ~~2. Ghost Element Memory Risk (Medium Priority)~~ ✅ RESOLVED
+### ~~2. Ghost Element Memory Risk (Medium Priority)~~ [x] RESOLVED
 
 **Problem:** `cloneNode(true)` copied all event listeners, potential memory leak.
 
 **Solution Implemented:** Lightweight ghost built from card data using `parseCard()`. No DOM cloning - creates minimal div with sprite background position.
 
-### ~~3. Multi-Touch Confusion (Medium Priority)~~ ✅ RESOLVED
+### ~~3. Multi-Touch Confusion (Medium Priority)~~ [x] RESOLVED
 
 **Problem:** Second finger touches were silently ignored.
 
 **Solution Implemented:** Multi-touch detection in `handleTouchStart` and `handleTouchMove`. If second finger touches during drag, cancel immediately with haptic feedback (30ms vibration).
 
-### ~~4. No Touch Affordance (Medium Priority)~~ ✅ RESOLVED
+### ~~4. No Touch Affordance (Medium Priority)~~ [x] RESOLVED
 
 **Problem:** New users didn't know cards require long-press to drag.
 
 **Solution Implemented:** First-time user hint system with localStorage persistence. Shows "Hold cards to drag them" toast on quick tap until first successful drag.
 
-### ~~5. Stale Valid Targets (Low-Medium Priority)~~ ✅ ALREADY RESOLVED
+### ~~5. Stale Valid Targets (Low-Medium Priority)~~ [x] ALREADY RESOLVED
 
 **Problem:** Concern about valid targets being stale.
 
@@ -63,7 +63,7 @@ The touch implementation in `useTouchDrag.js` is **functional and improving**:
 
 ## Implementation Phases
 
-### Phase 1: Drop Target Detection Refactor (Critical) ✅ COMPLETE
+### Phase 1: Drop Target Detection Refactor (Critical) [x] COMPLETE
 
 **Goal:** Eliminate hardcoded layout constants, use data attributes.
 
@@ -80,7 +80,7 @@ The touch implementation in `useTouchDrag.js` is **functional and improving**:
 
 ---
 
-### Phase 2: Multi-Touch Handling ✅ COMPLETE
+### Phase 2: Multi-Touch Handling [x] COMPLETE
 
 **Goal:** Gracefully handle multi-touch scenarios.
 
@@ -97,7 +97,7 @@ The touch implementation in `useTouchDrag.js` is **functional and improving**:
 
 ---
 
-### Phase 3: Lightweight Ghost Element ✅ COMPLETE
+### Phase 3: Lightweight Ghost Element [x] COMPLETE
 
 **Goal:** Reduce memory risk from cloneNode.
 
@@ -115,7 +115,7 @@ The touch implementation in `useTouchDrag.js` is **functional and improving**:
 
 ---
 
-### Phase 4: Touch Affordance (First-Time UX) ✅ COMPLETE
+### Phase 4: Touch Affordance (First-Time UX) [x] COMPLETE
 
 **Goal:** Help new users discover long-press drag.
 
@@ -134,7 +134,7 @@ The touch implementation in `useTouchDrag.js` is **functional and improving**:
 
 ---
 
-### Phase 5: Re-validate on Drop ✅ ALREADY IMPLEMENTED
+### Phase 5: Re-validate on Drop [x] ALREADY IMPLEMENTED
 
 **Goal:** Ensure move is still valid when finger lifts.
 
@@ -166,11 +166,11 @@ The `isValidTarget` function is called at drop time with current game state.
 
 | Phase | Task | Model | Priority | Status |
 |-------|------|-------|----------|--------|
-| 1 | Drop target data attributes | Sonnet | Critical | ✅ Complete |
-| 2 | Multi-touch cancellation | Haiku | High | ✅ Complete |
-| 3 | Lightweight ghost element | Sonnet | Medium | ✅ Complete |
-| 4 | Touch affordance tooltip | Sonnet | Medium | ✅ Complete |
-| 5 | Re-validate on drop | Haiku | Medium | ✅ Already implemented |
+| 1 | Drop target data attributes | Sonnet | Critical | [x] Complete |
+| 2 | Multi-touch cancellation | Haiku | High | [x] Complete |
+| 3 | Lightweight ghost element | Sonnet | Medium | [x] Complete |
+| 4 | Touch affordance tooltip | Sonnet | Medium | [x] Complete |
+| 5 | Re-validate on drop | Haiku | Medium | [x] Already implemented |
 | 6 | Accessibility (ARIA) | Sonnet | Low | Pending (optional) |
 
 ---

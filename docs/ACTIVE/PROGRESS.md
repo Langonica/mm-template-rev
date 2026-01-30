@@ -8,16 +8,16 @@ Meridian Solitaire is a unique card game implementation with dual foundation sys
 
 ## Current Work
 
-### Touch Interaction Robustness (v2.4.0) - Phases 1-5 COMPLETE ✅
+### Touch Interaction Robustness (v2.4.0) - Phases 1-5 COMPLETE [x]
 
 **Objective:** Eliminate architectural fragility in touch drag implementation.
 
 **Completed 2026-01-29:**
-- **Phase 1:** Drop target data attributes (layout-independent detection)
-- **Phase 2:** Multi-touch cancellation with haptic feedback
-- **Phase 3:** Lightweight ghost element (no DOM cloning)
-- **Phase 4:** First-time user affordance hint
-- **Phase 5:** Re-validate on drop (already implemented)
+- [x] Phase 1: Drop target data attributes (layout-independent detection)
+- [x] Phase 2: Multi-touch cancellation with haptic feedback
+- [x] Phase 3: Lightweight ghost element (no DOM cloning)
+- [x] Phase 4: First-time user affordance hint
+- [x] Phase 5: Re-validate on drop (already implemented)
 
 **Remaining:** Phase 6 (Accessibility/ARIA) - optional, low priority
 
@@ -25,7 +25,7 @@ Meridian Solitaire is a unique card game implementation with dual foundation sys
 
 ---
 
-### Phase 2c: False Positive Fix - Strategic Cycling Detection - COMPLETE ✅
+### Phase 2c: False Positive Fix - Strategic Cycling Detection - COMPLETE [x]
 
 **Objective:** Fix false "unproductive play" warnings when players are cycling stock near endgame to find winning cards.
 
@@ -49,13 +49,13 @@ if (moveType === 'recycle' || moveType === 'draw') {
 - `src/utils/gameLogic.js` - Added strategic cycling check to analyzeProductivity
 
 **Result:**
-- ✅ Players cycling stock with <10 cards remaining get NO warning
-- ✅ Normal productivity detection unchanged for mid-game
-- ✅ Build passes clean
+- [x] Players cycling stock with <10 cards remaining get NO warning
+- [x] Normal productivity detection unchanged for mid-game
+- [x] Build passes clean
 
 ---
 
-### Phase 2a: Game State Detection Tuning (Telemetry) - COMPLETE ✅
+### Phase 2a: Game State Detection Tuning (Telemetry) - COMPLETE [x]
 
 **Objective:** Add telemetry tracking and configurable thresholds for the game state notification system.
 
@@ -89,7 +89,7 @@ if (moveType === 'recycle' || moveType === 'draw') {
 
 ---
 
-### Phase 1: App.jsx Architectural Hardening - COMPLETE ✅
+### Phase 1: App.jsx Architectural Hardening - COMPLETE [x]
 
 **Objective:** Eliminate setState-in-effect violations and fix architectural patterns that cause cascading renders.
 
@@ -108,16 +108,16 @@ if (moveType === 'recycle' || moveType === 'draw') {
 | Missing loadGameState dependency | App.jsx:737 | Added eslint-disable (intentional for dev-only) |
 
 **Result:**
-- ✅ App.jsx now has zero ESLint errors
-- ✅ All setState-in-effect warnings resolved
-- ✅ Build passes clean
-- ⚠️ Other files still have warnings (out of scope for Phase 1)
+- [x] App.jsx now has zero ESLint errors
+- [x] All setState-in-effect warnings resolved
+- [x] Build passes clean
+- (!) Other files still have warnings (out of scope for Phase 1)
 
 **Commit:** `bf9354f` (docs) + Phase 1 changes
 
 ---
 
-### 2x-Only Asset Simplification - COMPLETE ✅
+### 2x-Only Asset Simplification - COMPLETE [x]
 
 **Objective:** Simplify asset handling by using 2x assets exclusively and eliminating the dynamic asset selection hook.
 
@@ -134,13 +134,13 @@ if (moveType === 'recycle' || moveType === 'draw') {
 - `src/App.jsx` - Removed useHighDPIAssets hook integration
 
 **Result:**
-- ✅ Cleaner codebase with simplified asset handling
-- ✅ 2x assets load correctly in both dev and production
-- ✅ No conditional asset selection logic needed
+- [x] Cleaner codebase with simplified asset handling
+- [x] 2x assets load correctly in both dev and production
+- [x] No conditional asset selection logic needed
 
 ---
 
-### v2.3.1 - Game State Notification Bug Fix - COMPLETE ✅
+### v2.3.1 - Game State Notification Bug Fix - COMPLETE [x]
 
 **Objective:** Fix critical bug where toast notification cannot be dismissed and loops indefinitely.
 
@@ -150,9 +150,9 @@ if (moveType === 'recycle' || moveType === 'draw') {
 
 | Bug | Severity | Description |
 |-----|----------|-------------|
-| #1 | Critical | Toast re-triggers after dismiss (useEffect sees tier unchanged, reopens) |
-| #2 | Medium | Action button has wrong handler (`handleOverlayDismiss` instead of `handleToastDismiss`) |
-| #3 | Medium | Productivity criteria too strict - valid tableau moves trigger false positives |
+| #1 | (Critical) | Toast re-triggers after dismiss (useEffect sees tier unchanged, reopens) |
+| #2 | (Medium) | Action button has wrong handler (`handleOverlayDismiss` instead of `handleToastDismiss`) |
+| #3 | (Medium) | Productivity criteria too strict - valid tableau moves trigger false positives |
 
 **Solution Design:**
 1. Add `dismissedNotificationTier` state to track user dismissal
@@ -173,11 +173,11 @@ if (moveType === 'recycle' || moveType === 'draw') {
 
 ---
 
-### v2.3.0 - Animation System Overhaul - COMPLETE ✅
+### v2.3.0 - Animation System Overhaul - COMPLETE [x]
 
 **Objective:** Replace basic slurp/pop animations with sophisticated sequences for auto-complete and double-click autoplay.
 
-**Phase 1: Auto-Complete Sequence (COMPLETE - 2026-01-28)**
+**Phase 1: Auto-Complete Sequence ([x] COMPLETE - 2026-01-28)**
 
 | Feature | Implementation | Duration |
 |---------|---------------|----------|
@@ -186,7 +186,7 @@ if (moveType === 'recycle' || moveType === 'draw') {
 | Arriving phase | Card lands, foundation pulses | 200ms |
 | Win delay | 500ms pause before win screen | 500ms |
 
-**Phase 2: Arc Motion for Regular Autoplay (COMPLETE - 2026-01-28)**
+**Phase 2: Arc Motion for Regular Autoplay ([x] COMPLETE - 2026-01-28)**
 
 | Feature | Implementation | Duration |
 |---------|---------------|----------|
@@ -204,15 +204,15 @@ if (moveType === 'recycle' || moveType === 'draw') {
 
 **Total Animation Duration:**
 - Old: 700ms (slurp + pop)
-- New: 600ms (lift + fly + land) ✓ Faster AND more visible
+- New: 600ms (lift + fly + land) [x] Faster AND more visible
 
 ---
 
-### v2.2.2 - Extended Autoplay System - COMPLETE ✅
+### v2.2.2 - Extended Autoplay System - COMPLETE [x]
 
 **Objective:** Extend the existing double-click autoplay from foundation-only to include tableau moves.
 
-**Status:** ✅ Implemented and tested
+**Status:** [x] Implemented and tested
 
 **Changes Applied (2026-01-28):**
 - `gameLogic.js`: `tryAutoMoveToFoundation()` → `tryAutoMove()`
@@ -229,18 +229,18 @@ if (moveType === 'recycle' || moveType === 'draw') {
 | Column type | Ace/King columns > Traditional |
 
 **Scope:**
-- ✅ Waste → Tableau/Foundation
-- ✅ Pocket → Tableau/Foundation  
-- ✅ Tableau → Tableau/Foundation
-- ❌ Foundation → Tableau (excluded - reverse play is user choice)
+- [x] Waste → Tableau/Foundation
+- [x] Pocket → Tableau/Foundation  
+- [x] Tableau → Tableau/Foundation
+- [-] Foundation → Tableau (excluded - reverse play is user choice)
 
 ---
 
-### v2.2.1 - Column Typing Bug Fix - COMPLETE ✅
+### v2.2.1 - Column Typing Bug Fix - COMPLETE [x]
 
 **Objective:** Fix critical bug in hidden game modes where columns prematurely switch type based on face-down cards instead of face-up cards.
 
-**Status:** ✅ Fixed and tested
+**Status:** [x] Fixed and tested
 
 **Bug Summary:**
 In `hidden` and `hidden_double` modes, the `updateColumnType()` function in `gameLogic.js` incorrectly used `column[0]` (physical bottom card) to determine column type. In hidden modes, `column[0]` is often a face-down card, causing columns to adopt wrong types.
@@ -267,7 +267,7 @@ Actual (bug): Column reads column[0] (face-down card) and sets wrong type
 
 ---
 
-### v2.3.0 - Game State Analyzer & Smart Detection - IN PROGRESS 🧠
+### v2.3.0 - Game State Analyzer & Smart Detection - IN PROGRESS [Idea]
 
 **Objective:** Implement comprehensive game state tracking to detect stalemates, circular play, and offer auto-complete for trivially winnable games. This system will also serve as the foundation for a future hint system.
 
@@ -281,15 +281,15 @@ Current stalemate detection is basic (no moves + empty stock = stalemate). It mi
 
 ---
 
-**Phase 1: State Fingerprinting & Tracking ✅ COMPLETE**
+**Phase 1: State Fingerprinting & Tracking [x] COMPLETE**
 
 | Task | Status | Files |
 |------|--------|-------|
-| Create `GameStateTracker` class | ✅ Done | `gameLogic.js` |
-| Implement `getStateFingerprint()` | ✅ Done | `cardUtils.js` |
-| Implement `fingerprintToKey()` | ✅ Done | `cardUtils.js` |
-| Track stock/waste cycles | ✅ Done | `useCardGame.js` |
-| Store state history | ✅ Done | `GameStateTracker` |
+| Create `GameStateTracker` class | [x] Done | `gameLogic.js` |
+| Implement `getStateFingerprint()` | [x] Done | `cardUtils.js` |
+| Implement `fingerprintToKey()` | [x] Done | `cardUtils.js` |
+| Track stock/waste cycles | [x] Done | `useCardGame.js` |
+| Store state history | [x] Done | `GameStateTracker` |
 
 **Implementation Details:**
 
@@ -320,7 +320,7 @@ Current stalemate detection is basic (no moves + empty stock = stalemate). It mi
 
 ---
 
-**Phase 2: Circular Play Detection 🔄 COMPLETE**
+**Phase 2: Circular Play Detection [In Progress] COMPLETE**}, {
 
 **Detection System (Phase 1):**
 | Detection | Threshold | Method |
@@ -332,17 +332,17 @@ Current stalemate detection is basic (no moves + empty stock = stalemate). It mi
 **UI Implementation (Phase 2):**
 | Task | Status | Files |
 |------|--------|-------|
-| Warning levels | ✅ Done | `useCardGame.js` |
-| Progress counter | ✅ Done | `GameStats.jsx` |
-| Visual indicators | ✅ Done | `GameStats.module.css` |
-| Component wiring | ✅ Done | `GameStage.jsx`, `App.jsx` |
+| Warning levels | [x] Done | `useCardGame.js` |
+| Progress counter | [x] Done | `GameStats.jsx` |
+| Visual indicators | [x] Done | `GameStats.module.css` |
+| Component wiring | [x] Done | `GameStage.jsx`, `App.jsx` |
 
 **Warning Levels:**
 | Level | Condition | UI |
 |-------|-----------|-----|
-| 🟡 Caution | 2 cycles OR 15+ moves w/o progress | Yellow "⚡ X moves" indicator |
-| 🔴 Critical | 3+ cycles detected | Red pulsing "⚠️ Circular play" indicator |
-| 🛑 Stalled | 20+ moves w/o progress | Red pulsing "⚠️ X moves - stalled" indicator |
+| (Caution) | 2 cycles OR 15+ moves w/o progress | Yellow "(!) X moves" indicator |
+| (Critical) | 3+ cycles detected | Red pulsing "[Warning] Circular play" indicator |
+| (Stalled) | 20+ moves w/o progress | Red pulsing "[Warning] X moves - stalled" indicator |
 
 **Implementation:**
 ```javascript
@@ -369,20 +369,20 @@ circularPlayState: {
 
 ---
 
-**Phase 3: Stalemate UX Modal 🛑 COMPLETE**
+**Phase 3: Stalemate UX Modal (Stalled) COMPLETE**}, {
 
 | Task | Status | Files |
 |------|--------|-------|
-| Create `StalemateModal` component | ✅ Done | `components/StalemateModal/` |
-| Stats display | ✅ Done | `StalemateModal.jsx` |
-| Action buttons | ✅ Done | `StalemateModal.jsx` |
-| Integration | ✅ Done | `App.jsx` |
-| Auto-trigger | ✅ Done | useEffect on gameStatus |
+| Create `StalemateModal` component | [x] Done | `components/StalemateModal/` |
+| Stats display | [x] Done | `StalemateModal.jsx` |
+| Action buttons | [x] Done | `StalemateModal.jsx` |
+| Integration | [x] Done | `App.jsx` |
+| Auto-trigger | [x] Done | useEffect on gameStatus |
 
 **Modal Content:**
 ```
 ┌─────────────────────────────────┐
-│  🏁 Game Stalled                │
+│  [Launch] Game Stalled                │
 │                                 │
 │  No further moves available.    │
 │                                 │
@@ -418,15 +418,15 @@ useEffect(() => {
 
 ---
 
-**Phase 4: Auto-Complete Detection** ✨ IN PROGRESS
+**Phase 4: Auto-Complete Detection** [In Progress] IN PROGRESS
 
 | Condition | Required State | Status |
 |-----------|----------------|--------|
-| Stock empty | `stock.length === 0` | 🔄 Implementing |
-| Waste empty | `waste.length === 0` | 🔄 Implementing |
-| Pockets empty | `pocket1 === null && pocket2 === null` | 🔄 Implementing |
-| All tableau face-up | No face-down cards in any column | 🔄 Implementing |
-| No blocked sequences | No circular dependencies | 🔄 Implementing |
+| Stock empty | `stock.length === 0` | [In Progress] Implementing |
+| Waste empty | `waste.length === 0` | [In Progress] Implementing |
+| Pockets empty | `pocket1 === null && pocket2 === null` | [In Progress] Implementing |
+| All tableau face-up | No face-down cards in any column | [In Progress] Implementing |
+| No blocked sequences | No circular dependencies | [In Progress] Implementing |
 
 **Implementation Tasks:**
 1. Create `canAutoComplete(gameState)` function in `gameLogic.js`
@@ -504,11 +504,11 @@ Complete: Win celebration
 
 ---
 
-### v2.2.3 - Code Audit Phase 2 Completion - COMPLETE ✅
+### v2.2.3 - Code Audit Phase 2 Completion - COMPLETE [x]
 
 **Objective:** Complete remaining Code Audit Phase 2 items: console.log cleanup and z-index consolidation.
 
-**Status:** ✅ Completed 2026-01-28
+**Status:** [x] Completed 2026-01-28
 
 **Changes Applied:**
 
@@ -533,70 +533,70 @@ Complete: Win celebration
 
 ---
 
-### v2.2.0 - Deep Blue Casino Theme - 2026-01-28 - COMPLETE ✅
+### v2.2.0 - Deep Blue Casino Theme - 2026-01-28 - COMPLETE [x]
 
 **Objective:** Implement new Blue Casino theme with multi-theme architecture.
 
-**Phase 1: Theme System Architecture ✅**
+**Phase 1: Theme System Architecture [x]**
 | Task | Status | Impact |
 |------|--------|--------|
-| Create theme specification | ✅ Done | Complete design document with rationale |
-| Blue Casino theme constants | ✅ Done | 80+ CSS variables for theming |
-| Semantic token layer | ✅ Done | Universal token names (bg-deep, accent-primary) |
-| ThemeContext provider | ✅ Done | Runtime theme switching + localStorage |
-| useTheme hook | ✅ Done | Clean component access to theme |
+| Create theme specification | [x] Done | Complete design document with rationale |
+| Blue Casino theme constants | [x] Done | 80+ CSS variables for theming |
+| Semantic token layer | [x] Done | Universal token names (bg-deep, accent-primary) |
+| ThemeContext provider | [x] Done | Runtime theme switching + localStorage |
+| useTheme hook | [x] Done | Clean component access to theme |
 
-**Phase 2: Game Stage Theming ✅**
+**Phase 2: Game Stage Theming [x]**
 | Task | Status | Impact |
 |------|--------|--------|
-| Game board background | ✅ Done | Green → Deep blue |
-| Ace tracks | ✅ Done | Gold → Light blue tint |
-| King tracks | ✅ Done | Silver → Deep blue tint |
-| Neutral tracks | ✅ Done | Grey → Blue-grey |
-| Track borders | ✅ Done | Theme-aware border colors |
+| Game board background | [x] Done | Green → Deep blue |
+| Ace tracks | [x] Done | Gold → Light blue tint |
+| King tracks | [x] Done | Silver → Deep blue tint |
+| Neutral tracks | [x] Done | Grey → Blue-grey |
+| Track borders | [x] Done | Theme-aware border colors |
 
-**Phase 3: Component Rollout ✅**
+**Phase 3: Component Rollout [x]**
 | Component | Status | Changes |
 |-----------|--------|---------|
-| Modals (Stats, Rules, Pause, Confirm) | ✅ Done | Blue panels, cyan accents |
-| Buttons | ✅ Done | Cyan primary, updated variants |
-| CountBadge | ✅ Done | Cyan/blue colors |
-| Home/Campaign screens | ✅ Done | Blue gradients |
-| LevelCard | ✅ Done | Cyan for current level |
-| GameControls/GameStats | ✅ Done | Theme tokens |
-| GearButton/GameMenu | ✅ Done | Cyan hover effects |
-| Select/MenuItem | ✅ Done | Theme integration |
-| OrientationBlocker | ✅ Done | Blue background |
+| Modals (Stats, Rules, Pause, Confirm) | [x] Done | Blue panels, cyan accents |
+| Buttons | [x] Done | Cyan primary, updated variants |
+| CountBadge | [x] Done | Cyan/blue colors |
+| Home/Campaign screens | [x] Done | Blue gradients |
+| LevelCard | [x] Done | Cyan for current level |
+| GameControls/GameStats | [x] Done | Theme tokens |
+| GearButton/GameMenu | [x] Done | Cyan hover effects |
+| Select/MenuItem | [x] Done | Theme integration |
+| OrientationBlocker | [x] Done | Blue background |
 
-**Phase 4: Animation Colors ✅**
+**Phase 4: Animation Colors [x]**
 | Animation | Status | Changes |
 |-----------|--------|---------|
-| Win celebration | ✅ Done | Gold (#FFD700) → Cyan (#00D4FF) |
-| Confetti | ✅ Done | Gold particles → Cyan particles |
-| Win message glow | ✅ Done | Gold shadow → Cyan glow |
-| Game-over screen | ✅ Done | Gold text/stats → Cyan |
-| Portal animations | ✅ Done | Green glow → Cyan glow |
-| Foundation slots | ✅ Done | Gold/silver → Cyan tints |
-| Card count badges | ✅ Done | Blue → Cyan |
+| Win celebration | [x] Done | Gold (#FFD700) → Cyan (#00D4FF) |
+| Confetti | [x] Done | Gold particles → Cyan particles |
+| Win message glow | [x] Done | Gold shadow → Cyan glow |
+| Game-over screen | [x] Done | Gold text/stats → Cyan |
+| Portal animations | [x] Done | Green glow → Cyan glow |
+| Foundation slots | [x] Done | Gold/silver → Cyan tints |
+| Card count badges | [x] Done | Blue → Cyan |
 
-**Phase 5: Theme Selector UI ✅**
+**Phase 5: Theme Selector UI [x]**
 | Feature | Status | Details |
 |---------|--------|---------|
-| GameMenu integration | ✅ Done | Theme dropdown in Settings |
-| useTheme hook | ✅ Done | Clean API for theme switching |
-| localStorage persistence | ✅ Done | Theme saved automatically |
-| Visual polish | ✅ Done | Matches existing mode selector |
+| GameMenu integration | [x] Done | Theme dropdown in Settings |
+| useTheme hook | [x] Done | Clean API for theme switching |
+| localStorage persistence | [x] Done | Theme saved automatically |
+| Visual polish | [x] Done | Matches existing mode selector |
 
 **Documentation:**
-- 📄 `docs/THEME_SPEC_v2.2.md` - Complete theme specification
-- 🎨 `docs/DESIGN_ASSETS.md` - Updated color palette
+- [Note] `docs/THEME_SPEC_v2.2.md` - Complete theme specification
+- [Design] `docs/DESIGN_ASSETS.md` - Updated color palette
 
 **Available Themes:**
 | Theme | ID | Status |
 |-------|-----|--------|
-| Deep Blue Casino | `blue-casino` | ✅ Default |
-| Green Classic | `green-classic` | 📝 Planned |
-| Crimson Night | `crimson-night` | 📝 Planned |
+| Deep Blue Casino | `blue-casino` | [x] Default |
+| Green Classic | `green-classic` | [Note] Planned |
+| Crimson Night | `crimson-night` | [Note] Planned |
 
 **Next Steps:**
 - Implement Green Classic theme (CSS file only)
@@ -644,8 +644,8 @@ Complete: Win celebration
 - `src/App.jsx` - Simplified asset loading (removed useHighDPIAssets hook)
 
 **Assets Required (User Provided):**
-- `cardspritesheet@2x.png` (2080×1120px) ✅
-- `mm-gameboard@2x.png` (2560×1440px) ✅
+- `cardspritesheet@2x.png` (2080×1120px) [x]
+- `mm-gameboard@2x.png` (2560×1440px) [x]
 
 ---
 
@@ -1109,20 +1109,20 @@ Reducing foundation cards to 65% size saves ~40px vertical space while remaining
 *The following section is preserved from earlier development phases. These features have been implemented or reprioritized.*
 
 ### Version 2.1.0 (Historical Plan - Implemented)
-- ~~Hint system~~ ✅ Implemented in v2.3.0
-- ~~Auto-complete detection~~ ✅ Implemented in v2.3.0
-- Sound effects 📋 Still planned
+- ~~Hint system~~ [x] Implemented in v2.3.0
+- ~~Auto-complete detection~~ [x] Implemented in v2.3.0
+- Sound effects [Task] Still planned
 
 ### Version 2.2.0 (Historical Plan - Implemented)
-- ~~Deep Blue Theme~~ ✅ Implemented in v2.2.0
-- ~~Multi-theme architecture~~ ✅ Implemented in v2.2.0
-- ~~Responsive scaling~~ ✅ Implemented in v2.1.0
-- Achievements 📋 Still planned
-- Daily challenges 📋 Still planned
+- ~~Deep Blue Theme~~ [x] Implemented in v2.2.0
+- ~~Multi-theme architecture~~ [x] Implemented in v2.2.0
+- ~~Responsive scaling~~ [x] Implemented in v2.1.0
+- Achievements [Task] Still planned
+- Daily challenges [Task] Still planned
 
 ### Version 3.0.0 (Future)
-- Leaderboards 📋 Planned
-- Progressive web app (PWA) 📋 Planned
+- Leaderboards [Task] Planned
+- Progressive web app (PWA) [Task] Planned
 
 ---
 

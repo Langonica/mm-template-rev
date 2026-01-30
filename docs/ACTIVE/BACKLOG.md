@@ -7,16 +7,16 @@ A living document tracking deferred improvements, technical debt, and items to r
 ## In Progress
 
 ### Touch Interaction Robustness (v2.4.0)
-**Priority:** 🟡 High | **Complexity:** Medium | **Added:** 2026-01-29
+**Priority:** (High Priority) | **Complexity:** Medium | **Added:** 2026-01-29
 
 **Objective:** Eliminate architectural fragility in touch drag implementation.
 
 **Phases:**
-- Phase 1: Drop target data attributes (CRITICAL) - ✅ Complete
-- Phase 2: Multi-touch handling - ✅ Complete
-- Phase 3: Lightweight ghost element - ✅ Complete
-- Phase 4: Touch affordance tooltip - ✅ Complete
-- Phase 5: Re-validate on drop - ✅ Already implemented
+- Phase 1: Drop target data attributes (CRITICAL) - [x] Complete
+- Phase 2: Multi-touch handling - [x] Complete
+- Phase 3: Lightweight ghost element - [x] Complete
+- Phase 4: Touch affordance tooltip - [x] Complete
+- Phase 5: Re-validate on drop - [x] Already implemented
 - Phase 6: Accessibility (ARIA) - Pending (optional, low priority)
 
 **Plan:** `docs/ACTIVE/PLAN_touch_robustness.md`
@@ -28,10 +28,10 @@ A living document tracking deferred improvements, technical debt, and items to r
 ---
 
 ### Stabilization & Hardening - Phase 2b (v2.3.2)
-**Priority:** 🟡 High | **Complexity:** Medium | **Added:** 2026-01-29
+**Priority:** (High) | **Complexity:** Medium | **Added:** 2026-01-29
 
-**Phase 2a:** ✅ COMPLETE - Telemetry and configurable thresholds implemented
-**Phase 2c:** ✅ COMPLETE - False positive fix (strategic cycling detection)
+**Phase 2a:** [x] COMPLETE - Telemetry and configurable thresholds implemented
+**Phase 2c:** [x] COMPLETE - False positive fix (strategic cycling detection)
 
 **Phase 2b: Game State Detection Hardening**
 - Add "ignore this game" option for edge cases
@@ -43,7 +43,7 @@ A living document tracking deferred improvements, technical debt, and items to r
 ---
 
 ### CSS Inline Style Migration (Deferred)
-**Priority:** 🟢 Low | **Complexity:** Medium | **Added:** 2026-01-28
+**Priority:** (Low Priority) | **Complexity:** Medium | **Added:** 2026-01-28
 
 **Context:** ~53 inline style blocks remain across 12 files. These work correctly but should eventually be migrated to CSS modules for consistency.
 
@@ -65,7 +65,7 @@ A living document tracking deferred improvements, technical debt, and items to r
 **Resolved:** 2026-01-28 | Implemented Phase 2 with arc trajectory animation. Phases: lifting (100ms) → flying with ghost trails (300ms) → landing with bounce (200ms). Source flash effect on departing location.
 
 ### Portal Animation for Card Stacks
-**Status:** 📋 ARCHIVED - Deferred to post-launch  
+**Status:** [Task] ARCHIVED - Deferred to post-launch  
 **Priority:** Low | **Added:** 2026-01-20
 
 **Context:** Portal slurp/pop animation only works for single cards. Multi-card sequence animation would be nice but not critical for launch.

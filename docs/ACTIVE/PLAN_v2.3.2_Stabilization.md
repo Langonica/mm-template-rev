@@ -11,10 +11,10 @@
 
 | Phase | Focus | Complexity | Files | Status |
 |-------|-------|------------|-------|--------|
-| 1 | App.jsx Architectural Hardening | Medium | 2-3 | 🔄 Ready |
-| 2a | Detection Tuning (Telemetry) | Low | 3-4 | ⏳ Pending |
-| 2b | Detection Hardening (Edge Cases) | Medium | 4-5 | ⏳ Pending |
-| 3* | Error Resilience (Optional) | Medium | 5+ | ⏳ Deferred |
+| 1 | App.jsx Architectural Hardening | Medium | 2-3 | [In Progress] Ready |
+| 2a | Detection Tuning (Telemetry) | Low | 3-4 | [-] Pending |
+| 2b | Detection Hardening (Edge Cases) | Medium | 4-5 | [-] Pending |
+| 3* | Error Resilience (Optional) | Medium | 5+ | [-] Deferred |
 
 *Phase 3 only if issues surface during testing
 
@@ -62,7 +62,7 @@ useEffect(() => {
   if (currentSnapshot && moveCount === 0 && !gameEndedRef.current) {
     recordGameStart()
     gameEndedRef.current = false
-    setLastGameResult(null)  // ❌ setState in effect body
+    setLastGameResult(null)  // [-] setState in effect body
   }
 }, [currentSnapshot, moveCount, recordGameStart])
 ```
