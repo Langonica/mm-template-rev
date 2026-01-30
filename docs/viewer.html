@@ -1207,23 +1207,32 @@
     
     // Show/hide scroll to top button based on scroll position
     function setupScrollToTopButton() {
-      const contentWrapper = document.querySelector('.content-wrapper');
       const scrollButton = document.getElementById('scrollToTop');
       
-      if (!contentWrapper || !scrollButton) {
-        console.error('Scroll to top: Required elements not found', { contentWrapper, scrollButton });
+      if (!scrollButton) {
+        console.error('Scroll to top: Button not found');
         return;
       }
       
-      console.log('Scroll to top: Setup complete');
+      // Try different scroll containers
+      const scrollContainers = [
+        document.querySelector('.content-wrapper'),
+        document.querySelector('.main'),
+        window
+      ];
       
-      contentWrapper.addEventListener('scroll', () => {
-        console.log('Scroll event:', contentWrapper.scrollTop);
-        if (contentWrapper.scrollTop > 500) {
-          scrollButton.classList.add('visible');
-        } else {
-          scrollButton.classList.remove('visible');
-        }
+      scrollContainers.forEach((container, index) => {
+        if (!container) return;
+        const name = ['content-wrapper', 'main', 'window'][index];
+        container.addEventListener('scroll', () => {
+          const scrollTop = container === window ? window.scrollY : container.scrollTop;
+          console.log(`Scroll event on ${name}:`, scrollTop);
+          if (scrollTop > 500) {
+            scrollButton.classList.add('visible');
+          } else {
+            scrollButton.classList.remove('visible');
+          }
+        });
       });
     }
     
