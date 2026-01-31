@@ -21,6 +21,13 @@
   gap: 20px;
   padding: 24px;
   overflow-y: auto;
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.content::-webkit-scrollbar {
+  display: none;
 }
 
 .titleArea {
