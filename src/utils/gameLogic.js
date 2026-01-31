@@ -285,18 +285,23 @@ function updateColumnType(columnIndex, state) {
     return;
   }
   
-  // Case 3: Determine type based on bottom card (index 0)
-  // This only happens for empty columns being filled or traditional columns
-  const bottomCard = parseCard(column[0]);
-  if (bottomCard) {
-    if (bottomCard.value === 'A') {
-      state.columnState.types[columnIndex] = 'ace';
-    } else if (bottomCard.value === 'K') {
-      state.columnState.types[columnIndex] = 'king';
-    } else {
-      state.columnState.types[columnIndex] = 'traditional';
+  // Case 3: Column typing ONLY when EXACTLY ONE card in column
+  // and that card is Ace or King
+  if (column.length === 1) {
+    const soleCard = parseCard(column[0]);
+    if (soleCard) {
+      if (soleCard.value === 'A') {
+        state.columnState.types[columnIndex] = 'ace';
+        return;
+      } else if (soleCard.value === 'K') {
+        state.columnState.types[columnIndex] = 'king';
+        return;
+      }
     }
   }
+  
+  // Default: traditional for multi-card columns
+  state.columnState.types[columnIndex] = 'traditional';
 }
 
 /**
