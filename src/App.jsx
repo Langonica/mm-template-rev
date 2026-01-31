@@ -69,6 +69,38 @@ function App() {
     formatNumber
   } = useGameStats(showError)
 
+  // Logging callbacks for game actions - defined BEFORE useCardGame
+  const logMoveToStorage = useCallback((moveData) => {
+    // moveData: { card, fromType, fromLoc, toType, toLoc, moveNumber, gameState }
+    gameLogStorage.logMove(moveData, moveData.gameState);
+    
+    // Additional specific logging for foundation placements
+    if (moveData.toType === 'foundation') {
+      const { card, toLoc, moveNumber } = moveData;
+      const [zone, suit] = toLoc.split(':'); // toLoc format: "up:h" or "down:c"
+      const pileSize = moveData.gameState?.foundations?.[zone]?.[suit]?.length || 1;
+      gameLogStorage.logFoundation(card, suit, zone, pileSize, moveNumber);
+    }
+    
+    // Log pocket actions
+    if (moveData.toType === 'pocket') {
+      gameLogStorage.logPocket('store', moveData.card, moveData.toLoc, moveData.moveNumber);
+    }
+    if (moveData.fromType === 'pocket') {
+      gameLogStorage.logPocket('retrieve', moveData.card, moveData.fromLoc, moveData.moveNumber);
+    }
+  }, []);
+  
+  const logStockDrawToStorage = useCallback((drawData) => {
+    // drawData: { card, cardsRemaining, moveNumber }
+    gameLogStorage.logStockDraw(drawData.card, drawData.cardsRemaining, drawData.moveNumber);
+  }, []);
+  
+  const logStockRecycleToStorage = useCallback((recycleData) => {
+    // recycleData: { wasteSize, cycleNumber }
+    gameLogStorage.logStockRecycle(recycleData.wasteSize, recycleData.cycleNumber);
+  }, []);
+
   const {
     config,
     currentSnapshot,
@@ -332,38 +364,6 @@ function App() {
       setDismissedNotificationTier(null)
     }
   }, [currentCampaignLevel, resumeTimer, loadSnapshot, recordCampaignAttempt])
-
-  // Comprehensive game action logging for simulation data
-  const logMoveToStorage = useCallback((moveData) => {
-    // moveData: { card, fromType, fromLoc, toType, toLoc, moveNumber, gameState }
-    gameLogStorage.logMove(moveData, moveData.gameState);
-    
-    // Additional specific logging for foundation placements
-    if (moveData.toType === 'foundation') {
-      const { card, toLoc, moveNumber } = moveData;
-      const [zone, suit] = toLoc.split(':'); // toLoc format: "up:h" or "down:c"
-      const pileSize = moveData.gameState?.foundations?.[zone]?.[suit]?.length || 1;
-      gameLogStorage.logFoundation(card, suit, zone, pileSize, moveNumber);
-    }
-    
-    // Log pocket actions
-    if (moveData.toType === 'pocket') {
-      gameLogStorage.logPocket('store', moveData.card, moveData.toLoc, moveData.moveNumber);
-    }
-    if (moveData.fromType === 'pocket') {
-      gameLogStorage.logPocket('retrieve', moveData.card, moveData.fromLoc, moveData.moveNumber);
-    }
-  }, []);
-  
-  const logStockDrawToStorage = useCallback((drawData) => {
-    // drawData: { card, cardsRemaining, moveNumber }
-    gameLogStorage.logStockDraw(drawData.card, drawData.cardsRemaining, drawData.moveNumber);
-  }, []);
-  
-  const logStockRecycleToStorage = useCallback((recycleData) => {
-    // recycleData: { wasteSize, cycleNumber }
-    gameLogStorage.logStockRecycle(recycleData.wasteSize, recycleData.cycleNumber);
-  }, [])
 
   const handleDropWithNotification = useCallback((target) => {
     const success = handleDrop(target)
