@@ -297,43 +297,43 @@ The export now includes:
 
 ### Analysis Tools
 
-#### Quick Stats (Telemetry)
+#### Quick Stats (Career/Telemetry)
 ```bash
-# Single file
-python3 tools/analyze_test_data.py exports/tester1_2026-01-29.json
-
-# Multiple files (aggregate)
+# Career statistics and session summaries
 python3 tools/analyze_test_data.py exports/*.json
 ```
 
-#### Detailed Game Logs (NEW)
+#### Detailed Game Logs (Comprehensive)
 ```bash
-# Analyze detailed event logs
+# Full action analysis
 python3 tools/analyze_game_logs.py exports/tester1_2026-01-29.json
 
-# Verbose mode - see event timelines
+# Verbose - see every move
 python3 tools/analyze_game_logs.py -v exports/*.json
 
-# Export timeline for visualization
-python3 tools/analyze_game_logs.py exports/*.json -t timeline.json
+# Export for simulation training
+python3 tools/analyze_game_logs.py exports/*.json -e training_data.json
 ```
 
-**Log Analysis Outputs:**
-- Move-by-move event streams
-- Undo patterns
-- Stock cycle timing
-- Notification trigger points
-- First foundation timing
-- Timeline reconstruction
+**Tracked Actions:**
+- Every card move (source → destination with column types)
+- Foundation placements (every card, not just completions)
+- Pocket usage (store/retrieve with timing)
+- Column conversions (traditional→ace/king)
+- Stock operations (draws, recycles with cycle count)
+- Undo events (when and what was undone)
+- Game lifecycle (start, end, final state)
 
 ### Data Sources
 
 | Source | Key | Granularity | Use Case |
 |--------|-----|-------------|----------|
 | Stats | `meridian_solitaire_stats` | Aggregated | Career totals, best times |
-| Telemetry | `meridian-gs-telemetry` | Per-game | Win/loss, tiers, solver results |
-| Game Logs | `meridian_game_logs` | Per-event | Full game reconstruction |
+| Telemetry | `meridian-gs-telemetry` | Per-game | Win/loss, solver results |
+| Game Logs | `meridian_game_logs` | Per-event | **Full action reconstruction** |
 | Session | `meridian_solitaire_session` | Daily | Current session metrics |
+
+**Note**: Notification tier tracking removed (system disabled). Focus is now on concrete player actions for simulation training.
 
 ### Minimum Data Requirements (Phase 3 Gate)
 

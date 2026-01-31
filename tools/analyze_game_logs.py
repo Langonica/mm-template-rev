@@ -1,28 +1,28 @@
 #!/usr/bin/env python3
 """
-Game Log Analyzer
+Game Log Analyzer v2.0
 
-Analyzes detailed game logs from meridian_game_logs localStorage key.
-These logs contain the full event stream of each game session.
+Analyzes comprehensive player action logs for simulation development.
+Extracts meaningful patterns: moves, pocket usage, column conversions, etc.
 
 Usage:
-    python3 tools/analyze_game_logs.py path/to/export.json
-    python3 tools/analyze_game_logs.py --logs-only path/to/logs_export.json
+    python3 tools/analyze_game_logs.py exports/*.json
+    python3 tools/analyze_game_logs.py --verbose exports/tester.json
 """
 
 import json
 import sys
 from pathlib import Path
-from collections import defaultdict
+from collections import defaultdict, Counter
 from datetime import datetime
 
 
-def load_logs_from_export(filepath):
-    """Extract game logs from a debug export file."""
+def load_logs(filepath):
+    """Load game logs from export file."""
     with open(filepath) as f:
         data = json.load(f)
     
-    # Logs might be in data.data.meridian_game_logs or directly in file
+    # Handle different export formats
     if 'data' in data and 'meridian_game_logs' in data.get('data', {}):
         return data['data']['meridian_game_logs']
     elif 'logs' in data:
@@ -32,9 +32,10 @@ def load_logs_from_export(filepath):
     return []
 
 
-def analyze_log_session(session):
-    """Analyze a single game session log."""
+def analyze_session(session):
+    """Analyze a single game session."""
     events = session.get('events', [])
+    stats = session.get('stats', {})
     
     analysis = {
         'sessionId': session.get('sessionId'),
@@ -42,236 +43,321 @@ def analyze_log_session(session):
         'outcome': session.get('outcome'),
         'moves': session.get('moves', 0),
         'duration': session.get('duration', 0),
-        'eventCounts': defaultdict(int),
-        'movesByType': defaultdict(int),
-        'undoCount': 0,
-        'stockCycles': 0,
-        'foundationsPlaced': 0,
-        'notifications': [],
-        'firstFoundationAt': None,
-        'timeline': []
+        'dealId': session.get('dealId'),
+        
+        # Aggregated stats (from game)
+        'stats': stats,
+        
+        # Detailed breakdowns
+        'moveTypes': Counter(),
+        'foundationCards': [],  # Each card placed on foundation
+        'pocketUsage': {'store': [], 'retrieve': []},
+        'columnConversions': [],
+        'stockRecycles': [],
+        'undoPoints': [],  # When undos happened
+        
+        # Temporal patterns
+        'foundationTiming': [],  # (moveNumber, relativeTime)
+        'cycleTiming': [],  # (cycleNumber, moveNumber)
+        
+        # State at key moments
+        'initialState': session.get('initialState'),
+        'finalState': session.get('finalState'),
     }
     
     for event in events:
         event_type = event.get('type')
-        analysis['eventCounts'][event_type] += 1
         
-        if event_type == 'MOVE':
-            move_type = event.get('moveType', 'unknown')
-            analysis['movesByType'][move_type] += 1
+        if event_type == 'CARD_MOVE':
+            to_type = event.get('to', {}).get('type')
+            analysis['moveTypes'][to_type] += 1
+            
+        elif event_type == 'FOUNDATION_PLACE':
+            analysis['foundationCards'].append({
+                'card': event.get('card'),
+                'suit': event.get('suit'),
+                'direction': event.get('direction'),
+                'pileSize': event.get('pileSize'),
+                'moveNumber': event.get('moveNumber'),
+                'time': event.get('relativeTime')
+            })
+            analysis['foundationTiming'].append((
+                event.get('moveNumber', 0),
+                event.get('relativeTime', 0)
+            ))
+            
+        elif event_type == 'POCKET':
+            action = event.get('action')
+            entry = {
+                'card': event.get('card'),
+                'pocket': event.get('pocketNum'),
+                'moveNumber': event.get('moveNumber')
+            }
+            analysis['pocketUsage'][action].append(entry)
+            
+        elif event_type == 'COLUMN_CONVERT':
+            analysis['columnConversions'].append({
+                'column': event.get('column'),
+                'from': event.get('from'),
+                'to': event.get('to'),
+                'triggerCard': event.get('triggerCard'),
+                'moveNumber': event.get('moveNumber')
+            })
+            
+        elif event_type == 'STOCK_RECYCLE':
+            analysis['stockRecycles'].append({
+                'cycleNumber': event.get('cycleNumber'),
+                'wasteSize': event.get('wasteSize'),
+                'moveNumber': event.get('moveNumber', 0)
+            })
+            analysis['cycleTiming'].append((
+                event.get('cycleNumber', 0),
+                event.get('moveNumber', 0)
+            ))
             
         elif event_type == 'UNDO':
-            analysis['undoCount'] += 1
-            
-        elif event_type == 'STOCK_CYCLE':
-            analysis['stockCycles'] = event.get('cycleNumber', analysis['stockCycles'])
-            
-        elif event_type == 'FOUNDATION':
-            analysis['foundationsPlaced'] += 1
-            if analysis['firstFoundationAt'] is None:
-                analysis['firstFoundationAt'] = event.get('relativeTime', 0)
-                
-        elif event_type == 'NOTIFICATION':
-            analysis['notifications'].append({
-                'tier': event.get('tier'),
-                'time': event.get('relativeTime', 0)
+            analysis['undoPoints'].append({
+                'moveNumber': event.get('moveNumber'),
+                'card': event.get('undoneCard')
             })
-        
-        # Build timeline
-        analysis['timeline'].append({
-            'type': event_type,
-            'time': event.get('relativeTime', 0),
-            'details': {k: v for k, v in event.items() if k not in ['type', 'timestamp', 'relativeTime']}
-        })
     
     return analysis
 
 
 def print_session_analysis(analysis, verbose=False):
     """Print analysis for a single session."""
-    print(f"\n{'='*60}")
-    print(f"Session: {analysis['sessionId'][:20]}...")
-    print(f"Mode: {analysis['mode']} | Outcome: {analysis['outcome'].upper()}")
-    print(f"{'='*60}")
+    print(f"\n{'='*70}")
+    print(f"Session: {analysis['sessionId'][:25]}...")
+    print(f"Mode: {analysis['mode']} | Outcome: {analysis['outcome'].upper() if analysis['outcome'] else 'N/A'}")
+    print(f"Moves: {analysis['moves']} | Duration: {analysis['duration']}s")
+    print(f"{'='*70}")
     
-    print(f"\n📊 Basic Stats:")
-    print(f"  Total Moves: {analysis['moves']}")
-    print(f"  Duration: {analysis['duration']}s")
-    print(f"  Undos Used: {analysis['undoCount']}")
-    print(f"  Stock Cycles: {analysis['stockCycles']}")
-    print(f"  Foundations: {analysis['foundationsPlaced']}")
-    if analysis['firstFoundationAt']:
-        print(f"  First Foundation: {analysis['firstFoundationAt']/1000:.1f}s")
+    stats = analysis['stats']
     
-    if analysis['movesByType']:
-        print(f"\n🎯 Moves by Type:")
-        for move_type, count in sorted(analysis['movesByType'].items()):
-            print(f"  {move_type:20s} {count:3d}")
+    # Move breakdown
+    print(f"\n📊 Move Breakdown:")
+    print(f"  Total Moves: {stats.get('totalMoves', 'N/A')}")
+    print(f"  To Foundation: {stats.get('foundationMoves', 'N/A')}")
+    print(f"  To Tableau: {stats.get('tableauMoves', 'N/A')}")
+    print(f"  Stock Draws: {stats.get('stockDraws', 'N/A')}")
+    print(f"  Stock Recycles: {stats.get('stockRecycles', 'N/A')} (cycles: {stats.get('stockCycles', 'N/A')})")
     
-    if analysis['notifications']:
-        print(f"\n🔔 Notifications:")
-        for notif in analysis['notifications']:
-            print(f"  {notif['tier']:15s} at {notif['time']/1000:.1f}s")
+    # Pocket usage
+    pocket_stores = len(analysis['pocketUsage']['store'])
+    pocket_retrieves = len(analysis['pocketUsage']['retrieve'])
+    if pocket_stores or pocket_retrieves:
+        print(f"\n🎒 Pocket Usage:")
+        print(f"  Stores: {pocket_stores}")
+        print(f"  Retrieves: {pocket_retrieves}")
+        if verbose and analysis['pocketUsage']['store']:
+            print(f"  Store details:")
+            for p in analysis['pocketUsage']['store'][:5]:
+                print(f"    Move {p['moveNumber']}: {p['card']} to pocket {p['pocket']}")
     
-    if verbose and analysis['timeline']:
-        print(f"\n📝 Event Timeline (last 10):")
-        for event in analysis['timeline'][-10:]:
-            details = ', '.join(f"{k}={v}" for k, v in event['details'].items())
-            print(f"  {event['time']/1000:8.1f}s  {event['type']:15s}  {details}")
+    # Foundation progress
+    foundations = stats.get('foundationsCompleted', 0)
+    foundation_cards = len(analysis['foundationCards'])
+    print(f"\n🏛️  Foundation Progress:")
+    print(f"  Cards Placed: {foundation_cards}")
+    print(f"  Foundations Completed: {foundations}/8")
+    
+    if analysis['foundationTiming'] and verbose:
+        print(f"  First foundation card at move: {analysis['foundationTiming'][0][0]}")
+        if len(analysis['foundationTiming']) > 1:
+            last = analysis['foundationTiming'][-1]
+            print(f"  Last foundation card at move: {last[0]}")
+    
+    # Column conversions
+    conversions = len(analysis['columnConversions'])
+    if conversions:
+        print(f"\n🔄 Column Conversions: {conversions}")
+        if verbose:
+            for conv in analysis['columnConversions'][:5]:
+                print(f"  Col {conv['column']}: {conv['from']} → {conv['to']} (move {conv['moveNumber']})")
+    
+    # Undo analysis
+    undos = len(analysis['undoPoints'])
+    if undos:
+        print(f"\n↩️  Undo Usage: {undos} times")
+        if verbose and analysis['undoPoints']:
+            undo_moves = [u['moveNumber'] for u in analysis['undoPoints']]
+            print(f"  Undone moves: {undo_moves[:10]}{'...' if len(undo_moves) > 10 else ''}")
+    
+    # Final state
+    final = analysis.get('finalState')
+    if final:
+        print(f"\n🏁 Final State:")
+        print(f"  Cards on Foundations: {final.get('foundations', 'N/A')}")
+        print(f"  Cards in Tableau: {final.get('tableauCards', 'N/A')}")
+        print(f"  Empty Columns: {final.get('emptyColumns', 'N/A')}")
 
 
-def print_aggregate_analysis(analyses):
-    """Print aggregate analysis across all sessions."""
+def print_aggregate(analyses):
+    """Print aggregate statistics across all sessions."""
     if not analyses:
-        print("No sessions to analyze")
+        print("\nNo completed sessions to analyze")
         return
     
-    total = len(analyses)
-    wins = sum(1 for a in analyses if a['outcome'] == 'won')
-    losses = total - wins
+    completed = [a for a in analyses if a['outcome']]
+    wins = [a for a in completed if a['outcome'] == 'won']
+    losses = [a for a in completed if a['outcome'] == 'lost']
     
-    print("\n" + "="*60)
+    print("\n" + "="*70)
     print("AGGREGATE ANALYSIS")
-    print("="*60)
+    print("="*70)
     
     print(f"\n📈 Overall:")
-    print(f"  Total Sessions: {total}")
-    print(f"  Wins: {wins} ({wins/total*100:.1f}%)")
-    print(f"  Losses: {losses} ({losses/total*100:.1f}%)")
+    print(f"  Total Sessions: {len(completed)}")
+    print(f"  Wins: {len(wins)} ({len(wins)/len(completed)*100:.1f}%)")
+    print(f"  Losses: {len(losses)} ({len(losses)/len(completed)*100:.1f}%)")
     
     # By mode
-    by_mode = defaultdict(lambda: {'games': 0, 'wins': 0, 'moves': [], 'undos': []})
-    for a in analyses:
+    by_mode = defaultdict(lambda: {'games': 0, 'wins': 0, 'moves': [], 'foundations': []})
+    for a in completed:
         mode = a['mode']
         by_mode[mode]['games'] += 1
         by_mode[mode]['wins'] += (1 if a['outcome'] == 'won' else 0)
         by_mode[mode]['moves'].append(a['moves'])
-        by_mode[mode]['undos'].append(a['undoCount'])
+        by_mode[mode]['foundations'].append(a['stats'].get('foundationsCompleted', 0))
     
     print(f"\n🎮 By Mode:")
-    for mode, stats in sorted(by_mode.items()):
-        win_rate = stats['wins'] / stats['games'] * 100
-        avg_moves = sum(stats['moves']) / len(stats['moves'])
-        avg_undos = sum(stats['undos']) / len(stats['undos'])
+    for mode, data in sorted(by_mode.items()):
+        win_rate = data['wins'] / data['games'] * 100
+        avg_moves = sum(data['moves']) / len(data['moves'])
+        avg_foundations = sum(data['foundations']) / len(data['foundations'])
         print(f"\n  {mode}:")
-        print(f"    Games: {stats['games']}, Win Rate: {win_rate:.1f}%")
-        print(f"    Avg Moves: {avg_moves:.1f}, Avg Undos: {avg_undos:.1f}")
+        print(f"    Games: {data['games']}, Win Rate: {win_rate:.1f}%")
+        print(f"    Avg Moves: {avg_moves:.1f}")
+        print(f"    Avg Foundations: {avg_foundations:.1f}/8")
     
-    # Move count distribution for wins
-    won_games = [a for a in analyses if a['outcome'] == 'won']
-    if won_games:
-        moves = [a['moves'] for a in won_games]
-        print(f"\n📊 Winning Game Move Distribution:")
-        print(f"  Min: {min(moves)}, Max: {max(moves)}")
-        print(f"  Avg: {sum(moves)/len(moves):.1f}, Median: {sorted(moves)[len(moves)//2]}")
+    # Win analysis
+    if wins:
+        win_moves = [a['moves'] for a in wins]
+        win_foundations = [a['stats'].get('foundationsCompleted', 0) for a in wins]
+        win_cycles = [a['stats'].get('stockCycles', 0) for a in wins]
         
-        # Buckets
-        buckets = {'<20': 0, '20-30': 0, '30-40': 0, '40-50': 0, '50+': 0}
-        for m in moves:
-            if m < 20:
-                buckets['<20'] += 1
-            elif m < 30:
-                buckets['20-30'] += 1
-            elif m < 40:
-                buckets['30-40'] += 1
-            elif m < 50:
-                buckets['40-50'] += 1
+        print(f"\n🏆 Win Analysis:")
+        print(f"  Move Range: {min(win_moves)} - {max(win_moves)}")
+        print(f"  Avg Moves: {sum(win_moves)/len(win_moves):.1f}")
+        print(f"  Avg Stock Cycles: {sum(win_cycles)/len(win_cycles):.1f}")
+        
+        # Distribution
+        buckets = {'<30': 0, '30-45': 0, '45-60': 0, '60-80': 0, '80+': 0}
+        for m in win_moves:
+            if m < 30:
+                buckets['<30'] += 1
+            elif m < 45:
+                buckets['30-45'] += 1
+            elif m < 60:
+                buckets['45-60'] += 1
+            elif m < 80:
+                buckets['60-80'] += 1
             else:
-                buckets['50+'] += 1
+                buckets['80+'] += 1
         
-        print(f"\n  Distribution:")
+        print(f"\n  Move Distribution (wins):")
         for bucket, count in buckets.items():
-            bar = '█' * (count * 20 // len(moves))
-            print(f"    {bucket:6s} {count:3d} {bar}")
+            if count > 0:
+                bar = '█' * (count * 30 // len(wins))
+                print(f"    {bucket:6s} {count:3d} {bar}")
     
-    # Undo analysis
-    games_with_undos = [a for a in analyses if a['undoCount'] > 0]
-    if games_with_undos:
-        print(f"\n↩️  Undo Analysis:")
-        print(f"  Games with undos: {len(games_with_undos)}/{total} ({len(games_with_undos)/total*100:.1f}%)")
-        undo_counts = [a['undoCount'] for a in games_with_undos]
-        print(f"  Avg undos (when used): {sum(undo_counts)/len(undo_counts):.1f}")
-        print(f"  Max undos in one game: {max(undo_counts)}")
+    # Loss analysis
+    if losses:
+        loss_moves = [a['moves'] for a in losses]
+        loss_foundations = [a['stats'].get('foundationsCompleted', 0) for a in losses]
+        
+        print(f"\n💔 Loss Analysis:")
+        print(f"  Avg Moves: {sum(loss_moves)/len(loss_moves):.1f}")
+        print(f"  Avg Foundations: {sum(loss_foundations)/len(loss_foundations):.1f}/8")
     
-    # Notification analysis
-    games_with_warnings = [a for a in analyses if any(n['tier'] in ['warning', 'confirmed'] for n in a['notifications'])]
-    if games_with_warnings:
-        print(f"\n⚠️  Warning Analysis:")
-        warned_then_won = sum(1 for a in games_with_warnings if a['outcome'] == 'won')
-        print(f"  Games with warnings: {len(games_with_warnings)}")
-        print(f"  Warned but won (false positive?): {warned_then_won}")
-        print(f"  Accuracy: {(len(games_with_warnings) - warned_then_won) / len(games_with_warnings) * 100:.1f}%")
+    # Pocket usage across all games
+    total_stores = sum(len(a['pocketUsage']['store']) for a in analyses)
+    total_retrieves = sum(len(a['pocketUsage']['retrieve']) for a in analyses)
+    if total_stores or total_retrieves:
+        print(f"\n🎒 Total Pocket Usage:")
+        print(f"  Stores: {total_stores}, Retrieves: {total_retrieves}")
+    
+    # Strategy patterns
+    total_conversions = sum(len(a['columnConversions']) for a in analyses)
+    if total_conversions:
+        print(f"\n🔄 Total Column Conversions: {total_conversions}")
 
 
-def export_sessions_to_timeline(analyses, output_path):
-    """Export all sessions as a single timeline for visualization."""
-    timeline = []
+def export_for_simulation(analyses, output_path):
+    """Export data in format suitable for simulation training."""
+    training_data = []
     
     for analysis in analyses:
-        for event in analysis['timeline']:
-            timeline.append({
-                'sessionId': analysis['sessionId'],
-                'mode': analysis['mode'],
-                'outcome': analysis['outcome'],
-                **event
-            })
-    
-    # Sort by session then time
-    timeline.sort(key=lambda x: (x['sessionId'], x['time']))
+        if not analysis['outcome']:
+            continue
+            
+        training_data.append({
+            'sessionId': analysis['sessionId'],
+            'mode': analysis['mode'],
+            'outcome': analysis['outcome'],
+            'moves': analysis['moves'],
+            'stats': analysis['stats'],
+            'foundationTiming': analysis['foundationTiming'],
+            'cycleTiming': analysis['cycleTiming'],
+            'pocketUsage': analysis['pocketUsage'],
+            'columnConversions': analysis['columnConversions'],
+            'initialState': analysis['initialState'],
+            'finalState': analysis['finalState']
+        })
     
     with open(output_path, 'w') as f:
-        json.dump(timeline, f, indent=2)
+        json.dump({
+            'exportedAt': datetime.now().isoformat(),
+            'count': len(training_data),
+            'sessions': training_data
+        }, f, indent=2)
     
-    print(f"\n📄 Timeline exported to: {output_path}")
+    print(f"\n📄 Simulation data exported: {output_path}")
 
 
 def main():
     import argparse
     
     parser = argparse.ArgumentParser(description='Analyze Meridian game logs')
-    parser.add_argument('files', nargs='+', help='Export JSON files to analyze')
-    parser.add_argument('--verbose', '-v', action='store_true', help='Show detailed event timelines')
-    parser.add_argument('--logs-only', action='store_true', help='Files contain only logs, not full export')
-    parser.add_argument('--export-timeline', '-t', metavar='FILE', help='Export combined timeline to JSON')
+    parser.add_argument('files', nargs='+', help='Export JSON files')
+    parser.add_argument('--verbose', '-v', action='store_true', help='Detailed output')
+    parser.add_argument('--export', '-e', metavar='FILE', help='Export for simulation')
     
     args = parser.parse_args()
     
-    all_sessions = []
+    all_analyses = []
     
     for filepath in args.files:
         path = Path(filepath)
         if not path.exists():
-            print(f"Warning: File not found: {filepath}")
+            print(f"⚠️  File not found: {filepath}")
             continue
         
         try:
-            logs = load_logs_from_export(path)
-            
+            logs = load_logs(path)
             if not logs:
-                print(f"No logs found in {filepath}")
+                print(f"⚠️  No logs in {path.name}")
                 continue
             
-            print(f"\n📁 Processing: {path.name} ({len(logs)} sessions)")
+            print(f"\n📁 {path.name}: {len(logs)} sessions")
             
             for session in logs:
-                analysis = analyze_log_session(session)
-                all_sessions.append(analysis)
+                analysis = analyze_session(session)
+                all_analyses.append(analysis)
                 
-                if args.verbose or len(logs) <= 5:
+                if args.verbose or len(logs) <= 3:
                     print_session_analysis(analysis, args.verbose)
-            
+                    
         except Exception as e:
-            print(f"Error processing {filepath}: {e}")
+            print(f"❌ Error in {filepath}: {e}")
     
-    # Aggregate analysis
-    if all_sessions:
-        print_aggregate_analysis(all_sessions)
+    if all_analyses:
+        print_aggregate(all_analyses)
         
-        if args.export_timeline:
-            export_sessions_to_timeline(all_sessions, args.export_timeline)
+        if args.export:
+            export_for_simulation(all_analyses, args.export)
     else:
-        print("\nNo sessions found to analyze.")
-        print("Make sure exports contain 'meridian_game_logs' key")
+        print("\n⚠️  No valid sessions found")
 
 
 if __name__ == '__main__':

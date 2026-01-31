@@ -19,7 +19,7 @@ import { findCardLocation, parseCard, canPlaceOnFoundation, deepClone } from '..
 import { loadThresholds, isNotificationSystemEnabled } from '../utils/notificationConfig';
 
 export const useCardGame = (callbacks = {}) => {
-  const { onCardsMoved, onFoundationCompleted } = callbacks;
+  const { onCardsMoved, onFoundationCompleted, onMoveExecuted, onStockDraw, onStockRecycle } = callbacks;
   const [config, setConfig] = useState({
     mode: 'classic',
     variant: 'normal',
@@ -539,6 +539,15 @@ export const useCardGame = (callbacks = {}) => {
       checkAutoComplete(newState);
       clearHint(); // Clear hints after move
       
+      // Log stock recycle
+      if (onStockRecycle) {
+        const cycleNumber = stateTracker.getStats()?.recycleCount || 1;
+        onStockRecycle({
+          wasteSize: currentWasteCards.length,
+          cycleNumber
+        });
+      }
+      
     } else {
       // Draw a card
       const drawnCard = currentStockCards[currentStockCards.length - 1];
@@ -569,10 +578,19 @@ export const useCardGame = (callbacks = {}) => {
       updateGameStateNotification(trackingResult, newState);
       checkAutoComplete(newState);
       clearHint(); // Clear hints after move
+      
+      // Log stock draw
+      if (onStockDraw) {
+        onStockDraw({
+          card: drawnCard,
+          cardsRemaining: newStockCards.length,
+          moveNumber: moveCount + 1
+        });
+      }
     }
     
     setMoveCount(prev => prev + 1);
-  }, [currentStockCards, currentWasteCards, gameState, undoSystem, stateTracker, updateGameStateNotification, checkAutoComplete, clearHint]);
+  }, [currentStockCards, currentWasteCards, gameState, undoSystem, stateTracker, updateGameStateNotification, checkAutoComplete, clearHint, onStockDraw, onStockRecycle, moveCount]);
   
   // Handle card move with undo tracking
   const handleMove = useCallback((cardStr, target) => {
@@ -652,26 +670,55 @@ export const useCardGame = (callbacks = {}) => {
       checkAutoComplete(newState);
       clearHint(); // Clear hints after move
 
-      setMoveCount(prev => prev + 1);
-      
-      // Track card movement for statistics
-      if (onCardsMoved) {
-        onCardsMoved(1); // Single card moved
-      }
-      
-      // Track foundation completion (check if foundation now has 13 cards)
-      if (onFoundationCompleted && target.type === 'foundation') {
-        const foundationPile = newState.foundations[target.zone]?.[target.suit] || [];
-        if (foundationPile.length === 13) {
-          onFoundationCompleted();
+      setMoveCount(prev => {
+        const newMoveCount = prev + 1;
+        
+        // Track card movement for statistics
+        if (onCardsMoved) {
+          onCardsMoved(1);
         }
-      }
-
-      return true;
+        
+        // Comprehensive move logging for simulation data
+        if (onMoveExecuted) {
+          // Determine source location
+          const sourceLocation = findCardLocation(cardStr, previousState);
+          const fromType = sourceLocation?.type || 'unknown';
+          const fromLoc = sourceLocation?.type === 'tableau' ? sourceLocation.column :
+                         sourceLocation?.type === 'pocket' ? sourceLocation.pocketNum :
+                         sourceLocation?.type === 'waste' ? 'waste' : 'unknown';
+          
+          // Determine destination
+          const toType = target.type;
+          const toLoc = target.type === 'tableau' ? target.column :
+                       target.type === 'foundation' ? `${target.zone}:${target.suit}` :
+                       target.type === 'pocket' ? target.pocketNum :
+                       'unknown';
+          
+          onMoveExecuted({
+            card: cardStr,
+            fromType,
+            fromLoc,
+            toType,
+            toLoc,
+            moveNumber: newMoveCount,
+            gameState: newState
+          });
+        }
+        
+        // Track foundation completion (check if foundation now has 13 cards)
+        if (onFoundationCompleted && target.type === 'foundation') {
+          const foundationPile = newState.foundations[target.zone]?.[target.suit] || [];
+          if (foundationPile.length === 13) {
+            onFoundationCompleted();
+          }
+        }
+        
+        return newMoveCount;
+      });
     }
 
     return false;
-  }, [gameState, undoSystem, stateTracker, updateGameStateNotification, checkAutoComplete, clearHint, onCardsMoved, onFoundationCompleted]);
+  }, [gameState, undoSystem, stateTracker, updateGameStateNotification, checkAutoComplete, clearHint, onCardsMoved, onFoundationCompleted, onMoveExecuted]);
   
   // Handle double-click auto-move with arc animation (Phase 2)
   // Tries foundation first, then tableau builds, then empty columns
