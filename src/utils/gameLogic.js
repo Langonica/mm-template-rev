@@ -274,25 +274,29 @@ function updateColumnType(columnIndex, state) {
     return;
   }
 
-  // Case 2: Column typing only occurs when there's exactly ONE card left
-  // and that card is an Ace or King
-  // In classic mode: the single visible card
-  // In hidden mode: the single card after all face-down cards are flipped
-  if (column.length === 1) {
-    const card = parseCard(column[0]);
-    if (card) {
-      if (card.value === 'A') {
-        state.columnState.types[columnIndex] = 'ace';
-        return;
-      } else if (card.value === 'K') {
-        state.columnState.types[columnIndex] = 'king';
-        return;
-      }
-    }
+  // Get current type (if already typed as ace/king, preserve it)
+  const currentType = state.columnState.types[columnIndex];
+  
+  // Case 2: Already typed as ace or king - preserve the type
+  // Ace columns build ascending: A-2-3-4-5-6-7
+  // King columns build descending: K-Q-J-10-9-8-7
+  // These types only change when column is emptied
+  if (currentType === 'ace' || currentType === 'king') {
+    return;
   }
   
-  // Default: traditional type for multi-card columns
-  state.columnState.types[columnIndex] = 'traditional';
+  // Case 3: Determine type based on bottom card (index 0)
+  // This only happens for empty columns being filled or traditional columns
+  const bottomCard = parseCard(column[0]);
+  if (bottomCard) {
+    if (bottomCard.value === 'A') {
+      state.columnState.types[columnIndex] = 'ace';
+    } else if (bottomCard.value === 'K') {
+      state.columnState.types[columnIndex] = 'king';
+    } else {
+      state.columnState.types[columnIndex] = 'traditional';
+    }
+  }
 }
 
 /**
