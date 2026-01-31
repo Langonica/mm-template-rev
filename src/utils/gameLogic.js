@@ -274,19 +274,19 @@ function updateColumnType(columnIndex, state) {
     return;
   }
 
-  // Get current type (if already typed as ace/king, preserve it)
+  // Get current type
   const currentType = state.columnState.types[columnIndex];
   
-  // Case 2: Already typed as ace or king - preserve the type
-  // Ace columns build ascending: A-2-3-4-5-6-7
-  // King columns build descending: K-Q-J-10-9-8-7
-  // These types only change when column is emptied
+  // Case 2: Already typed as ace or king - PRESERVE IT
+  // Once an ace column (A-2-3-4-5-6-7), always an ace column
+  // Once a king column (K-Q-J-10-9-8-7), always a king column
+  // Type only changes when column is emptied
   if (currentType === 'ace' || currentType === 'king') {
     return;
   }
   
-  // Case 3: Column typing ONLY when EXACTLY ONE card in column
-  // and that card is Ace or King
+  // Case 3: Determine type for empty/traditional columns
+  // ONLY type as ace/king when column has EXACTLY ONE card
   if (column.length === 1) {
     const soleCard = parseCard(column[0]);
     if (soleCard) {
@@ -300,7 +300,7 @@ function updateColumnType(columnIndex, state) {
     }
   }
   
-  // Default: traditional for multi-card columns
+  // Multi-card columns default to traditional (unless already ace/king)
   state.columnState.types[columnIndex] = 'traditional';
 }
 
