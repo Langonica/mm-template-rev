@@ -274,24 +274,25 @@ function updateColumnType(columnIndex, state) {
     return;
   }
 
-  // Case 2: Determine type based on current bottom face-up card
-  // Column type is always determined by the bottom-most face-up card
-  // This allows the type to update when cards are removed
-  const faceDownCount = state.columnState.faceDownCounts?.[columnIndex] || 0;
-
-  // First face-up card determines column type
-  const firstFaceUpIndex = faceDownCount;
-  const card = parseCard(column[firstFaceUpIndex]);
-
-  if (card) {
-    if (card.value === 'A') {
-      state.columnState.types[columnIndex] = 'ace';
-    } else if (card.value === 'K') {
-      state.columnState.types[columnIndex] = 'king';
-    } else {
-      state.columnState.types[columnIndex] = 'traditional';
+  // Case 2: Column typing only occurs when there's exactly ONE card left
+  // and that card is an Ace or King
+  // In classic mode: the single visible card
+  // In hidden mode: the single card after all face-down cards are flipped
+  if (column.length === 1) {
+    const card = parseCard(column[0]);
+    if (card) {
+      if (card.value === 'A') {
+        state.columnState.types[columnIndex] = 'ace';
+        return;
+      } else if (card.value === 'K') {
+        state.columnState.types[columnIndex] = 'king';
+        return;
+      }
     }
   }
+  
+  // Default: traditional type for multi-card columns
+  state.columnState.types[columnIndex] = 'traditional';
 }
 
 /**

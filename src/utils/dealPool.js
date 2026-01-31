@@ -186,7 +186,7 @@ function adaptDealForMode(baseDeal, targetMode, difficulty) {
   };
   
   const config = modeConfig[targetMode] || modeConfig.classic;
-  const { metadata, deal } = baseDeal;
+  const { id: baseId, metadata, deal } = baseDeal;
   
   // Build adapted column state
   const adaptedColumnState = adaptColumnState(deal.columnState, config.faceDownPattern);
@@ -195,13 +195,13 @@ function adaptDealForMode(baseDeal, targetMode, difficulty) {
     ...baseDeal,
     metadata: {
       ...metadata,
-      id: `${metadata.id}_as_${targetMode}`,
+      id: `${baseId}_as_${targetMode}`,
       name: `${metadata.name} (${targetMode})`,
       mode: targetMode,
       pockets: config.pockets,
       allUp: config.allUp,
       difficulty: difficulty,
-      adaptedFrom: metadata.id,
+      adaptedFrom: baseId,
       adaptedAt: new Date().toISOString()
     },
     deal: {
@@ -310,14 +310,14 @@ export async function getCampaignDeal(tier, level) {
  * @returns {Object} Game state compatible with useCardGame
  */
 export function dealToGameState(deal) {
-  const { metadata, deal: dealData } = deal;
+  const { id: dealId, metadata, deal: dealData } = deal;
   
   // Use metadata from deal (which may be adapted for different mode)
   const mode = metadata.mode || 'classic';
   
   return {
     metadata: {
-      id: metadata.id,
+      id: metadata.id || dealId,
       name: metadata.name || `${mode} ${metadata.difficulty}`,
       mode: mode,
       variant: metadata.variant || 'normal',
