@@ -256,6 +256,26 @@ tools/snapshot_generator/
 
 ## Phase 2.5: Data Collection (Current)
 
+### Notification System DISABLED
+
+**Status**: Game state notification system (stalemate detection, tiered hints/warnings) has been **disabled** as of this build.
+
+**Reason**: Critical false positives detected - forfeit screens appearing during winning games, 0% accuracy rate.
+
+**Preservation**: All UI components retained for future AI-based system:
+- `GameStateToast` - Hints/Concern toasts
+- `GameStateOverlay` - Warning tier overlay
+- `StalemateModal` - Confirmed unwinnable state
+
+**Re-enable** (when ready):
+```javascript
+// In browser console (DEV mode)
+window.__NOTIFICATION_CONFIG__.setEnabled(true)
+location.reload()
+```
+
+---
+
 **Do NOT proceed to Phase 3 (Python generator) until we have real user data.**
 
 ### Why Wait?
@@ -379,6 +399,8 @@ python3 tools/analyze_game_logs.py exports/*.json -t timeline.json
 - `src/App.jsx` - Add debug export, integrate logger ✅
 - `src/components/HomeScreen/HomeScreen.jsx` - Hidden debug trigger ✅
 - `src/utils/dealGenerator.js` - Use pool instead of pure random ✅
+- `src/utils/notificationConfig.js` - Add disable flag ✅
+- `src/hooks/useCardGame.js` - Disable notification system ✅
 - `src/utils/snapshotLoader.js` - Integrate with pool manifest
 
 ---

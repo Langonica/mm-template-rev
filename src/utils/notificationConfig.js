@@ -7,7 +7,39 @@
  * @module notificationConfig
  */
 
+// ============================================================================
+// NOTIFICATION SYSTEM DISABLED - Phase 2.5
+// The game state notification system (stalemate detection, tiered warnings)
+// has been disabled due to unreliable detection and false positives.
+// 
+// To re-enable, set this to true and reload:
+// localStorage.setItem('meridian-notification-enabled', 'true')
+// ============================================================================
+
 const STORAGE_KEY = 'meridian-notification-thresholds'
+const ENABLED_KEY = 'meridian-notification-enabled'
+
+/**
+ * Check if notification system is enabled
+ * Currently returns false by default - system disabled for reliability issues
+ * @returns {boolean}
+ */
+export function isNotificationSystemEnabled() {
+  if (typeof window === 'undefined') return false
+  // Default to DISABLED. Must explicitly enable via localStorage
+  const enabled = localStorage.getItem(ENABLED_KEY)
+  return enabled === 'true'
+}
+
+/**
+ * Enable/disable notification system
+ * @param {boolean} enabled 
+ */
+export function setNotificationSystemEnabled(enabled) {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(ENABLED_KEY, enabled ? 'true' : 'false')
+  console.log(`[NotificationConfig] Notification system ${enabled ? 'ENABLED' : 'DISABLED'}`)
+}
 
 // Default thresholds (conservative to reduce false positives)
 export const DEFAULT_THRESHOLDS = {
@@ -163,7 +195,10 @@ if (typeof window !== 'undefined' && import.meta.env?.DEV) {
     get: getThresholdConfig,
     set: setThresholdsDebug,
     reset: resetThresholds,
+    isEnabled: isNotificationSystemEnabled,
+    setEnabled: setNotificationSystemEnabled,
   }
   
   console.log('[NotificationConfig] Debug API available at window.__NOTIFICATION_CONFIG__')
+  console.log('[NotificationConfig] System currently:', isNotificationSystemEnabled() ? 'ENABLED' : 'DISABLED')
 }

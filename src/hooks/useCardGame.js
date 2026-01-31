@@ -16,7 +16,7 @@ import {
   detectUnwinnableState
 } from '../utils/gameLogic';
 import { findCardLocation, parseCard, canPlaceOnFoundation, deepClone } from '../utils/cardUtils';
-import { loadThresholds } from '../utils/notificationConfig';
+import { loadThresholds, isNotificationSystemEnabled } from '../utils/notificationConfig';
 
 export const useCardGame = (callbacks = {}) => {
   const { onCardsMoved, onFoundationCompleted } = callbacks;
@@ -35,7 +35,8 @@ export const useCardGame = (callbacks = {}) => {
   const [autoMoveAnimation, setAutoMoveAnimation] = useState(null); // For foundation auto-move animations
 
   // Game state notification system (Phase 1 - Enhanced Detection)
-  // Three-tier system: normal -> concern -> warning -> confirmed
+  // NOTE: System currently DISABLED in notificationConfig.js due to reliability issues
+  // All tiers return 'none' until detection accuracy is improved
   const [gameStateNotification, setGameStateNotification] = useState({
     tier: 'none', // 'none' | 'concern' | 'warning' | 'confirmed'
     unproductiveCycles: 0,
@@ -113,6 +114,21 @@ export const useCardGame = (callbacks = {}) => {
 
   // Helper: Update game state notification after move
   const updateGameStateNotification = useCallback((trackerResult, currentState) => {
+    // SYSTEM DISABLED: Notification system disabled due to reliability issues
+    // See notificationConfig.js for details
+    if (!isNotificationSystemEnabled()) {
+      // Still update cycle counts for tracking, but always return 'none' tier
+      setGameStateNotification(prev => ({
+        ...prev,
+        tier: 'none',
+        unproductiveCycles: trackerResult.unproductiveCycleCount,
+        movesSinceProgress: trackerResult.movesSinceProgress,
+        wasProductive: trackerResult.wasProductive,
+        details: trackerResult.productivityDetails
+      }));
+      return 'none';
+    }
+    
     // Run unwinnable check if conditions warrant
     const unwinnableCheck = currentState ? runUnwinnableCheck(currentState, trackerResult) : null;
     
