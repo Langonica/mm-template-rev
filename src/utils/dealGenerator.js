@@ -1,5 +1,5 @@
 import { parseCard } from './cardUtils';
-import { getRandomDeal as getPoolDeal, hasRandomDeals, dealToGameState, getPoolStats } from './dealPool';
+import { getRandomDeal as getPoolDeal, dealToGameState, getPoolStats } from './dealPool';
 
 // ============================================================================
 // DEAL GENERATOR - Creates random deals for each game mode
@@ -209,7 +209,7 @@ export function generateRandomDeal(mode) {
 }
 
 /**
- * Get a random deal - tries pool first, falls back to pure random
+ * Get a random deal - uses campaign pool, falls back to pure random
  * @param {string} mode - Game mode
  * @param {Object} options - Options
  * @param {string} options.difficulty - Preferred difficulty (easy, moderate, hard)
@@ -218,20 +218,18 @@ export function generateRandomDeal(mode) {
 export async function getRandomDealAsync(mode, options = {}) {
   const { difficulty = 'moderate' } = options;
   
-  // Try pool first
-  if (hasRandomDeals(mode, difficulty)) {
-    try {
-      const poolDeal = await getPoolDeal(mode, difficulty);
-      if (poolDeal) {
-        console.log(`[DealGenerator] Using pool deal: ${poolDeal._poolId}`);
-        return dealToGameState(poolDeal);
-      }
-    } catch (error) {
-      console.warn('[DealGenerator] Pool deal failed, falling back:', error);
+  // Try campaign pool first (30 curated deals adapted for any mode)
+  try {
+    const poolDeal = await getPoolDeal(mode, difficulty);
+    if (poolDeal) {
+      console.log(`[DealGenerator] Using campaign deal: ${poolDeal._poolId}`);
+      return dealToGameState(poolDeal);
     }
+  } catch (error) {
+    console.warn('[DealGenerator] Campaign deal failed, falling back:', error);
   }
   
-  // Fall back to pure random
+  // Fall back to pure random (should rarely happen)
   console.log(`[DealGenerator] Using pure random deal for ${mode}`);
   return generateRandomDeal(mode);
 }

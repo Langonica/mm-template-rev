@@ -54,6 +54,10 @@ function saveLogs(logs) {
 export function startLogSession(params) {
   const { mode, dealId, dealSeed, isCampaign, campaignLevel, initialState } = params;
   
+  if (import.meta.env.DEV) {
+    console.log('[GameLogStorage] Starting session:', { mode, dealId, isCampaign });
+  }
+  
   const sessionId = `game_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 4)}`;
   
   const session = {
@@ -148,6 +152,10 @@ export function endLogSession(result) {
  */
 export function logCardMove(move, gameState) {
   const { card, fromType, fromLoc, toType, toLoc, moveNumber } = move;
+  
+  if (import.meta.env.DEV) {
+    console.log('[GameLogStorage] logCardMove:', { card, fromType, toType, moveNumber });
+  }
   
   const eventData = {
     moveNumber,
@@ -272,7 +280,10 @@ export function logAutoCompleteStart(cardsRemaining, moveNumber) {
 
 function logEvent(type, data = {}) {
   const session = window.__CURRENT_LOG_SESSION__;
-  if (!session) return;
+  if (!session) {
+    console.warn(`[GameLogStorage] No active session for event: ${type}`);
+    return;
+  }
   
   const event = {
     timestamp: Date.now(),
@@ -282,6 +293,11 @@ function logEvent(type, data = {}) {
   };
   
   session.events.push(event);
+  
+  // Debug logging in DEV mode
+  if (import.meta.env.DEV) {
+    console.log(`[GameLogStorage] Event: ${type}`, data);
+  }
   
   // Persist every 10 events
   if (session.events.length % 10 === 0) {
