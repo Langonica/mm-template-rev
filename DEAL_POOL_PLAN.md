@@ -90,6 +90,22 @@ window.__GAME_LOGGER__.dumpLog();
 ### 2.1 Directory Structure ✅
 
 ```
+src/data/deals/
+├── pool_manifest.json          # Master registry
+├── campaign/                   # 30 curated verified deals
+│   ├── tier1/level_01-10.json  # Easy (used for all easy modes)
+│   ├── tier2/level_01-10.json  # Moderate (used for all moderate modes)
+│   └── tier3/level_01-10.json  # Hard (used for all hard modes)
+└── random/                     # Reserved for future expansion
+    └── [empty until Phase 3]
+```
+
+**Key Design**: The 30 campaign deals are **adapted on-the-fly** for any mode:
+- Same verified deal, different presentation (pockets, face up/down)
+- Guarantees all games use winnable deals
+- Enables cross-mode comparison (same deal in classic vs hidden)
+
+```
 src/data/
 ├── snapshots/                    # Existing 30 campaign levels
 │   ├── index.js                  # Current exports
