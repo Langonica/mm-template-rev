@@ -1,0 +1,751 @@
+{
+  "exportedAt": "2026-01-31T03:56:43.476Z",
+  "version": "1.0.0",
+  "appVersion": "unknown",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+  "screen": {
+    "width": 1920,
+    "height": 1080,
+    "availWidth": 1920,
+    "availHeight": 1049,
+    "colorDepth": 24,
+    "pixelRatio": 1
+  },
+  "viewport": {
+    "innerWidth": 1796,
+    "innerHeight": 916
+  },
+  "data": {
+    "meridian_solitaire_stats": {
+      "totalGames": 33,
+      "wins": 32,
+      "losses": 0,
+      "forfeits": 1,
+      "currentStreak": 24,
+      "bestStreak": 24,
+      "bestWinMoves": 102,
+      "bestWinTime": 198,
+      "totalMoves": 4241,
+      "totalPlayTime": 12752,
+      "totalCardsMoved": 310,
+      "perfectGames": 2,
+      "foundationsCompleted": 0,
+      "totalUndosUsed": 4,
+      "byMode": {
+        "classic": {
+          "games": 60,
+          "wins": 60,
+          "forfeits": 0,
+          "bestMoves": 102,
+          "bestTime": 198,
+          "perfectGames": 4
+        },
+        "classic_double": {
+          "games": 2,
+          "wins": 0,
+          "forfeits": 2,
+          "bestMoves": null,
+          "bestTime": null,
+          "perfectGames": 0
+        },
+        "hidden": {
+          "games": 2,
+          "wins": 2,
+          "forfeits": 0,
+          "bestMoves": 137,
+          "bestTime": 291,
+          "perfectGames": 0
+        },
+        "hidden_double": {
+          "games": 2,
+          "wins": 2,
+          "forfeits": 0,
+          "bestMoves": 104,
+          "bestTime": 289,
+          "perfectGames": 0
+        }
+      },
+      "lastPlayed": 1769831792348
+    },
+    "meridian_solitaire_session": {
+      "date": "Fri Jan 30 2026",
+      "gamesPlayed": 2,
+      "gamesWon": 2,
+      "totalMoves": 263,
+      "totalTime": 826,
+      "cardsMoved": 160,
+      "undosUsed": 2
+    },
+    "meridian-gs-telemetry": {
+      "version": "1.0",
+      "games": [
+        {
+          "gameId": "ml06g793",
+          "startTime": "2026-01-30T01:01:12.759Z",
+          "mode": "classic",
+          "outcome": "won",
+          "highestTier": 3,
+          "wasDismissed": true,
+          "ignoredWarning": true,
+          "eventuallyWon": true,
+          "cycleCount": 0,
+          "solverChecked": 0,
+          "solverResult": "none",
+          "endTime": "2026-01-30T01:06:20.616Z",
+          "moves": 112
+        },
+        {
+          "gameId": "ml19ph0w",
+          "startTime": "2026-01-30T19:20:10.352Z",
+          "mode": "classic",
+          "outcome": "won",
+          "highestTier": 3,
+          "wasDismissed": true,
+          "ignoredWarning": true,
+          "eventuallyWon": true,
+          "cycleCount": 0,
+          "solverChecked": 0,
+          "solverResult": "none",
+          "endTime": "2026-01-30T19:26:19.784Z",
+          "moves": 117
+        },
+        {
+          "gameId": "ml1rvl7m",
+          "startTime": "2026-01-31T03:48:48.802Z",
+          "mode": "classic",
+          "outcome": "won",
+          "highestTier": 3,
+          "wasDismissed": true,
+          "ignoredWarning": true,
+          "eventuallyWon": true,
+          "cycleCount": 0,
+          "solverChecked": 0,
+          "solverResult": "none",
+          "endTime": "2026-01-31T03:56:32.346Z",
+          "moves": 146
+        }
+      ]
+    },
+    "meridian_game_logs": [
+      {
+        "sessionId": "ml1rvl7m-504hw",
+        "version": "1.0.0",
+        "startTime": "2026-01-31T03:48:48.802Z",
+        "mode": "classic",
+        "dealId": "classic_normal_hard_09",
+        "isCampaign": true,
+        "campaignLevel": 29,
+        "events": [
+          {
+            "timestamp": 1769831328802,
+            "relativeTime": 0,
+            "type": "SESSION_START",
+            "mode": "classic",
+            "dealId": "classic_normal_hard_09",
+            "isCampaign": true,
+            "campaignLevel": 29
+          },
+          {
+            "timestamp": 1769831432111,
+            "relativeTime": 103309,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831432130,
+            "relativeTime": 103328,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831434908,
+            "relativeTime": 106106,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831435679,
+            "relativeTime": 106877,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831438808,
+            "relativeTime": 110006,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831440694,
+            "relativeTime": 111892,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831443475,
+            "relativeTime": 114673,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831445683,
+            "relativeTime": 116881,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831447585,
+            "relativeTime": 118783,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831448107,
+            "relativeTime": 119305,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831451587,
+            "relativeTime": 122785,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831452698,
+            "relativeTime": 123896,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831482803,
+            "relativeTime": 154001,
+            "type": "UNDO",
+            "moveNumber": 49
+          },
+          {
+            "timestamp": 1769831488987,
+            "relativeTime": 160185,
+            "type": "UNDO",
+            "moveNumber": 48
+          },
+          {
+            "timestamp": 1769831619573,
+            "relativeTime": 290771,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831619590,
+            "relativeTime": 290788,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831621332,
+            "relativeTime": 292530,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831623072,
+            "relativeTime": 294270,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831626949,
+            "relativeTime": 298147,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831628529,
+            "relativeTime": 299727,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831629839,
+            "relativeTime": 301037,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831630710,
+            "relativeTime": 301908,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831634352,
+            "relativeTime": 305550,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831641997,
+            "relativeTime": 313195,
+            "type": "NOTIFICATION",
+            "tier": "hint"
+          },
+          {
+            "timestamp": 1769831644615,
+            "relativeTime": 315813,
+            "type": "NOTIFICATION",
+            "tier": "concern"
+          },
+          {
+            "timestamp": 1769831644633,
+            "relativeTime": 315831,
+            "type": "NOTIFICATION",
+            "tier": "concern"
+          },
+          {
+            "timestamp": 1769831647390,
+            "relativeTime": 318588,
+            "type": "NOTIFICATION",
+            "tier": "concern"
+          },
+          {
+            "timestamp": 1769831650011,
+            "relativeTime": 321209,
+            "type": "NOTIFICATION",
+            "tier": "concern"
+          },
+          {
+            "timestamp": 1769831653973,
+            "relativeTime": 325171,
+            "type": "NOTIFICATION",
+            "tier": "concern"
+          },
+          {
+            "timestamp": 1769831655672,
+            "relativeTime": 326870,
+            "type": "NOTIFICATION",
+            "tier": "concern"
+          },
+          {
+            "timestamp": 1769831657171,
+            "relativeTime": 328369,
+            "type": "NOTIFICATION",
+            "tier": "concern"
+          },
+          {
+            "timestamp": 1769831659338,
+            "relativeTime": 330536,
+            "type": "NOTIFICATION",
+            "tier": "concern"
+          },
+          {
+            "timestamp": 1769831664369,
+            "relativeTime": 335567,
+            "type": "NOTIFICATION",
+            "tier": "concern"
+          },
+          {
+            "timestamp": 1769831665954,
+            "relativeTime": 337152,
+            "type": "NOTIFICATION",
+            "tier": "concern"
+          },
+          {
+            "timestamp": 1769831669404,
+            "relativeTime": 340602,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831669425,
+            "relativeTime": 340623,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831671695,
+            "relativeTime": 342893,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831671715,
+            "relativeTime": 342913,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831678079,
+            "relativeTime": 349277,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831680408,
+            "relativeTime": 351606,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831681493,
+            "relativeTime": 352691,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831689260,
+            "relativeTime": 360458,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831691662,
+            "relativeTime": 362860,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831693222,
+            "relativeTime": 364420,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831695055,
+            "relativeTime": 366253,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831697154,
+            "relativeTime": 368352,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831701763,
+            "relativeTime": 372961,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831706380,
+            "relativeTime": 377578,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831710187,
+            "relativeTime": 381385,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831712852,
+            "relativeTime": 384050,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831728382,
+            "relativeTime": 399580,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831729632,
+            "relativeTime": 400830,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831733107,
+            "relativeTime": 404305,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831734792,
+            "relativeTime": 405990,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831736134,
+            "relativeTime": 407332,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831737438,
+            "relativeTime": 408636,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831751343,
+            "relativeTime": 422541,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831753105,
+            "relativeTime": 424303,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831761208,
+            "relativeTime": 432406,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831762210,
+            "relativeTime": 433408,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831764615,
+            "relativeTime": 435813,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831766235,
+            "relativeTime": 437433,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831767746,
+            "relativeTime": 438944,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831768900,
+            "relativeTime": 440098,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831769881,
+            "relativeTime": 441079,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831771025,
+            "relativeTime": 442223,
+            "type": "NOTIFICATION",
+            "tier": "warning"
+          },
+          {
+            "timestamp": 1769831792347,
+            "relativeTime": 463545,
+            "type": "SESSION_END",
+            "outcome": "won",
+            "moves": 146,
+            "duration": 463
+          }
+        ],
+        "completed": true,
+        "endTime": "2026-01-31T03:56:32.347Z",
+        "duration": 463,
+        "outcome": "won",
+        "moves": 146
+      }
+    ],
+    "meridian-notification-settings": {
+      "gameStateNotifications": "on"
+    },
+    "meridian-theme": "blue-casino",
+    "meridian-campaign-progress": {
+      "currentLevel": 1,
+      "highestUnlocked": 30,
+      "tiersCompleted": {
+        "easy": true,
+        "moderate": true,
+        "hard": false
+      },
+      "campaignComplete": false,
+      "levels": {
+        "classic_normal_easy_01": {
+          "completed": true,
+          "bestMoves": 129,
+          "bestTime": 272,
+          "attempts": 4
+        },
+        "classic_normal_easy_02": {
+          "completed": true,
+          "bestMoves": 131,
+          "bestTime": 314,
+          "attempts": 1
+        },
+        "classic_normal_easy_03": {
+          "completed": true,
+          "bestMoves": 104,
+          "bestTime": 289,
+          "attempts": 1
+        },
+        "classic_normal_easy_04": {
+          "completed": true,
+          "bestMoves": 113,
+          "bestTime": 306,
+          "attempts": 1
+        },
+        "classic_normal_easy_05": {
+          "completed": true,
+          "bestMoves": 106,
+          "bestTime": 198,
+          "attempts": 1
+        },
+        "classic_normal_easy_06": {
+          "completed": true,
+          "bestMoves": 123,
+          "bestTime": 505,
+          "attempts": 1
+        },
+        "classic_normal_easy_07": {
+          "completed": true,
+          "bestMoves": 107,
+          "bestTime": 233,
+          "attempts": 1
+        },
+        "classic_normal_easy_08": {
+          "completed": true,
+          "bestMoves": 105,
+          "bestTime": 234,
+          "attempts": 1
+        },
+        "classic_normal_easy_09": {
+          "completed": true,
+          "bestMoves": 116,
+          "bestTime": 269,
+          "attempts": 1
+        },
+        "classic_normal_easy_10": {
+          "completed": true,
+          "bestMoves": 106,
+          "bestTime": 259,
+          "attempts": 1
+        },
+        "classic_normal_moderate_01": {
+          "completed": true,
+          "bestMoves": 168,
+          "bestTime": 546,
+          "attempts": 1
+        },
+        "classic_normal_moderate_02": {
+          "completed": true,
+          "bestMoves": 159,
+          "bestTime": 444,
+          "attempts": 1
+        },
+        "classic_normal_moderate_03": {
+          "completed": true,
+          "bestMoves": 145,
+          "bestTime": 425,
+          "attempts": 8
+        },
+        "classic_normal_moderate_04": {
+          "completed": true,
+          "bestMoves": 120,
+          "bestTime": 338,
+          "attempts": 2
+        },
+        "classic_normal_moderate_05": {
+          "completed": true,
+          "bestMoves": 127,
+          "bestTime": 374,
+          "attempts": 2
+        },
+        "classic_normal_moderate_06": {
+          "completed": true,
+          "bestMoves": 139,
+          "bestTime": 379,
+          "attempts": 1
+        },
+        "classic_normal_moderate_07": {
+          "completed": true,
+          "bestMoves": 123,
+          "bestTime": 420,
+          "attempts": 3
+        },
+        "classic_normal_moderate_08": {
+          "completed": true,
+          "bestMoves": 153,
+          "bestTime": 582,
+          "attempts": 3
+        },
+        "classic_normal_moderate_09": {
+          "completed": true,
+          "bestMoves": 138,
+          "bestTime": 446,
+          "attempts": 5
+        },
+        "classic_normal_moderate_10": {
+          "completed": true,
+          "bestMoves": 147,
+          "bestTime": 568,
+          "attempts": 4
+        },
+        "classic_normal_hard_01": {
+          "completed": true,
+          "bestMoves": 135,
+          "bestTime": 492,
+          "attempts": 4
+        },
+        "classic_normal_hard_02": {
+          "completed": true,
+          "bestMoves": 143,
+          "bestTime": 512,
+          "attempts": 1
+        },
+        "classic_normal_hard_03": {
+          "completed": true,
+          "bestMoves": 218,
+          "bestTime": 645,
+          "attempts": 5
+        },
+        "classic_normal_hard_04": {
+          "completed": true,
+          "bestMoves": 147,
+          "bestTime": 383,
+          "attempts": 4
+        },
+        "classic_normal_hard_05": {
+          "completed": true,
+          "bestMoves": 124,
+          "bestTime": 401,
+          "attempts": 2
+        },
+        "classic_normal_hard_06": {
+          "completed": true,
+          "bestMoves": 122,
+          "bestTime": 343,
+          "attempts": 1
+        },
+        "classic_normal_hard_07": {
+          "completed": true,
+          "bestMoves": 180,
+          "bestTime": 606,
+          "attempts": 2
+        },
+        "classic_normal_hard_08": {
+          "completed": true,
+          "bestMoves": 112,
+          "bestTime": 307,
+          "attempts": 2
+        },
+        "classic_normal_hard_09": {
+          "completed": true,
+          "bestMoves": 146,
+          "bestTime": 463,
+          "attempts": 1
+        }
+      }
+    }
+  }
+}
