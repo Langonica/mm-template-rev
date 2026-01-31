@@ -24,7 +24,7 @@
   "pools": {
     "campaign": {
       "tier1": {
-        "path": "/deals/campaign/tier1/",
+        "path": "deals/campaign/tier1/",
         "count": 10,
         "difficulty": "easy",
         "movesRange": [15, 25],
@@ -42,7 +42,7 @@
         ]
       },
       "tier2": {
-        "path": "/deals/campaign/tier2/",
+        "path": "deals/campaign/tier2/",
         "count": 10,
         "difficulty": "moderate",
         "movesRange": [25, 40],
@@ -60,7 +60,7 @@
         ]
       },
       "tier3": {
-        "path": "/deals/campaign/tier3/",
+        "path": "deals/campaign/tier3/",
         "count": 10,
         "difficulty": "hard",
         "movesRange": [40, 60],
