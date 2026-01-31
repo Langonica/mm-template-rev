@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MERIDIAN - Coming Soon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #D4AF37;
+            --gold-light: #F4D03F;
+            --dark: #0D0D0D;
+            --darker: #080808;
+            --felt: #1a3d1a;
+            --felt-light: #2d5a2d;
+            --accent: #c41e3a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--darker);
+            color: white;
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide.prev {
+            opacity: 0;
+            transform: translateX(-100px);
+        }
+
+        /* Felt background pattern */
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(196, 30, 58, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: 100;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 60px rgba(212, 175, 55, 0.3);
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            color: var(--gold-light);
+            margin-bottom: 2rem;
+        }
+
+        h3 {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            line-height: 1.8;
+            max-width: 700px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .tagline {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-top: 2rem;
+        }
+
+        /* Card visual */
+        .card-visual {
+            width: 120px;
+            height: 168px;
+            background: white;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(212, 175, 55, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 12px;
+            margin: 2rem;
+            transform-style: preserve-3d;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .card-visual.red {
+            color: var(--accent);
+        }
+
+        .card-visual.black {
+            color: #1a1a1a;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateY(-5deg) rotateX(5deg); }
+            50% { transform: translateY(-20px) rotateY(5deg) rotateX(-5deg); }
+        }
+
+        .card-corner {
+            font-size: 1.2rem;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .card-center {
+            font-size: 3rem;
+            text-align: center;
+            align-self: center;
+        }
+
+        /* Card spread */
+        .card-spread {
+            display: flex;
+            gap: -30px;
+            margin: 3rem 0;
+            perspective: 1000px;
+        }
+
+        .card-spread .card-visual {
+            margin: 0 -20px;
+            animation: none;
+            transition: transform 0.3s ease;
+        }
+
+        .card-spread .card-visual:nth-child(1) { transform: rotate(-15deg) translateY(20px); }
+        .card-spread .card-visual:nth-child(2) { transform: rotate(-5deg) translateY(5px); }
+        .card-spread .card-visual:nth-child(3) { transform: rotate(5deg) translateY(5px); }
+        .card-spread .card-visual:nth-child(4) { transform: rotate(15deg) translateY(20px); }
+
+        .card-spread:hover .card-visual:nth-child(1) { transform: rotate(-20deg) translateY(10px) translateX(-10px); }
+        .card-spread:hover .card-visual:nth-child(2) { transform: rotate(-5deg) translateY(-10px); }
+        .card-spread:hover .card-visual:nth-child(3) { transform: rotate(5deg) translateY(-10px); }
+        .card-spread:hover .card-visual:nth-child(4) { transform: rotate(20deg) translateY(10px) translateX(10px); }
+
+        /* Features grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 900px;
+            margin-top: 3rem;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 1.5rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            background: rgba(212, 175, 55, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gold-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Stats counter */
+        .stats {
+            display: flex;
+            gap: 4rem;
+            margin-top: 3rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 100;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 0.5rem;
+        }
+
+        /* Navigation dots */
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot:hover,
+        .nav-dot.active {
+            background: var(--gold);
+            box-shadow: 0 0 20px var(--gold);
+        }
+
+        /* Progress bar */
+        .progress {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+
+        /* Keyboard hint */
+        .hint {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .card-spread {
+                transform: scale(0.8);
+            }
+            
+            .stats {
+                gap: 2rem;
+                flex-wrap: wrap;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Glitch effect for title */
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            animation: glitch-1 2s infinite;
+            color: var(--accent);
+            z-index: -1;
+        }
+
+        .glitch::after {
+            animation: glitch-2 2s infinite;
+            color: var(--gold);
+            z-index: -2;
+        }
+
+        @keyframes glitch-1 {
+            0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+            20% { clip-path: inset(20% 0 30% 0); transform: translate(-2px, 2px); }
+            40% { clip-path: inset(50% 0 20% 0); transform: translate(2px, -2px); }
+            60% { clip-path: inset(10% 0 60% 0); transform: translate(-2px, 0); }
+            80% { clip-path: inset(80% 0 5% 0); transform: translate(2px, 2px); }
+        }
+
+        @keyframes glitch-2 {
+            0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+            20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -2px); }
+            40% { clip-path: inset(30% 0 40% 0); transform: translate(-2px, 2px); }
+            60% { clip-path: inset(10% 0 70% 0); transform: translate(2px, 0); }
+            80% { clip-path: inset(40% 0 30% 0); transform: translate(-2px, -2px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1 class="glitch" data-text="MERIDIAN">MERIDIAN</h1>
+            <h2>Master Solitaire</h2>
+            <div class="card-spread">
+                <div class="card-visual red">
+                    <div class="card-corner">7♥</div>
+                    <div class="card-center">♥</div>
+                    <div class="card-corner" style="transform: rotate(180deg)">7♥</div>
+                </div>
+                <div class="card-visual black">
+                    <div class="card-corner">K♠</div>
+                    <div class="card-center">♠</div>
+                    <div class="card-corner" style="transform: rotate(180deg)">K♠</div>
+                </div>
+                <div class="card-visual red">
+                    <div class="card-corner">A♦</div>
+                    <div class="card-center">♦</div>
+                    <div class="card-corner" style="transform: rotate(180deg)">A♦</div>
+                </div>
+                <div class="card-visual black">
+                    <div class="card-corner">Q♣</div>
+                    <div class="card-center">♣</div>
+                    <div class="card-corner" style="transform: rotate(180deg)">Q♣</div>
+                </div>
+            </div>
+            <p class="tagline">The Cards Remember. Do You?</p>
+        </div>
+
+        <!-- Slide 2: The Hook -->
+        <div class="slide">
+            <h3>The Setup</h3>
+            <p style="font-size: 1.5rem; font-style: italic; margin: 2rem 0;">
+                "Every master was once a beginner.<br>
+                Every legend started with a single deal."
+            </p>
+            <p>
+                In the shadow of the Meridian, where cards fall like stars,<br>
+                your journey begins. Not with luck—with skill.<br>
+                Not with chance—with mastery.
+            </p>
+            <div style="margin-top: 3rem; padding: 2rem; border-left: 2px solid var(--gold); text-align: left;">
+                <p style="font-size: 1rem; color: var(--gold-light);">
+                    52 cards. 7 columns. 8 foundations.<br>
+                    One path to victory.
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Features -->
+        <div class="slide">
+            <h3>What Awaits</h3>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🎴</div>
+                    <div class="feature-title">Four Modes</div>
+                    <div class="feature-desc">Classic, Hidden, Double Pocket—each a unique challenge</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🏆</div>
+                    <div class="feature-title">Campaign</div>
+                    <div class="feature-desc">30 handcrafted levels of ascending mastery</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Stats</div>
+                    <div class="feature-desc">Track every move, every win, every perfect game</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-title">Pure Skill</div>
+                    <div class="feature-desc">Every deal verified winnable. No excuses.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: By The Numbers -->
+        <div class="slide">
+            <h3>The Scale</h3>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">52</div>
+                    <div class="stat-label">Cards</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Foundations</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">Possibilities</div>
+                </div>
+            </div>
+            <p style="margin-top: 4rem; font-style: italic;">
+                But only one perfect sequence.<br>
+                Will you find it?
+            </p>
+        </div>
+
+        <!-- Slide 5: Coming Soon -->
+        <div class="slide">
+            <h1 style="font-size: clamp(2rem, 6vw, 4rem);">COMING SOON</h1>
+            <div class="card-visual red" style="margin: 3rem;">
+                <div class="card-corner">?</div>
+                <div class="card-center" style="font-size: 4rem;">🎰</div>
+                <div class="card-corner" style="transform: rotate(180deg)">?</div>
+            </div>
+            <p style="margin-bottom: 2rem;">
+                The table is set. The cards are waiting.<br>
+                Your move, player.
+            </p>
+            <p class="tagline" style="font-size: 1.2rem; color: var(--gold);">
+                Meridian Solitaire v2.4
+            </p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-dots">
+        <div class="nav-dot active" onclick="goToSlide(0)"></div>
+        <div class="nav-dot" onclick="goToSlide(1)"></div>
+        <div class="nav-dot" onclick="goToSlide(2)"></div>
+        <div class="nav-dot" onclick="goToSlide(3)"></div>
+        <div class="nav-dot" onclick="goToSlide(4)"></div>
+    </div>
+
+    <div class="progress" id="progress"></div>
+    
+    <div class="hint">
+        Use Arrow Keys or Click Dots to Navigate
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.nav-dot');
+        const totalSlides = slides.length;
+
+        function updateSlides() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active', 'prev');
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else if (index < currentSlide) {
+                    slide.classList.add('prev');
+                }
+            });
+
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+
+        function goToSlide(n) {
+            currentSlide = Math.max(0, Math.min(n, totalSlides - 1));
+            updateSlides();
+        }
+
+        function nextSlide() {
+            goToSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            goToSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Touch/swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+            }
+        }
+
+        // Auto-advance hint
+        setTimeout(() => {
+            document.querySelector('.hint').style.opacity = '0.5';
+        }, 3000);
+    </script>
+</body>
+</html>
