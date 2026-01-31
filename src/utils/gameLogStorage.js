@@ -346,7 +346,7 @@ function calculateSessionStats(session) {
   }
 }
 
-function countFoundationCards(state) {
+export function countFoundationCards(state) {
   if (!state?.foundations) return 0;
   let count = 0;
   for (const zone of ['up', 'down']) {
@@ -357,12 +357,12 @@ function countFoundationCards(state) {
   return count;
 }
 
-function countTableauCards(state) {
+export function countTableauCards(state) {
   if (!state?.tableau) return 0;
   return Object.values(state.tableau).reduce((sum, col) => sum + (col?.length || 0), 0);
 }
 
-function countEmptyColumns(state) {
+export function countEmptyColumns(state) {
   if (!state?.tableau) return 0;
   return Object.values(state.tableau).filter(col => !col || col.length === 0).length;
 }

@@ -26,7 +26,7 @@ import { useGSTelemetry } from './hooks/useGSTelemetry'
 import { generateRandomDeal, getRandomDealAsync, getGameModes } from './utils/dealGenerator'
 import { initDebugExport, triggerDebugExport } from './utils/debugExport'
 import gameLogger from './utils/gameLogger'
-import gameLogStorage from './utils/gameLogStorage'
+import gameLogStorage, { countFoundationCards, countEmptyColumns } from './utils/gameLogStorage'
 import './styles/App.css'
 
 function App() {
@@ -455,22 +455,34 @@ function App() {
       startTelemetry(selectedMode) // Telemetry: track game start
       gameEndedRef.current = false
       
+      // Get deal ID from snapshot (works for both campaign and adapted random deals)
+      const dealId = currentSnapshot?.metadata?.id || 
+                     currentSnapshot?._pool?.poolId || 
+                     currentCampaignLevel?.id ||
+                     'unknown';
+      
       // Logger: Game start
       const gameId = `${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
       gameLogger.gameStart({
         gameId,
         mode: selectedMode,
-        dealId: currentCampaignLevel?.id,
+        dealId,
         isCampaign: !!currentCampaignLevel,
         campaignLevel: currentCampaignLevel?.levelNumber
       });
       
-      // Persistent log storage
+      // Persistent log storage with full initial state
       gameLogStorage.startSession({
         mode: selectedMode,
-        dealId: currentCampaignLevel?.id,
+        dealId,
         isCampaign: !!currentCampaignLevel,
-        campaignLevel: currentCampaignLevel?.levelNumber
+        campaignLevel: currentCampaignLevel?.levelNumber,
+        initialState: currentSnapshot ? {
+          tableau: currentSnapshot.tableau,
+          stock: currentSnapshot.stock,
+          waste: currentSnapshot.waste,
+          columnTypes: currentSnapshot.columnState?.types
+        } : null
       })
       
       // Defer state update to avoid synchronous setState in effect
@@ -497,11 +509,17 @@ function App() {
         won
       });
       
-      // Persistent log storage
+      // Persistent log storage with final state
       gameLogStorage.endSession({
         outcome: gameStatus.status,
         moves: moveCount,
-        duration: result?.duration
+        duration: result?.duration,
+        finalState: currentSnapshot ? {
+          foundations: countFoundationCards(currentSnapshot),
+          tableau: currentSnapshot.tableau,
+          columnTypes: currentSnapshot.columnState?.types,
+          emptyColumns: countEmptyColumns(currentSnapshot)
+        } : null
       })
 
       // Record campaign completion if this was a campaign level
