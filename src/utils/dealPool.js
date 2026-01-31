@@ -150,8 +150,13 @@ export async function getRandomDeal(mode, difficulty = 'moderate', options = {})
     const baseUrl = import.meta.env.BASE_URL || '/';
     const dealPath = tierData.path.startsWith('./') ? tierData.path.slice(2) : tierData.path;
     const dealUrl = `${baseUrl}${dealPath}${levelInfo.file}`;
-    const module = await import(/* @vite-ignore */ dealUrl);
-    const baseDeal = module.default || module;
+    
+    // Fetch JSON file (not import, to avoid MIME type issues)
+    const response = await fetch(dealUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    const baseDeal = await response.json();
     
     // Adapt the deal for the requested mode (pockets, face up/down)
     const adaptedDeal = adaptDealForMode(baseDeal, mode, difficulty);
@@ -292,8 +297,17 @@ export async function getCampaignDeal(tier, level) {
   }
   
   try {
-    const module = await import(/* @vite-ignore */ `${tierData.path}${levelInfo.file}`);
-    const deal = module.default || module;
+    // Use base URL from Vite to construct proper path
+    const baseUrl = import.meta.env.BASE_URL || '/';
+    const dealPath = tierData.path.startsWith('./') ? tierData.path.slice(2) : tierData.path;
+    const dealUrl = `${baseUrl}${dealPath}${levelInfo.file}`;
+    
+    // Fetch JSON file
+    const response = await fetch(dealUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    const deal = await response.json();
     
     return {
       ...deal,
